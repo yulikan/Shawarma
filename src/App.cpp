@@ -24,6 +24,17 @@ void App::Update() {
     if (Util::Input::IsKeyUp(Util::Keycode::ESCAPE) || Util::Input::IfExit()) {
         m_CurrentState = State::END;
     }
+
+    // 按下 Q 鍵切換背景圖
+    if (Util::Input::IsKeyUp(Util::Keycode::Q)) {
+        LOG_TRACE("Switching background to background2.png");
+        // 重新分配背景物件
+        m_Background = std::make_shared<BackgroundImage>("C:/Shawarma/CHAO0304/Shawarma/Resources/Image/background/kitchen.png");
+        // 重新初始化渲染器（如果沒有 SetGameObjects 方法）
+        m_Renderer = std::make_shared<Util::Renderer>(std::vector<std::shared_ptr<Util::GameObject>>{m_Background});
+    }
+
+
     if (m_Renderer) {
         m_Renderer->Update();  // 确保 Renderer 在每一帧更新
     }
