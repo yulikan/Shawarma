@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # PTSD Template
 
 This is a [PTSD](https://github.com/ntut-open-source-club/practical-tools-for-simple-design) framework template for students taking OOPL2024s.
@@ -22,3 +23,6 @@ This is a [PTSD](https://github.com/ntut-open-source-club/practical-tools-for-si
    cmake -DCMAKE_BUILD_TYPE=Debug -B build # -G Ninja
    ```
    better read [PTSD README](https://github.com/ntut-open-source-club/practical-tools-for-simple-design)
+=======
+# Shawarma
+>>>>>>> ae30f087bb2674a590c39e5237db292bcf87711c
