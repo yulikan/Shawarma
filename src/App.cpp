@@ -13,10 +13,14 @@
 void App::Start() {
     LOG_TRACE("Start");
     m_CurrentState = State::UPDATE;
-    m_Background = std::make_shared<BackgroundImage>();
 
-    // 初始化渲染器，并添加背景
-    m_Renderer = std::make_shared<Util::Renderer>(std::vector<std::shared_ptr<Util::GameObject>>{m_Background});
+    m_Renderer = std::make_shared<Util::Renderer>();
+    m_Background = std::make_shared<BackgroundImage>();
+    m_ExitButton = std::make_shared<ExitButton>();
+
+    m_Renderer->AddChild(m_Background);
+
+
 }
 
 
@@ -32,6 +36,12 @@ void App::Update() {
         m_Background = std::make_shared<BackgroundImage>("C:/Shawarma/CHAO0304/Shawarma/Resources/Image/background/kitchen.png");
         // 重新初始化渲染器（如果沒有 SetGameObjects 方法）
         m_Renderer = std::make_shared<Util::Renderer>(std::vector<std::shared_ptr<Util::GameObject>>{m_Background});
+        m_Renderer->AddChild(m_ExitButton);
+    }
+
+    if (m_ExitButton->IsClicked()) { // 透過 IfExit() 判斷是否要退出
+        std::cout << "Exit button clicked. Exiting..." << std::endl;
+        m_CurrentState = State::END;
     }
 
 
