@@ -8,7 +8,7 @@
 #include "Util/Logger.hpp"
 #include <filesystem>
 #include "Util/Renderer.hpp"
-
+#include "Util/Keycode.hpp" // for Keycode
 
 void App::Start() {
     LOG_TRACE("Start");
@@ -33,7 +33,7 @@ void App::Update() {
     if (Util::Input::IsKeyUp(Util::Keycode::Q)) {
         LOG_TRACE("Switching background to background2.png");
         // 重新分配背景物件
-        m_Background = std::make_shared<BackgroundImage>("C:/Shawarma/CHAO0304/Shawarma/Resources/Image/background/kitchen.png");
+        m_Background = std::make_shared<BackgroundImage>("C:/Users/yello/Shawarma/Resources/Image/background/kitchen.png");
         // 重新初始化渲染器（如果沒有 SetGameObjects 方法）
         m_Renderer = std::make_shared<Util::Renderer>(std::vector<std::shared_ptr<Util::GameObject>>{m_Background});
         m_Renderer->AddChild(m_ExitButton);
