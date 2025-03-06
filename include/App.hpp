@@ -13,7 +13,7 @@
 class BackgroundImage : public Util::GameObject {
 public:
     BackgroundImage() : GameObject(
-        std::make_unique<Util::Image>("C:/Users/yello/Shawarma/Resources/Image/background/StartPage.png"),
+        std::make_unique<Util::Image>("C:/Shawarma/CHAO0306/Shawarma/Resources/Image/background/StartPage.png"),
         1) {
         m_Transform.scale = glm::vec2(0.69f, 0.69f); // 调整缩放比例
     }
@@ -29,9 +29,9 @@ public:
 class ExitButton : public Util::GameObject {
 public:
     ExitButton() : GameObject(
-        std::make_unique<Util::Image>("C:/Users/yello/Shawarma//Resources/Image/Object/exitBtn.png"),
+        std::make_unique<Util::Image>("C:/Shawarma/CHAO0306/Shawarma/Resources/Image/Object/exitBtn.png"),
         5) {
-        m_Transform.translation = glm::vec2(100.0f, 200.0f); // 設定按鈕位置
+        m_Transform.translation = glm::vec2(-540.0f, 300.0f); // 設定按鈕位置
         m_Transform.scale = glm::vec2(0.3f, 0.3f); // 設定按鈕大小
     }
 
@@ -41,8 +41,13 @@ public:
         // 檢測滑鼠左鍵是否按下
         bool mousePressed = Util::Input::IsKeyPressed(Util::Keycode::MOUSE_LB);
 
-        glm::vec2 buttonMin = m_Transform.translation;
-        glm::vec2 buttonMax = m_Transform.translation + glm::vec2(100.0f * m_Transform.scale.x, 50.0f * m_Transform.scale.y);
+        // Get the actual image dimensions
+        float imageWidth = 470.0f * m_Transform.scale.x;
+        float imageHeight = 175.0f * m_Transform.scale.y;
+
+        // Calculate button boundaries based on the image center
+        glm::vec2 buttonMin = m_Transform.translation - glm::vec2(imageWidth/2, imageHeight/2);
+        glm::vec2 buttonMax = m_Transform.translation + glm::vec2(imageWidth/2, imageHeight/2);
 
         return mousePressed &&
                mousePos.x >= buttonMin.x && mousePos.x <= buttonMax.x &&
