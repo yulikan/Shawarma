@@ -25,6 +25,34 @@ public:
 };
 
 //按鈕
+// 開始按鈕
+class StartButton : public Util::GameObject {
+public:
+    StartButton() : GameObject(
+        std::make_unique<Util::Image>("C:/Shawarma/CHAO0306/Shawarma/Resources/Image/Object/startBtn.png"),
+        5) {
+        m_Transform.translation = glm::vec2(-250.0f, -120.0f); // 設定按鈕位置
+        m_Transform.scale = glm::vec2(0.76f, 0.76f); // 設定按鈕大小
+    }
+
+    bool IsClicked() {
+        glm::vec2 mousePos = Util::Input::GetCursorPosition();
+        bool mousePressed = Util::Input::IsKeyPressed(Util::Keycode::MOUSE_LB);
+
+        float imageWidth = 700.0f * m_Transform.scale.x;
+        float imageHeight = 250.0f * m_Transform.scale.y;
+
+        glm::vec2 buttonMin = m_Transform.translation - glm::vec2(imageWidth / 2, imageHeight / 2);
+        glm::vec2 buttonMax = m_Transform.translation + glm::vec2(imageWidth / 2, imageHeight / 2);
+
+        return mousePressed &&
+               mousePos.x >= buttonMin.x && mousePos.x <= buttonMax.x &&
+               mousePos.y >= buttonMin.y && mousePos.y <= buttonMax.y;
+    }
+};
+
+
+
 // 退出按鈕（使用 GameObject）
 class ExitButton : public Util::GameObject {
 public:
@@ -80,6 +108,7 @@ private:
     State m_CurrentState = State::START;
     std::shared_ptr<BackgroundImage> m_Background;
     std::shared_ptr<Util::Renderer> m_Renderer;
+    std::shared_ptr<StartButton> m_StartButton;
     std::shared_ptr<ExitButton> m_ExitButton;
 
     //std::shared_ptr<Util::Image> m_BackgroundImage; // 背景圖片
