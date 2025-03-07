@@ -18,6 +18,8 @@ void App::Start() {
     m_Renderer = std::make_shared<Util::Renderer>();
     m_Background = std::make_shared<BackgroundImage>();
     m_StartButton = std::make_shared<StartButton>();
+    m_ShopButton = std::make_shared<ShopButton>();
+    m_ReturnButton = std::make_shared<ReturnButton>();
     //m_ExitButton = std::make_shared<ExitButton>();
     //m_Boss = std::make_shared<Boss>();
 
@@ -27,6 +29,7 @@ void App::Start() {
     m_Knife = std::make_shared<Knife>();
 
     m_Renderer->AddChild(m_StartButton);
+    m_Renderer->AddChild(m_ShopButton);
     m_Renderer->AddChild(m_Background);
 
 
@@ -50,6 +53,20 @@ void App::Update() {
         //m_Renderer->AddChild(m_Boss);
     }
 
+
+    if (m_ShopButton->IsClicked()) {
+        LOG_TRACE("Shop button clicked! Switching background.");
+        m_Background = std::make_shared<BackgroundImage>("C:/Shawarma/CHAO0306/Shawarma/Resources/Image/background/restaurant.png");
+        m_Renderer = std::make_shared<Util::Renderer>(std::vector<std::shared_ptr<Util::GameObject>>{m_Background});
+        m_Renderer->AddChild(m_ReturnButton);
+
+    }
+
+    if (m_ReturnButton->IsClicked()) { // 透過 IfExit() 判斷是否要退出
+        std::cout << "Return button clicked. Returning..." << std::endl;
+        m_CurrentState = State::START;
+    }
+    
     // if (m_ExitButton->IsClicked()) { // 透過 IfExit() 判斷是否要退出
     //     std::cout << "Exit button clicked. Exiting..." << std::endl;
     //     m_CurrentState = State::END;

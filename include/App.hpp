@@ -13,9 +13,9 @@
 class BackgroundImage : public Util::GameObject {
 public:
     BackgroundImage() : GameObject(
-        std::make_unique<Util::Image>("C:/Shawarma/CHAO0306/Shawarma/Resources/Image/background/StartPage.png"),
+        std::make_unique<Util::Image>("C:/Shawarma/CHAO0306/Shawarma/Resources/Image/background/homePage.png"),
         1) {
-        m_Transform.scale = glm::vec2(0.69f, 0.69f); // 调整缩放比例
+        m_Transform.scale = glm::vec2(0.65f, 0.65f); // 调整缩放比例
     }
     // 接受不同的圖片路徑
     explicit BackgroundImage(const std::string& imagePath)
@@ -29,18 +29,70 @@ public:
 class StartButton : public Util::GameObject {
 public:
     StartButton() : GameObject(
-        std::make_unique<Util::Image>("C:/Shawarma/CHAO0306/Shawarma/Resources/Image/Object/startBtn.png"),
+        std::make_unique<Util::Image>("C:/Shawarma/CHAO0306/Shawarma/Resources/Image/Object/startBtn1.png"),
         5) {
-        m_Transform.translation = glm::vec2(-250.0f, -120.0f); // 設定按鈕位置
-        m_Transform.scale = glm::vec2(0.76f, 0.76f); // 設定按鈕大小
+        m_Transform.translation = glm::vec2(-328.0f, 45.0f); // 設定按鈕位置
+        m_Transform.scale = glm::vec2(0.38f, 0.38f); // 設定按鈕大小
     }
 
     bool IsClicked() {
         glm::vec2 mousePos = Util::Input::GetCursorPosition();
         bool mousePressed = Util::Input::IsKeyPressed(Util::Keycode::MOUSE_LB);
 
-        float imageWidth = 700.0f * m_Transform.scale.x;
-        float imageHeight = 250.0f * m_Transform.scale.y;
+        float imageWidth = 450.0f * m_Transform.scale.x;
+        float imageHeight = 600.0f * m_Transform.scale.y;
+
+        glm::vec2 buttonMin = m_Transform.translation - glm::vec2(imageWidth / 2, imageHeight / 2);
+        glm::vec2 buttonMax = m_Transform.translation + glm::vec2(imageWidth / 2, imageHeight / 2);
+
+        return mousePressed &&
+               mousePos.x >= buttonMin.x && mousePos.x <= buttonMax.x &&
+               mousePos.y >= buttonMin.y && mousePos.y <= buttonMax.y;
+    }public:
+};
+
+// 商店按鈕
+class ShopButton : public Util::GameObject {
+public:
+    ShopButton() : GameObject(
+        std::make_unique<Util::Image>("C:/Shawarma/CHAO0306/Shawarma/Resources/Image/Object/shopBtn.png"),
+        5) {
+        m_Transform.translation = glm::vec2(-42.0f, -87.0f); // 設定按鈕位置
+        m_Transform.scale = glm::vec2(0.35f, 0.35f); // 設定按鈕大小
+    }
+
+    bool IsClicked() {
+        glm::vec2 mousePos = Util::Input::GetCursorPosition();
+        bool mousePressed = Util::Input::IsKeyPressed(Util::Keycode::MOUSE_LB);
+
+        float imageWidth = 450.0f * m_Transform.scale.x;
+        float imageHeight = 320.0f * m_Transform.scale.y;
+
+        glm::vec2 buttonMin = m_Transform.translation - glm::vec2(imageWidth / 2, imageHeight / 2);
+        glm::vec2 buttonMax = m_Transform.translation + glm::vec2(imageWidth / 2, imageHeight / 2);
+
+        return mousePressed &&
+               mousePos.x >= buttonMin.x && mousePos.x <= buttonMax.x &&
+               mousePos.y >= buttonMin.y && mousePos.y <= buttonMax.y;
+    }
+};
+
+// 返回餐廳按鈕
+class ReturnButton : public Util::GameObject {
+public:
+    ReturnButton() : GameObject(
+        std::make_unique<Util::Image>("C:/Shawarma/CHAO0306/Shawarma/Resources/Image/Object/startBtn.png"),
+        5) {
+        m_Transform.translation = glm::vec2(-400.0f, 300.0f); // 設定按鈕位置
+        m_Transform.scale = glm::vec2(0.2f, 0.2f); // 設定按鈕大小
+    }
+
+    bool IsClicked() {
+        glm::vec2 mousePos = Util::Input::GetCursorPosition();
+        bool mousePressed = Util::Input::IsKeyPressed(Util::Keycode::MOUSE_LB);
+
+        float imageWidth = 450.0f * m_Transform.scale.x;
+        float imageHeight = 320.0f * m_Transform.scale.y;
 
         glm::vec2 buttonMin = m_Transform.translation - glm::vec2(imageWidth / 2, imageHeight / 2);
         glm::vec2 buttonMax = m_Transform.translation + glm::vec2(imageWidth / 2, imageHeight / 2);
@@ -207,6 +259,8 @@ private:
     std::shared_ptr<BackgroundImage> m_Background;
     std::shared_ptr<Util::Renderer> m_Renderer;
     std::shared_ptr<StartButton> m_StartButton;
+    std::shared_ptr<ShopButton> m_ShopButton;
+    std::shared_ptr<ReturnButton> m_ReturnButton;
     //std::shared_ptr<ExitButton> m_ExitButton;
 
     //std::shared_ptr<Boss> m_Boss;
