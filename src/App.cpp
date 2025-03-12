@@ -27,6 +27,11 @@ void App::Start() {
     m_Meat = std::make_shared<Meat>();
     m_Crust = std::make_shared<Crust>();
     m_Knife = std::make_shared<Knife>();
+    m_Fries = std::make_shared<Fries>();
+    m_Sauce = std::make_shared<Sauce>();
+    m_Pickle = std::make_shared<Pickle>();
+    m_ShavedMeat = std::make_shared<ShavedMeat>();
+
 
     m_Renderer->AddChild(m_StartButton);
     m_Renderer->AddChild(m_ShopButton);
@@ -43,26 +48,46 @@ void App::Update() {
     }
 
     if (m_StartButton->IsClicked()) {
+        m_CurrentPhase = phase::phase2;
         LOG_TRACE("Start button clicked! Switching background.");
-        m_Background = std::make_shared<BackgroundImage>("C:/Shawarma/CHAO0306/Shawarma/Resources/Image/background/restaurant.png");
+
+        m_Background = std::make_shared<BackgroundImage>("C:/Users/yello/Shawarma/Resources/Image/background/restaurant.png");
         m_Renderer = std::make_shared<Util::Renderer>(std::vector<std::shared_ptr<Util::GameObject>>{m_Background});
-        //m_Renderer->AddChild(m_ExitButton);
+
+        m_Renderer->AddChild(m_ReturnButton);
         m_Renderer->AddChild(m_Meat);
         m_Renderer->AddChild(m_Knife);
         m_Renderer->AddChild(m_Crust);
+
+        // 添加新食材
+        m_Renderer->AddChild(m_Fries);
+        m_Renderer->AddChild(m_Sauce);
+        m_Renderer->AddChild(m_Pickle);
+        m_Renderer->AddChild(m_ShavedMeat);
+
+
         //m_Renderer->AddChild(m_Boss);
     }
 
+    if (m_Fries->IsClicked() || m_Sauce->IsClicked() || m_Pickle->IsClicked() || m_ShavedMeat->IsClicked()) {
+        LOG_TRACE("Ingredient clicked! Updating crust image.");
+        std::cout<<"Ingredient clicked!"<<std::endl;
+        m_Crust = std::make_shared<Crust>();
+        //m_Crust->SetImage(std::make_unique<Util::Image>("C:/Users/yello/Shawarma/Resources/Image/Food/crust_with_ingredients.png"));
+        m_Renderer->AddChild(m_Crust);
+    }
 
-    if (m_ShopButton->IsClicked()) {
+    if (m_ShopButton->IsClicked()& (m_CurrentPhase == phase::phase1) ) {
+        m_CurrentPhase= phase::phase3;
         LOG_TRACE("Shop button clicked! Switching background.");
-        m_Background = std::make_shared<BackgroundImage>("C:/Shawarma/CHAO0306/Shawarma/Resources/Image/background/restaurant.png");
+        m_Background = std::make_shared<BackgroundImage>("C:/Users/yello/Shawarma/Resources/Image/background/restaurant.png");
         m_Renderer = std::make_shared<Util::Renderer>(std::vector<std::shared_ptr<Util::GameObject>>{m_Background});
         m_Renderer->AddChild(m_ReturnButton);
 
     }
 
     if (m_ReturnButton->IsClicked()) { // 透過 IfExit() 判斷是否要退出
+        m_CurrentPhase= phase::phase1;
         std::cout << "Return button clicked. Returning..." << std::endl;
         m_CurrentState = State::START;
     }

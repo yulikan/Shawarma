@@ -13,7 +13,7 @@
 class BackgroundImage : public Util::GameObject {
 public:
     BackgroundImage() : GameObject(
-        std::make_unique<Util::Image>("C:/Shawarma/CHAO0306/Shawarma/Resources/Image/background/homePage.png"),
+        std::make_unique<Util::Image>("C:/Users/yello/Shawarma/Resources/Image/background/homePage.png"),
         1) {
         m_Transform.scale = glm::vec2(0.65f, 0.65f); // 调整缩放比例
     }
@@ -29,7 +29,7 @@ public:
 class StartButton : public Util::GameObject {
 public:
     StartButton() : GameObject(
-        std::make_unique<Util::Image>("C:/Shawarma/CHAO0306/Shawarma/Resources/Image/Object/startBtn1.png"),
+        std::make_unique<Util::Image>("C:/Users/yello/Shawarma/Resources/Image/Object/startBtn1.png"),
         5) {
         m_Transform.translation = glm::vec2(-328.0f, 45.0f); // 設定按鈕位置
         m_Transform.scale = glm::vec2(0.38f, 0.38f); // 設定按鈕大小
@@ -55,7 +55,7 @@ public:
 class ShopButton : public Util::GameObject {
 public:
     ShopButton() : GameObject(
-        std::make_unique<Util::Image>("C:/Shawarma/CHAO0306/Shawarma/Resources/Image/Object/shopBtn.png"),
+        std::make_unique<Util::Image>("C:/Users/yello/Shawarma/Resources/Image/Object/shopBtn.png"),
         5) {
         m_Transform.translation = glm::vec2(-42.0f, -87.0f); // 設定按鈕位置
         m_Transform.scale = glm::vec2(0.35f, 0.35f); // 設定按鈕大小
@@ -81,7 +81,7 @@ public:
 class ReturnButton : public Util::GameObject {
 public:
     ReturnButton() : GameObject(
-        std::make_unique<Util::Image>("C:/Shawarma/CHAO0306/Shawarma/Resources/Image/Object/startBtn.png"),
+        std::make_unique<Util::Image>("C:/Users/yello/Shawarma/Resources/Image/Object/startBtn.png"),
         5) {
         m_Transform.translation = glm::vec2(-400.0f, 300.0f); // 設定按鈕位置
         m_Transform.scale = glm::vec2(0.2f, 0.2f); // 設定按鈕大小
@@ -119,7 +119,7 @@ public:
 class Meat : public Util::GameObject {
  public:
      Meat() : GameObject(
-             std::make_unique<Util::Image>("C:/Shawarma/CHAO0306/Shawarma/Resources/Image/Food/meat.png"),
+             std::make_unique<Util::Image>("C:/Users/yello/Shawarma/Resources/Image/Food/meat.png"),
              2) {
          m_Transform.translation = glm::vec2(-390.0f, 90.0f); // 設定按鈕位置
          m_Transform.scale = glm::vec2(0.34f, 0.34f); // 設定按鈕大小
@@ -130,7 +130,7 @@ class Meat : public Util::GameObject {
 class Crust : public Util::GameObject {
 public:
     Crust() : GameObject(
-            std::make_unique<Util::Image>("C:/Shawarma/CHAO0306/Shawarma/Resources/Image/Food/crust.png"),
+            std::make_unique<Util::Image>("C:/Users/yello/Shawarma/Resources/Image/Food/crust.png"),
             3), m_IsDragging(false) {
         m_Transform.translation = glm::vec2(-180.0f, -200.0f); // 設定初始位置
         m_Transform.scale = glm::vec2(0.2f, 0.2f); // 設定縮放大小
@@ -186,7 +186,7 @@ private:
 class Knife : public Util::GameObject {
 public:
     Knife() : GameObject(
-            std::make_unique<Util::Image>("C:/Shawarma/CHAO0306/Shawarma/Resources/Image/Object/knife_origin.png"),
+            std::make_unique<Util::Image>("C:/Users/yello/Shawarma/Resources/Image/Object/knife_origin.png"),
             4), m_IsDragging(false) {
         m_Transform.translation = glm::vec2(-480.0f, -160.0f); // 設定初始位置
         m_Transform.scale = glm::vec2(0.2f, 0.2f); // 設定縮放大小
@@ -234,6 +234,57 @@ private:
     bool m_IsDragging;
     glm::vec2 m_Offset;
 };
+class Fries : public Util::GameObject {
+public:
+    Fries() : GameObject(
+        std::make_unique<Util::Image>("C:/Users/yello/Shawarma/Resources/Image/Food/fries.png"), 3) {
+        m_Transform.translation = glm::vec2(0.0f, -110.0f);
+        m_Transform.scale = glm::vec2(0.5f, 0.5f);
+    }
+
+    bool IsClicked() {
+        return Util::Input::IsKeyPressed(Util::Keycode::MOUSE_LB) ;
+    }
+};
+
+class Sauce : public Util::GameObject {
+public:
+    Sauce() : GameObject(
+        std::make_unique<Util::Image>("C:/Users/yello/Shawarma/Resources/Image/Food/sauce.png"), 3) {
+        m_Transform.translation = glm::vec2(-100.0f, -110.0f);
+        m_Transform.scale = glm::vec2(0.5f, 0.5f);
+    }
+
+    bool IsClicked() {
+        return Util::Input::IsKeyPressed(Util::Keycode::MOUSE_LB) ;
+    }
+};
+
+class Pickle : public Util::GameObject {
+public:
+    Pickle() : GameObject(
+        std::make_unique<Util::Image>("C:/Users/yello/Shawarma/Resources/Image/Food/pickle.png"), 3) {
+        m_Transform.translation = glm::vec2(-220.0f, -110.0f);
+        m_Transform.scale = glm::vec2(0.5f, 0.5f);
+    }
+
+    bool IsClicked() {
+        return Util::Input::IsKeyPressed(Util::Keycode::MOUSE_LB) ;
+    }
+};
+
+class ShavedMeat : public Util::GameObject {
+public:
+    ShavedMeat() : GameObject(
+        std::make_unique<Util::Image>("C:/Users/yello/Shawarma/Resources/Image/Food/shaved_meat.png"), 3) {
+        m_Transform.translation = glm::vec2(-50.0f, 40.0f);
+        m_Transform.scale = glm::vec2(0.5f, 0.5f);
+    }
+
+    bool IsClicked() {
+        return Util::Input::IsKeyPressed(Util::Keycode::MOUSE_LB) ;
+    }
+};
 
 class App {
 public:
@@ -242,7 +293,11 @@ public:
         UPDATE,
         END,
     };
-
+    enum class phase {
+        phase1,
+        phase2,
+        phase3,
+    };
     State GetCurrentState() const { return m_CurrentState; }
 
     void Start();
@@ -256,6 +311,7 @@ private:
 
 private:
     State m_CurrentState = State::START;
+    phase m_CurrentPhase = phase::phase1;
     std::shared_ptr<BackgroundImage> m_Background;
     std::shared_ptr<Util::Renderer> m_Renderer;
     std::shared_ptr<StartButton> m_StartButton;
@@ -267,6 +323,10 @@ private:
     std::shared_ptr<Meat> m_Meat;
     std::shared_ptr<Crust> m_Crust;
     std::shared_ptr<Knife> m_Knife;
+    std::shared_ptr<Fries> m_Fries;
+    std::shared_ptr<Sauce> m_Sauce;
+    std::shared_ptr<Pickle> m_Pickle;
+    std::shared_ptr<ShavedMeat> m_ShavedMeat;
 
 };
 
