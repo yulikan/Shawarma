@@ -51,7 +51,7 @@ void App::Update() {
         m_CurrentPhase = phase::phase2;
         LOG_TRACE("Start button clicked! Switching background.");
 
-        m_Background = std::make_shared<BackgroundImage>("C:/Shawarma/CHAO0312/Shawarma/Resources/Image/background/restaurant.png");
+        m_Background = std::make_shared<BackgroundImage>("C:/Users/yello/Shawarma/Resources/Image/background/restaurant.png");
         m_Renderer = std::make_shared<Util::Renderer>(std::vector<std::shared_ptr<Util::GameObject>>{m_Background});
 
         m_Renderer->AddChild(m_ReturnButton);
@@ -69,18 +69,31 @@ void App::Update() {
         //m_Renderer->AddChild(m_Boss);
     }
 
-    if (m_Fries->IsClicked() || m_Sauce->IsClicked() || m_Pickle->IsClicked() || m_ShavedMeat->IsClicked()) {
+    if (m_Fries->IsClicked() ) {
         LOG_TRACE("Ingredient clicked! Updating crust image.");
-        std::cout<<"Ingredient clicked!"<<std::endl;
-        m_Crust = std::make_shared<Crust>();
+        std::cout<<"Fries clicked!"<<std::endl;
         //m_Crust->SetImage(std::make_unique<Util::Image>("C:/Users/yello/Shawarma/Resources/Image/Food/crust_with_ingredients.png"));
-        m_Renderer->AddChild(m_Crust);
+    }
+    if (m_Sauce->IsClicked() ) {
+        LOG_TRACE("Ingredient clicked! Updating crust image.");
+        std::cout<<"Sauce clicked!"<<std::endl;
+        //m_Crust->SetImage(std::make_unique<Util::Image>("C:/Users/yello/Shawarma/Resources/Image/Food/crust_with_ingredients.png"));
+    }
+    if (m_Pickle->IsClicked() ) {
+        LOG_TRACE("Ingredient clicked! Updating crust image.");
+        std::cout<<"Pickle clicked!"<<std::endl;
+        //m_Crust->SetImage(std::make_unique<Util::Image>("C:/Users/yello/Shawarma/Resources/Image/Food/crust_with_ingredients.png"));
+    }
+    if (m_ShavedMeat->IsClicked() ) {
+        LOG_TRACE("Ingredient clicked! Updating crust image.");
+        std::cout<<"ShavedMeat clicked!"<<std::endl;
+        //m_Crust->SetImage(std::make_unique<Util::Image>("C:/Users/yello/Shawarma/Resources/Image/Food/crust_with_ingredients.png"));
     }
 
     if (m_ShopButton->IsClicked()& (m_CurrentPhase == phase::phase1) ) {
         m_CurrentPhase= phase::phase3;
         LOG_TRACE("Shop button clicked! Switching background.");
-        m_Background = std::make_shared<BackgroundImage>("C:/Shawarma/CHAO0312/Shawarma/Resources/Image/background/restaurant.png");
+        m_Background = std::make_shared<BackgroundImage>("C:/Users/yello/Shawarma/Resources/Image/background/restaurant.png");
         m_Renderer = std::make_shared<Util::Renderer>(std::vector<std::shared_ptr<Util::GameObject>>{m_Background});
         m_Renderer->AddChild(m_ReturnButton);
 
