@@ -51,7 +51,7 @@ void App::Update() {
         m_CurrentPhase = phase::phase2;
         LOG_TRACE("Start button clicked! Switching background.");
 
-        m_Background = std::make_shared<BackgroundImage>("C:/Users/yello/Shawarma/Resources/Image/background/restaurant.png");
+        m_Background = std::make_shared<BackgroundImage>("C:/Shawarma/CHAO0312/Shawarma/Resources/Image/background/restaurant.png");
         m_Renderer = std::make_shared<Util::Renderer>(std::vector<std::shared_ptr<Util::GameObject>>{m_Background});
 
         m_Renderer->AddChild(m_ReturnButton);
@@ -80,7 +80,7 @@ void App::Update() {
     if (m_ShopButton->IsClicked()& (m_CurrentPhase == phase::phase1) ) {
         m_CurrentPhase= phase::phase3;
         LOG_TRACE("Shop button clicked! Switching background.");
-        m_Background = std::make_shared<BackgroundImage>("C:/Users/yello/Shawarma/Resources/Image/background/restaurant.png");
+        m_Background = std::make_shared<BackgroundImage>("C:/Shawarma/CHAO0312/Shawarma/Resources/Image/background/restaurant.png");
         m_Renderer = std::make_shared<Util::Renderer>(std::vector<std::shared_ptr<Util::GameObject>>{m_Background});
         m_Renderer->AddChild(m_ReturnButton);
 
