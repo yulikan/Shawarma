@@ -103,6 +103,16 @@ public:
     }
 };
 
+class Topping : public Util::GameObject {
+public:
+    Topping(const std::string& imagePath)
+        : GameObject(std::make_unique<Util::Image>(imagePath), 3) {
+        m_Transform.translation = glm::vec2(200.0f, -170.0f); // 設定初始位置到餅皮上
+        m_Transform.scale = glm::vec2(0.5f, 0.5f); // 設定大小
+    }
+};
+
+
 // 老闆
 // class Boss : public Util::GameObject {
 //     public:
@@ -132,7 +142,7 @@ public:
     Crust() : GameObject(
             std::make_unique<Util::Image>("C:/Shawarma/CHAO0312/Shawarma/Resources/Image/Food/crust.png"),
             3), m_IsDragging(false) {
-        m_Transform.translation = glm::vec2(-180.0f, -200.0f); // 設定初始位置
+        m_Transform.translation = glm::vec2(200.0f, -170.0f); // 設定初始位置
         m_Transform.scale = glm::vec2(0.2f, 0.2f); // 設定縮放大小
     }
 
@@ -234,57 +244,154 @@ private:
     bool m_IsDragging;
     glm::vec2 m_Offset;
 };
+
+//薯條
 class Fries : public Util::GameObject {
 public:
+
     Fries() : GameObject(
         std::make_unique<Util::Image>("C:/Shawarma/CHAO0312/Shawarma/Resources/Image/Food/fries.png"), 3) {
-        m_Transform.translation = glm::vec2(0.0f, -110.0f);
+        m_Transform.translation = glm::vec2(5.0f, -120.0f);
         m_Transform.scale = glm::vec2(0.5f, 0.5f);
     }
 
     bool IsClicked() {
-        return Util::Input::IsKeyPressed(Util::Keycode::MOUSE_LB) ;
+        glm::vec2 mousePos = Util::Input::GetCursorPosition();
+        bool mousePressed = Util::Input::IsKeyPressed(Util::Keycode::MOUSE_LB);
+
+        float imageWidth = 200.0f * m_Transform.scale.x;
+        float imageHeight = 250.0f * m_Transform.scale.y;
+
+        glm::vec2 buttonMin = m_Transform.translation - glm::vec2(imageWidth / 2, imageHeight / 2);
+        glm::vec2 buttonMax = m_Transform.translation + glm::vec2(imageWidth / 2, imageHeight / 2);
+
+        return mousePressed &&
+               mousePos.x >= buttonMin.x && mousePos.x <= buttonMax.x &&
+               mousePos.y >= buttonMin.y && mousePos.y <= buttonMax.y;
+
     }
+
+    void OnClick() {
+        if (IsClicked()) {
+            toppings.push_back(std::make_shared<Topping>(
+                "C:/Shawarma/CHAO0312/Shawarma/Resources/Image/Food/fries.png"
+            ));
+        }
+    }
+private:
+    std::vector<std::shared_ptr<Topping>> toppings;
 };
 
+//醬汁
 class Sauce : public Util::GameObject {
 public:
     Sauce() : GameObject(
         std::make_unique<Util::Image>("C:/Shawarma/CHAO0312/Shawarma/Resources/Image/Food/sauce.png"), 3) {
-        m_Transform.translation = glm::vec2(-100.0f, -110.0f);
+        m_Transform.translation = glm::vec2(-100.0f, -120.0f);
         m_Transform.scale = glm::vec2(0.5f, 0.5f);
     }
 
     bool IsClicked() {
-        return Util::Input::IsKeyPressed(Util::Keycode::MOUSE_LB) ;
+        glm::vec2 mousePos = Util::Input::GetCursorPosition();
+        bool mousePressed = Util::Input::IsKeyPressed(Util::Keycode::MOUSE_LB);
+
+        float imageWidth = 200.0f * m_Transform.scale.x;
+        float imageHeight = 250.0f * m_Transform.scale.y;
+
+        glm::vec2 buttonMin = m_Transform.translation - glm::vec2(imageWidth / 2, imageHeight / 2);
+        glm::vec2 buttonMax = m_Transform.translation + glm::vec2(imageWidth / 2, imageHeight / 2);
+
+        return mousePressed &&
+               mousePos.x >= buttonMin.x && mousePos.x <= buttonMax.x &&
+               mousePos.y >= buttonMin.y && mousePos.y <= buttonMax.y;
+
     }
+
+    void OnClick() {
+        if (IsClicked()) {
+            toppings.push_back(std::make_shared<Topping>(
+                "C:/Shawarma/CHAO0312/Shawarma/Resources/Image/Food/sauce.png"
+            ));
+        }
+    }
+
+private:
+    std::vector<std::shared_ptr<Topping>> toppings;
 };
 
 class Pickle : public Util::GameObject {
 public:
     Pickle() : GameObject(
         std::make_unique<Util::Image>("C:/Shawarma/CHAO0312/Shawarma/Resources/Image/Food/pickle.png"), 3) {
-        m_Transform.translation = glm::vec2(-220.0f, -110.0f);
+        m_Transform.translation = glm::vec2(-220.0f, -120.0f);
         m_Transform.scale = glm::vec2(0.5f, 0.5f);
     }
 
     bool IsClicked() {
-        return Util::Input::IsKeyPressed(Util::Keycode::MOUSE_LB) ;
+        glm::vec2 mousePos = Util::Input::GetCursorPosition();
+        bool mousePressed = Util::Input::IsKeyPressed(Util::Keycode::MOUSE_LB);
+
+        float imageWidth = 200.0f * m_Transform.scale.x;
+        float imageHeight = 250.0f * m_Transform.scale.y;
+
+        glm::vec2 buttonMin = m_Transform.translation - glm::vec2(imageWidth / 2, imageHeight / 2);
+        glm::vec2 buttonMax = m_Transform.translation + glm::vec2(imageWidth / 2, imageHeight / 2);
+
+        return mousePressed &&
+               mousePos.x >= buttonMin.x && mousePos.x <= buttonMax.x &&
+               mousePos.y >= buttonMin.y && mousePos.y <= buttonMax.y;
+
     }
+
+    void OnClick() {
+        if (IsClicked()) {
+            toppings.push_back(std::make_shared<Topping>(
+                "C:/Shawarma/CHAO0312/Shawarma/Resources/Image/Food/pickle.png"
+            ));
+        }
+    }
+
+private:
+    std::vector<std::shared_ptr<Topping>> toppings;
 };
 
 class ShavedMeat : public Util::GameObject {
 public:
     ShavedMeat() : GameObject(
         std::make_unique<Util::Image>("C:/Shawarma/CHAO0312/Shawarma/Resources/Image/Food/shaved_meat.png"), 3) {
-        m_Transform.translation = glm::vec2(-30.0f, 10.0f);
+        m_Transform.translation = glm::vec2(-335.0f, -120.0f);
         m_Transform.scale = glm::vec2(0.5f, 0.5f);
     }
 
     bool IsClicked() {
-        return Util::Input::IsKeyPressed(Util::Keycode::MOUSE_LB) ;
+        glm::vec2 mousePos = Util::Input::GetCursorPosition();
+        bool mousePressed = Util::Input::IsKeyPressed(Util::Keycode::MOUSE_LB);
+
+        float imageWidth = 200.0f * m_Transform.scale.x;
+        float imageHeight = 250.0f * m_Transform.scale.y;
+
+        glm::vec2 buttonMin = m_Transform.translation - glm::vec2(imageWidth / 2, imageHeight / 2);
+        glm::vec2 buttonMax = m_Transform.translation + glm::vec2(imageWidth / 2, imageHeight / 2);
+
+        return mousePressed &&
+               mousePos.x >= buttonMin.x && mousePos.x <= buttonMax.x &&
+               mousePos.y >= buttonMin.y && mousePos.y <= buttonMax.y;
+
     }
+
+    void OnClick() {
+        if (IsClicked()) {
+            toppings.push_back(std::make_shared<Topping>(
+                "C:/Shawarma/CHAO0312/Shawarma/Resources/Image/Food/shaved_meat.png"
+            ));
+        }
+    }
+
+private:
+    std::vector<std::shared_ptr<Topping>> toppings;
 };
+
+
 
 class App {
 public:
@@ -327,6 +434,8 @@ private:
     std::shared_ptr<Sauce> m_Sauce;
     std::shared_ptr<Pickle> m_Pickle;
     std::shared_ptr<ShavedMeat> m_ShavedMeat;
+
+    std::vector<std::shared_ptr<Topping>> toppings; // 儲存新增的配料
 
 };
 

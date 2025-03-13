@@ -66,6 +66,7 @@ void App::Update() {
         m_Renderer->AddChild(m_ShavedMeat);
 
 
+
         //m_Renderer->AddChild(m_Boss);
     }
 
@@ -73,9 +74,47 @@ void App::Update() {
         LOG_TRACE("Ingredient clicked! Updating crust image.");
         std::cout<<"Ingredient clicked!"<<std::endl;
         m_Crust = std::make_shared<Crust>();
-        //m_Crust->SetImage(std::make_unique<Util::Image>("C:/Users/yello/Shawarma/Resources/Image/Food/crust_with_ingredients.png"));
         m_Renderer->AddChild(m_Crust);
+
+        // for (auto& topping : toppings) {
+        //     LOG_TRACE("HAHAHA");
+        //     m_Renderer->AddChild(std::dynamic_pointer_cast<Util::GameObject>(topping));
+        // }
     }
+
+    //比較破的加菜寫法嘻嘻
+    if (m_Fries->IsClicked()){
+        auto newTopping = std::make_shared<Topping>("C:/Shawarma/CHAO0312/Shawarma/Resources/Image/Food/fries.png");
+        LOG_TRACE("Fries");
+        m_Renderer->AddChild(newTopping);
+    }
+    else if(m_Sauce->IsClicked()){
+        auto newTopping = std::make_shared<Topping>("C:/Shawarma/CHAO0312/Shawarma/Resources/Image/Food/sauce.png");
+        LOG_TRACE("Fries");
+        m_Renderer->AddChild(newTopping);
+    }
+    else if(m_Pickle->IsClicked()){
+        auto newTopping = std::make_shared<Topping>("C:/Shawarma/CHAO0312/Shawarma/Resources/Image/Food/pickle.png");
+        LOG_TRACE("Fries");
+        m_Renderer->AddChild(newTopping);
+    }
+    else if(m_ShavedMeat->IsClicked()){
+        auto newTopping = std::make_shared<Topping>("C:/Shawarma/CHAO0312/Shawarma/Resources/Image/Food/shaved_meat.png");
+        LOG_TRACE("Fries");
+        m_Renderer->AddChild(newTopping);
+    }
+
+    // if (m_Sauce->IsClicked()){
+    //     auto newTopping = std::make_shared<Topping>("C:/Shawarma/CHAO0312/Shawarma/Resources/Image/Food/sauce.png");
+    //     LOG_TRACE("Sauce");
+    //     m_Renderer->AddChild(newTopping);
+    // };
+    //
+    // if (m_ShavedMeat->IsClicked()){
+    //     auto newTopping = std::make_shared<Topping>("C:/Shawarma/CHAO0312/Shawarma/Resources/Image/Food/shaved_meat.png");
+    //     LOG_TRACE("ShaveMeat");
+    //     m_Renderer->AddChild(newTopping);
+    // };
 
     if (m_ShopButton->IsClicked()& (m_CurrentPhase == phase::phase1) ) {
         m_CurrentPhase= phase::phase3;
@@ -99,7 +138,8 @@ void App::Update() {
 
 
     if (m_Renderer) {
-        m_Renderer->Update();  // 确保 Renderer 在每一帧更新
+        m_Renderer->Update();  // 确保 Renderer
+
     }
     m_Crust->Update();
     m_Knife->Update();
@@ -109,4 +149,5 @@ void App::Update() {
 
 void App::End() { // NOLINT(this method will mutate members in the future)
     LOG_TRACE("End");
+    m_Renderer.reset();  // 假設 Renderer 有提供這個函數
 }

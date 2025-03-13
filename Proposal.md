@@ -28,7 +28,7 @@ https://www.canva.com/design/DAGgWp1QP6Q/0cS11Gn_jNURw-WAl8LjMA/edit?utm_content
   - 🤓 製作圖片素材（背景✅、老闆✅、肉✅、烤餅✅、配料(adding)、客人）
   - ✅ 製作退出遊戲功能
 - Week 4：製作餐點組合功能
-  - [ ] 餐點可以依照順序疊加圖片（烤餅->肉or配料）
+  - 🤓 餐點可以依照順序疊加圖片（烤餅->肉or配料）
 - Week 5：增加餐點特性
   - [ ] 配料使用後會變少
   - [ ] 點擊老闆會增加配料
