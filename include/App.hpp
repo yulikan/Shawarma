@@ -106,11 +106,62 @@ public:
 class Topping : public Util::GameObject {
 public:
     Topping(const std::string& imagePath)
-        : GameObject(std::make_unique<Util::Image>(imagePath), 3) {
-        m_Transform.translation = glm::vec2(200.0f, -170.0f); // 設定初始位置到餅皮上
-        m_Transform.scale = glm::vec2(0.5f, 0.5f); // 設定大小
+        : GameObject(std::make_unique<Util::Image>(imagePath), 4), m_IsPlaced(false) {
+        m_Transform.translation = glm::vec2(200.0f, -170.0f); // 初始位置
+        m_Transform.scale = glm::vec2(0.5f, 0.5f);
     }
+
+    void OnClick() {
+        if (!m_IsPlaced && IsClicked()) {
+            // 只允許第一次點擊時放置食材
+            m_IsPlaced = true;
+            m_Transform.translation = glm::vec2(200.0f, -170.0f); // 放置到餅皮上
+        }
+    }
+
+    void Update(){
+        if (!m_IsPlaced) {
+            glm::vec2 mousePos = Util::Input::GetCursorPosition();
+            bool mousePressed = Util::Input::IsKeyPressed(Util::Keycode::MOUSE_LB);
+            bool mouseDown = Util::Input::IsKeyDown(Util::Keycode::MOUSE_LB);
+            bool mouseReleased = Util::Input::IsKeyUp(Util::Keycode::MOUSE_LB);
+
+            if (mouseDown && IsClicked()) {
+                m_IsDragging = true;
+                m_Offset = m_Transform.translation - mousePos;
+            }
+
+            if (mousePressed && m_IsDragging) {
+                m_Transform.translation = mousePos + m_Offset;
+            }
+
+            if (mouseReleased) {
+                m_IsDragging = false;
+            }
+        }
+    }
+
+private:
+    bool IsClicked() {
+        glm::vec2 mousePos = Util::Input::GetCursorPosition();
+        bool mousePressed = Util::Input::IsKeyPressed(Util::Keycode::MOUSE_LB);
+
+        float imageWidth = 100.0f * m_Transform.scale.x;
+        float imageHeight = 100.0f * m_Transform.scale.y;
+
+        glm::vec2 buttonMin = m_Transform.translation - glm::vec2(imageWidth / 2, imageHeight / 2);
+        glm::vec2 buttonMax = m_Transform.translation + glm::vec2(imageWidth / 2, imageHeight / 2);
+
+        return mousePressed &&
+               mousePos.x >= buttonMin.x && mousePos.x <= buttonMax.x &&
+               mousePos.y >= buttonMin.y && mousePos.y <= buttonMax.y;
+    }
+
+    bool m_IsPlaced;
+    bool m_IsDragging;
+    glm::vec2 m_Offset;
 };
+
 
 
 // 老闆
@@ -189,15 +240,13 @@ private:
     bool m_IsDragging;
     glm::vec2 m_Offset;
 };
-// m_Transform.translation = glm::vec2(-480.0f, -160.0f); // 設定初始位置
-// m_Transform.scale = glm::vec2(0.2f, 0.2f); // 設定縮放大小
 
 // 刀子
 class Knife : public Util::GameObject {
 public:
     Knife() : GameObject(
             std::make_unique<Util::Image>("C:/Shawarma/CHAO0312/Shawarma/Resources/Image/Object/knife_origin.png"),
-            4), m_IsDragging(false) {
+            3), m_IsDragging(false) {
         m_Transform.translation = glm::vec2(-480.0f, -160.0f); // 設定初始位置
         m_Transform.scale = glm::vec2(0.2f, 0.2f); // 設定縮放大小
     }
@@ -278,6 +327,7 @@ public:
             ));
         }
     }
+
 private:
     std::vector<std::shared_ptr<Topping>> toppings;
 };
