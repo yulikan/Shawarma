@@ -10,6 +10,9 @@
 #include "Util/Renderer.hpp"
 #include "Util/Keycode.hpp" // for Keycode
 
+std::unordered_set<std::string> placedToppings;
+Fries fries;
+
 void App::Start() {
     LOG_TRACE("Start");
     m_CurrentState = State::UPDATE;

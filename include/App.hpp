@@ -8,6 +8,7 @@
 #include "Util/Renderer.hpp"
 #include "Util/Input.hpp"
 #include "Util/Keycode.hpp" // for Keycode
+#include <unordered_set>
 
 //場景區
 class BackgroundImage : public Util::GameObject {
@@ -118,7 +119,6 @@ public:
             m_Transform.translation = glm::vec2(200.0f, -170.0f); // 放置到餅皮上
         }
     }
-
     void Update(){
         if (!m_IsPlaced) {
             glm::vec2 mousePos = Util::Input::GetCursorPosition();
@@ -320,16 +320,19 @@ public:
 
     }
 
-    void OnClick() {
-        if (IsClicked()) {
+    void OnClick(std::unordered_set<std::string>& placedToppings) {
+        std::string toppingKey = "fries";  // 唯一識別碼
+
+        if (placedToppings.find(toppingKey) == placedToppings.end() && IsClicked()) {
+            placedToppings.insert(toppingKey);  // 記錄此配料已放置
             toppings.push_back(std::make_shared<Topping>(
                 "C:/Shawarma/CHAO0312/Shawarma/Resources/Image/Food/fries.png"
             ));
         }
     }
-
 private:
     std::vector<std::shared_ptr<Topping>> toppings;
+    bool m_IsPlaced = false;  // 需要初始化
 };
 
 //醬汁
@@ -358,15 +361,16 @@ public:
     }
 
     void OnClick() {
-        if (IsClicked()) {
+        if (!m_IsPlaced && IsClicked()) {
+            m_IsPlaced = true;
             toppings.push_back(std::make_shared<Topping>(
                 "C:/Shawarma/CHAO0312/Shawarma/Resources/Image/Food/sauce.png"
             ));
         }
     }
-
 private:
     std::vector<std::shared_ptr<Topping>> toppings;
+    bool m_IsPlaced = false;  // 需要初始化
 };
 
 class Pickle : public Util::GameObject {
@@ -394,7 +398,8 @@ public:
     }
 
     void OnClick() {
-        if (IsClicked()) {
+        if (!m_IsPlaced && IsClicked()) {
+            m_IsPlaced = true;
             toppings.push_back(std::make_shared<Topping>(
                 "C:/Shawarma/CHAO0312/Shawarma/Resources/Image/Food/pickle.png"
             ));
@@ -403,6 +408,7 @@ public:
 
 private:
     std::vector<std::shared_ptr<Topping>> toppings;
+    bool m_IsPlaced = false;  // 需要初始化
 };
 
 class ShavedMeat : public Util::GameObject {
@@ -430,7 +436,8 @@ public:
     }
 
     void OnClick() {
-        if (IsClicked()) {
+        if (!m_IsPlaced && IsClicked()) {
+            m_IsPlaced = true;
             toppings.push_back(std::make_shared<Topping>(
                 "C:/Shawarma/CHAO0312/Shawarma/Resources/Image/Food/shaved_meat.png"
             ));
@@ -439,6 +446,7 @@ public:
 
 private:
     std::vector<std::shared_ptr<Topping>> toppings;
+    bool m_IsPlaced = false;  // 需要初始化
 };
 
 
