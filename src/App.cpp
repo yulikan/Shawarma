@@ -31,7 +31,8 @@ void App::Start() {
     m_Sauce = std::make_shared<Sauce>();
     m_Pickle = std::make_shared<Pickle>();
     m_ShavedMeat = std::make_shared<ShavedMeat>();
-
+    m_FrenchFries = std::make_shared<FrenchFries>();
+    m_Customer = std::make_shared<Customer>();
 
     m_Renderer->AddChild(m_StartButton);
     m_Renderer->AddChild(m_ShopButton);
@@ -54,7 +55,7 @@ void App::Update() {
         m_CurrentPhase = phase::phase2;
         LOG_TRACE("Start button clicked! Switching background.");
 
-        m_Background = std::make_shared<BackgroundImage>("C:/Shawarma/CHAO0312/Shawarma/Resources/Image/background/restaurant.png");
+        m_Background = std::make_shared<BackgroundImage>("C:/Users/yello/Shawarma/Resources/Image/background/restaurant.png");
         m_Renderer = std::make_shared<Util::Renderer>(std::vector<std::shared_ptr<Util::GameObject>>{m_Background});
 
         m_Renderer->AddChild(m_ReturnButton);
@@ -67,6 +68,8 @@ void App::Update() {
         m_Renderer->AddChild(m_Sauce);
         m_Renderer->AddChild(m_Pickle);
         m_Renderer->AddChild(m_ShavedMeat);
+        m_Renderer->AddChild(m_FrenchFries);
+        m_Renderer->AddChild(m_Customer);
 
         //m_Renderer->AddChild(m_Boss);
     }
@@ -80,30 +83,33 @@ void App::Update() {
 
     //比較破的加菜寫法嘻嘻
     if (m_Fries->IsClicked() && m_CurrentPhase == phase::phase2) {
-        auto newTopping = std::make_shared<Topping>("C:/Shawarma/CHAO0312/Shawarma/Resources/Image/Food/fries.png");
+        auto newTopping = std::make_shared<Topping>("C:/Users/yello/Shawarma/Resources/Image/Food/fries.png");
         LOG_TRACE("Fries");
         m_Renderer->AddChild(newTopping);
     }
     else if(m_Sauce->IsClicked() && m_CurrentPhase == phase::phase2){
-        auto newTopping = std::make_shared<Topping>("C:/Shawarma/CHAO0312/Shawarma/Resources/Image/Food/sauce.png");
+        auto newTopping = std::make_shared<Topping>("C:/Users/yello/Shawarma/Resources/Image/Food/sauce.png");
         LOG_TRACE("Fries");
         m_Renderer->AddChild(newTopping);
     }
     else if(m_Pickle->IsClicked() && m_CurrentPhase == phase::phase2){
-        auto newTopping = std::make_shared<Topping>("C:/Shawarma/CHAO0312/Shawarma/Resources/Image/Food/pickle.png");
+        auto newTopping = std::make_shared<Topping>("C:/Users/yello/Shawarma/Resources/Image/Food/pickle.png");
         LOG_TRACE("Fries");
         m_Renderer->AddChild(newTopping);
     }
     else if(m_ShavedMeat->IsClicked() && m_CurrentPhase == phase::phase2){
-        auto newTopping = std::make_shared<Topping>("C:/Shawarma/CHAO0312/Shawarma/Resources/Image/Food/shaved_meat.png");
+        auto newTopping = std::make_shared<Topping>("C:/Users/yello/Shawarma/Resources/Image/Food/shaved_meat.png");
         LOG_TRACE("Fries");
         m_Renderer->AddChild(newTopping);
     }
 
+
+
+
     if (m_ShopButton->IsClicked() && (m_CurrentPhase == phase::phase1) ) {
         m_CurrentPhase= phase::phase3;
         LOG_TRACE("Shop button clicked! Switching background.");
-        m_Background = std::make_shared<BackgroundImage>("C:/Shawarma/CHAO0312/Shawarma/Resources/Image/background/restaurant.png");
+        m_Background = std::make_shared<BackgroundImage>("C:/Users/yello/Shawarma/Resources/Image/background/restaurant.png");
         m_Renderer = std::make_shared<Util::Renderer>(std::vector<std::shared_ptr<Util::GameObject>>{m_Background});
         m_Renderer->AddChild(m_ReturnButton);
 
@@ -127,6 +133,7 @@ void App::Update() {
     }
     m_Crust->Update();
     m_Knife->Update();
+    m_FrenchFries->Update();
 }
 
 
