@@ -81,6 +81,7 @@ void App::Update() {
     //     //m_Renderer->AddChild(m_Crust);
     // }
 
+<<<<<<< HEAD
     //比較破的加菜寫法嘻嘻
     if (m_Fries->IsClicked() && m_CurrentPhase == phase::phase2) {
         auto newTopping = std::make_shared<Topping>("C:/Users/yello/Shawarma/Resources/Image/Food/fries.png");
@@ -101,6 +102,27 @@ void App::Update() {
         auto newTopping = std::make_shared<Topping>("C:/Users/yello/Shawarma/Resources/Image/Food/shaved_meat.png");
         LOG_TRACE("Fries");
         m_Renderer->AddChild(newTopping);
+=======
+    if (m_Fries->IsClicked() ) {
+        LOG_TRACE("Ingredient clicked! Updating crust image.");
+        std::cout<<"Fries clicked!"<<std::endl;
+        //m_Crust->SetImage(std::make_unique<Util::Image>("C:/Users/yello/Shawarma/Resources/Image/Food/crust_with_ingredients.png"));
+    }
+    if (m_Sauce->IsClicked() ) {
+        LOG_TRACE("Ingredient clicked! Updating crust image.");
+        std::cout<<"Sauce clicked!"<<std::endl;
+        //m_Crust->SetImage(std::make_unique<Util::Image>("C:/Users/yello/Shawarma/Resources/Image/Food/crust_with_ingredients.png"));
+    }
+    if (m_Pickle->IsClicked() ) {
+        LOG_TRACE("Ingredient clicked! Updating crust image.");
+        std::cout<<"Pickle clicked!"<<std::endl;
+        //m_Crust->SetImage(std::make_unique<Util::Image>("C:/Users/yello/Shawarma/Resources/Image/Food/crust_with_ingredients.png"));
+    }
+    if (m_ShavedMeat->IsClicked() ) {
+        LOG_TRACE("Ingredient clicked! Updating crust image.");
+        std::cout<<"ShavedMeat clicked!"<<std::endl;
+        //m_Crust->SetImage(std::make_unique<Util::Image>("C:/Users/yello/Shawarma/Resources/Image/Food/crust_with_ingredients.png"));
+>>>>>>> cf524708c8f442925b6f23cf5603819ab1411dbb
     }
 
 
