@@ -8,6 +8,7 @@
 #include "Util/Renderer.hpp"
 #include "Util/Input.hpp"
 #include "Util/Keycode.hpp" // for Keycode
+#include <unordered_set>
 
 //場景區
 class BackgroundImage : public Util::GameObject {
@@ -118,7 +119,6 @@ public:
             m_Transform.translation = glm::vec2(200.0f, -170.0f); // 放置到餅皮上
         }
     }
-
     void Update(){
         if (!m_IsPlaced) {
             glm::vec2 mousePos = Util::Input::GetCursorPosition();
@@ -246,11 +246,7 @@ class Knife : public Util::GameObject {
 public:
     Knife() : GameObject(
             std::make_unique<Util::Image>("C:/Users/yello/Shawarma/Resources/Image/Object/knife_origin.png"),
-<<<<<<< HEAD
             3), m_IsDragging(false) {
-=======
-            4), m_IsDragging(false) {
->>>>>>> cf524708c8f442925b6f23cf5603819ab1411dbb
         m_Transform.translation = glm::vec2(-480.0f, -160.0f); // 設定初始位置
         m_Transform.scale = glm::vec2(0.2f, 0.2f); // 設定縮放大小
     }
@@ -304,11 +300,7 @@ public:
 
     Fries() : GameObject(
         std::make_unique<Util::Image>("C:/Users/yello/Shawarma/Resources/Image/Food/fries.png"), 3) {
-<<<<<<< HEAD
         m_Transform.translation = glm::vec2(5.0f, -120.0f);
-=======
-        m_Transform.translation = glm::vec2(0.0f, -110.0f);
->>>>>>> cf524708c8f442925b6f23cf5603819ab1411dbb
         m_Transform.scale = glm::vec2(0.5f, 0.5f);
     }
 
@@ -317,11 +309,7 @@ public:
         bool mousePressed = Util::Input::IsKeyPressed(Util::Keycode::MOUSE_LB);
 
         float imageWidth = 200.0f * m_Transform.scale.x;
-<<<<<<< HEAD
         float imageHeight = 250.0f * m_Transform.scale.y;
-=======
-        float imageHeight = 200.0f * m_Transform.scale.y;
->>>>>>> cf524708c8f442925b6f23cf5603819ab1411dbb
 
         glm::vec2 buttonMin = m_Transform.translation - glm::vec2(imageWidth / 2, imageHeight / 2);
         glm::vec2 buttonMax = m_Transform.translation + glm::vec2(imageWidth / 2, imageHeight / 2);
@@ -329,22 +317,22 @@ public:
         return mousePressed &&
                mousePos.x >= buttonMin.x && mousePos.x <= buttonMax.x &&
                mousePos.y >= buttonMin.y && mousePos.y <= buttonMax.y;
-<<<<<<< HEAD
 
-=======
->>>>>>> cf524708c8f442925b6f23cf5603819ab1411dbb
     }
 
-    void OnClick() {
-        if (IsClicked()) {
+    void OnClick(std::unordered_set<std::string>& placedToppings) {
+        std::string toppingKey = "fries";  // 唯一識別碼
+
+        if (placedToppings.find(toppingKey) == placedToppings.end() && IsClicked()) {
+            placedToppings.insert(toppingKey);  // 記錄此配料已放置
             toppings.push_back(std::make_shared<Topping>(
                 "C:/Users/yello/Shawarma/Resources/Image/Food/fries.png"
             ));
         }
     }
-
 private:
     std::vector<std::shared_ptr<Topping>> toppings;
+    bool m_IsPlaced = false;  // 需要初始化
 };
 
 //醬汁
@@ -352,11 +340,7 @@ class Sauce : public Util::GameObject {
 public:
     Sauce() : GameObject(
         std::make_unique<Util::Image>("C:/Users/yello/Shawarma/Resources/Image/Food/sauce.png"), 3) {
-<<<<<<< HEAD
         m_Transform.translation = glm::vec2(-100.0f, -120.0f);
-=======
-        m_Transform.translation = glm::vec2(-100.0f, -110.0f);
->>>>>>> cf524708c8f442925b6f23cf5603819ab1411dbb
         m_Transform.scale = glm::vec2(0.5f, 0.5f);
     }
 
@@ -365,11 +349,7 @@ public:
         bool mousePressed = Util::Input::IsKeyPressed(Util::Keycode::MOUSE_LB);
 
         float imageWidth = 200.0f * m_Transform.scale.x;
-<<<<<<< HEAD
         float imageHeight = 250.0f * m_Transform.scale.y;
-=======
-        float imageHeight = 200.0f * m_Transform.scale.y;
->>>>>>> cf524708c8f442925b6f23cf5603819ab1411dbb
 
         glm::vec2 buttonMin = m_Transform.translation - glm::vec2(imageWidth / 2, imageHeight / 2);
         glm::vec2 buttonMax = m_Transform.translation + glm::vec2(imageWidth / 2, imageHeight / 2);
@@ -377,33 +357,27 @@ public:
         return mousePressed &&
                mousePos.x >= buttonMin.x && mousePos.x <= buttonMax.x &&
                mousePos.y >= buttonMin.y && mousePos.y <= buttonMax.y;
-<<<<<<< HEAD
 
-=======
->>>>>>> cf524708c8f442925b6f23cf5603819ab1411dbb
     }
 
     void OnClick() {
-        if (IsClicked()) {
+        if (!m_IsPlaced && IsClicked()) {
+            m_IsPlaced = true;
             toppings.push_back(std::make_shared<Topping>(
                 "C:/Users/yello/Shawarma/Resources/Image/Food/sauce.png"
             ));
         }
     }
-
 private:
     std::vector<std::shared_ptr<Topping>> toppings;
+    bool m_IsPlaced = false;  // 需要初始化
 };
 
 class Pickle : public Util::GameObject {
 public:
     Pickle() : GameObject(
         std::make_unique<Util::Image>("C:/Users/yello/Shawarma/Resources/Image/Food/pickle.png"), 3) {
-<<<<<<< HEAD
         m_Transform.translation = glm::vec2(-220.0f, -120.0f);
-=======
-        m_Transform.translation = glm::vec2(-220.0f, -110.0f);
->>>>>>> cf524708c8f442925b6f23cf5603819ab1411dbb
         m_Transform.scale = glm::vec2(0.5f, 0.5f);
     }
 
@@ -412,11 +386,7 @@ public:
         bool mousePressed = Util::Input::IsKeyPressed(Util::Keycode::MOUSE_LB);
 
         float imageWidth = 200.0f * m_Transform.scale.x;
-<<<<<<< HEAD
         float imageHeight = 250.0f * m_Transform.scale.y;
-=======
-        float imageHeight = 200.0f * m_Transform.scale.y;
->>>>>>> cf524708c8f442925b6f23cf5603819ab1411dbb
 
         glm::vec2 buttonMin = m_Transform.translation - glm::vec2(imageWidth / 2, imageHeight / 2);
         glm::vec2 buttonMax = m_Transform.translation + glm::vec2(imageWidth / 2, imageHeight / 2);
@@ -424,14 +394,12 @@ public:
         return mousePressed &&
                mousePos.x >= buttonMin.x && mousePos.x <= buttonMax.x &&
                mousePos.y >= buttonMin.y && mousePos.y <= buttonMax.y;
-<<<<<<< HEAD
 
-=======
->>>>>>> cf524708c8f442925b6f23cf5603819ab1411dbb
     }
 
     void OnClick() {
-        if (IsClicked()) {
+        if (!m_IsPlaced && IsClicked()) {
+            m_IsPlaced = true;
             toppings.push_back(std::make_shared<Topping>(
                 "C:/Users/yello/Shawarma/Resources/Image/Food/pickle.png"
             ));
@@ -440,17 +408,14 @@ public:
 
 private:
     std::vector<std::shared_ptr<Topping>> toppings;
+    bool m_IsPlaced = false;  // 需要初始化
 };
 
 class ShavedMeat : public Util::GameObject {
 public:
     ShavedMeat() : GameObject(
         std::make_unique<Util::Image>("C:/Users/yello/Shawarma/Resources/Image/Food/shaved_meat.png"), 3) {
-<<<<<<< HEAD
         m_Transform.translation = glm::vec2(-335.0f, -120.0f);
-=======
-        m_Transform.translation = glm::vec2(-350.0f, -110.0f);
->>>>>>> cf524708c8f442925b6f23cf5603819ab1411dbb
         m_Transform.scale = glm::vec2(0.5f, 0.5f);
     }
 
@@ -459,11 +424,7 @@ public:
         bool mousePressed = Util::Input::IsKeyPressed(Util::Keycode::MOUSE_LB);
 
         float imageWidth = 200.0f * m_Transform.scale.x;
-<<<<<<< HEAD
         float imageHeight = 250.0f * m_Transform.scale.y;
-=======
-        float imageHeight = 200.0f * m_Transform.scale.y;
->>>>>>> cf524708c8f442925b6f23cf5603819ab1411dbb
 
         glm::vec2 buttonMin = m_Transform.translation - glm::vec2(imageWidth / 2, imageHeight / 2);
         glm::vec2 buttonMax = m_Transform.translation + glm::vec2(imageWidth / 2, imageHeight / 2);
@@ -471,14 +432,12 @@ public:
         return mousePressed &&
                mousePos.x >= buttonMin.x && mousePos.x <= buttonMax.x &&
                mousePos.y >= buttonMin.y && mousePos.y <= buttonMax.y;
-<<<<<<< HEAD
 
-=======
->>>>>>> cf524708c8f442925b6f23cf5603819ab1411dbb
     }
 
     void OnClick() {
-        if (IsClicked()) {
+        if (!m_IsPlaced && IsClicked()) {
+            m_IsPlaced = true;
             toppings.push_back(std::make_shared<Topping>(
                 "C:/Users/yello/Shawarma/Resources/Image/Food/shaved_meat.png"
             ));
@@ -487,15 +446,16 @@ public:
 
 private:
     std::vector<std::shared_ptr<Topping>> toppings;
+    bool m_IsPlaced = false;  // 需要初始化
 };
 
 class FrenchFries : public Util::GameObject {
 public:
     FrenchFries() : GameObject(
             std::make_unique<Util::Image>("C:/Users/yello/Shawarma/Resources/Image/Food/FrenchFries.png"),
-            5), m_IsDragging(false) {
-        m_Transform.translation = glm::vec2(500.0f, -150.0f); // 設定初始位置
-        m_Transform.scale = glm::vec2(0.5f, 0.5f); // 設定縮放大小
+            3), m_IsDragging(false) {
+        m_Transform.translation = glm::vec2(100.0f, -100.0f); // 初始位置
+        m_Transform.scale = glm::vec2(0.5f, 0.5f); // 縮放大小
     }
 
     void Update() {
@@ -523,8 +483,8 @@ private:
         glm::vec2 mousePos = Util::Input::GetCursorPosition();
         bool mousePressed = Util::Input::IsKeyPressed(Util::Keycode::MOUSE_LB);
 
-        float imageWidth = 300.0f * m_Transform.scale.x;
-        float imageHeight = 300.0f * m_Transform.scale.y;
+        float imageWidth = 200.0f * m_Transform.scale.x;
+        float imageHeight = 200.0f * m_Transform.scale.y;
 
         glm::vec2 buttonMin = m_Transform.translation - glm::vec2(imageWidth / 2, imageHeight / 2);
         glm::vec2 buttonMax = m_Transform.translation + glm::vec2(imageWidth / 2, imageHeight / 2);
@@ -547,7 +507,10 @@ public:
         m_Transform.scale = glm::vec2(0.5f, 0.5f); // 縮放大小
     }
 
-
+    bool IsNearFrenchFries(const FrenchFries& fries) {
+        float distance = glm::distance(m_Transform.translation, fries.GetTransform().translation);
+        return distance < 50.0f; // 如果距離小於50則判定為送達
+    }
 };
 
 class App {
@@ -592,7 +555,6 @@ private:
     std::shared_ptr<Pickle> m_Pickle;
     std::shared_ptr<ShavedMeat> m_ShavedMeat;
     std::shared_ptr<FrenchFries> m_FrenchFries;
-    std::shared_ptr<Customer> m_Customer;
 
     std::vector<std::shared_ptr<Topping>> toppings; // 儲存新增的配料
 

@@ -8,6 +8,7 @@
 #include "Util/Logger.hpp"
 #include <filesystem>
 #include "Util/Renderer.hpp"
+#include <unordered_set>
 #include "Util/Keycode.hpp" // for Keycode
 
 void App::Start() {
@@ -32,7 +33,6 @@ void App::Start() {
     m_Pickle = std::make_shared<Pickle>();
     m_ShavedMeat = std::make_shared<ShavedMeat>();
     m_FrenchFries = std::make_shared<FrenchFries>();
-    m_Customer = std::make_shared<Customer>();
 
     m_Renderer->AddChild(m_StartButton);
     m_Renderer->AddChild(m_ShopButton);
@@ -45,8 +45,16 @@ void App::Start() {
 //Phase1 -> Home
 //Phase2 -> Restaurant
 //Phase3 -> Shop
-
+std::unordered_set<std::string> placedToppings;
 void App::Update() {
+    std::unordered_set<std::string> placedToppings;
+
+    Fries fries;
+    Sauce sauce;
+    Pickle pickle;
+    ShavedMeat shavedMeat;
+
+    fries.OnClick(placedToppings);
     if (Util::Input::IsKeyUp(Util::Keycode::ESCAPE) || Util::Input::IfExit()) {
         m_CurrentState = State::END;
     }
@@ -62,14 +70,14 @@ void App::Update() {
         m_Renderer->AddChild(m_Meat);
         m_Renderer->AddChild(m_Knife);
         m_Renderer->AddChild(m_Crust);
+        m_Renderer->AddChild(m_FrenchFries);
 
         // 添加新食材
         m_Renderer->AddChild(m_Fries);
         m_Renderer->AddChild(m_Sauce);
         m_Renderer->AddChild(m_Pickle);
         m_Renderer->AddChild(m_ShavedMeat);
-        m_Renderer->AddChild(m_FrenchFries);
-        m_Renderer->AddChild(m_Customer);
+
 
         //m_Renderer->AddChild(m_Boss);
     }
@@ -81,7 +89,6 @@ void App::Update() {
     //     //m_Renderer->AddChild(m_Crust);
     // }
 
-<<<<<<< HEAD
     //比較破的加菜寫法嘻嘻
     if (m_Fries->IsClicked() && m_CurrentPhase == phase::phase2) {
         auto newTopping = std::make_shared<Topping>("C:/Users/yello/Shawarma/Resources/Image/Food/fries.png");
@@ -102,36 +109,12 @@ void App::Update() {
         auto newTopping = std::make_shared<Topping>("C:/Users/yello/Shawarma/Resources/Image/Food/shaved_meat.png");
         LOG_TRACE("Fries");
         m_Renderer->AddChild(newTopping);
-=======
-    if (m_Fries->IsClicked() ) {
-        LOG_TRACE("Ingredient clicked! Updating crust image.");
-        std::cout<<"Fries clicked!"<<std::endl;
-        //m_Crust->SetImage(std::make_unique<Util::Image>("C:/Users/yello/Shawarma/Resources/Image/Food/crust_with_ingredients.png"));
     }
-    if (m_Sauce->IsClicked() ) {
-        LOG_TRACE("Ingredient clicked! Updating crust image.");
-        std::cout<<"Sauce clicked!"<<std::endl;
-        //m_Crust->SetImage(std::make_unique<Util::Image>("C:/Users/yello/Shawarma/Resources/Image/Food/crust_with_ingredients.png"));
-    }
-    if (m_Pickle->IsClicked() ) {
-        LOG_TRACE("Ingredient clicked! Updating crust image.");
-        std::cout<<"Pickle clicked!"<<std::endl;
-        //m_Crust->SetImage(std::make_unique<Util::Image>("C:/Users/yello/Shawarma/Resources/Image/Food/crust_with_ingredients.png"));
-    }
-    if (m_ShavedMeat->IsClicked() ) {
-        LOG_TRACE("Ingredient clicked! Updating crust image.");
-        std::cout<<"ShavedMeat clicked!"<<std::endl;
-        //m_Crust->SetImage(std::make_unique<Util::Image>("C:/Users/yello/Shawarma/Resources/Image/Food/crust_with_ingredients.png"));
->>>>>>> cf524708c8f442925b6f23cf5603819ab1411dbb
-    }
-
-
-
 
     if (m_ShopButton->IsClicked() && (m_CurrentPhase == phase::phase1) ) {
         m_CurrentPhase= phase::phase3;
         LOG_TRACE("Shop button clicked! Switching background.");
-        m_Background = std::make_shared<BackgroundImage>("C:/Users/yello/Shawarma/Resources/Image/background/restaurant.png");
+        m_Background = std::make_shared<BackgroundImage>("C:/Users/yello/Resources/Image/background/restaurant.png");
         m_Renderer = std::make_shared<Util::Renderer>(std::vector<std::shared_ptr<Util::GameObject>>{m_Background});
         m_Renderer->AddChild(m_ReturnButton);
 
@@ -142,7 +125,7 @@ void App::Update() {
         std::cout << "Return button clicked. Returning..." << std::endl;
         m_CurrentState = State::START;
     }
-    
+
     // if (m_ExitButton->IsClicked()) { // 透過 IfExit() 判斷是否要退出
     //     std::cout << "Exit button clicked. Exiting..." << std::endl;
     //     m_CurrentState = State::END;
