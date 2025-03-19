@@ -453,7 +453,7 @@ class FrenchFries : public Util::GameObject {
 public:
     FrenchFries() : GameObject(
             std::make_unique<Util::Image>("C:/Users/yello/Shawarma/Resources/Image/Food/FrenchFries.png"),
-            3), m_IsDragging(false) {
+            5), m_IsDragging(false) {
         m_Transform.translation = glm::vec2(100.0f, -100.0f); // 初始位置
         m_Transform.scale = glm::vec2(0.5f, 0.5f); // 縮放大小
     }
@@ -500,18 +500,50 @@ private:
 
 class Customer : public Util::GameObject {
 public:
+    enum class EatState {
+        NOT_EATEN,
+        READY_TO_EAT,
+        EATEN
+    };
+
     Customer() : GameObject(
-            std::make_unique<Util::Image>("C:/Users/yello/Shawarma/Resources/Image/Customer/customer1.png"),
-            4) {
-        m_Transform.translation = glm::vec2(300.0f, -50.0f); // 初始位置
-        m_Transform.scale = glm::vec2(0.5f, 0.5f); // 縮放大小
+        std::make_unique<Util::Image>("C:/Users/yello/Shawarma/Resources/Image/Customer/customer1.png"),
+        4),
+        m_EatState(EatState::NOT_EATEN) {
+        m_Transform.translation = glm::vec2(300.0f, -50.0f);
+        m_Transform.scale = glm::vec2(0.5f, 0.5f);
     }
 
+    // 判斷薯條是否與客人碰撞（距離小於50則視為碰撞）
     bool IsNearFrenchFries(const FrenchFries& fries) {
         float distance = glm::distance(m_Transform.translation, fries.GetTransform().translation);
-        return distance < 50.0f; // 如果距離小於50則判定為送達
+        return distance < 50.0f;
     }
+
+    // 狀態操作介面
+    void SetEatState(EatState state) {
+        m_EatState = state;
+    }
+
+    EatState GetEatState() const {
+        return m_EatState;
+    }
+
+    // 記錄吃了什麼食物
+    void RecordFood(const std::string& food) {
+        m_EatenFoods.push_back(food);
+    }
+
+    // 若需要，可提供取得記錄內容的介面
+    const std::vector<std::string>& GetEatenFoods() const {
+        return m_EatenFoods;
+    }
+
+private:
+    EatState m_EatState;
+    std::vector<std::string> m_EatenFoods;
 };
+
 
 class App {
 public:
@@ -525,6 +557,7 @@ public:
         phase2,
         phase3,
     };
+
     State GetCurrentState() const { return m_CurrentState; }
 
     void Start();
@@ -555,6 +588,7 @@ private:
     std::shared_ptr<Pickle> m_Pickle;
     std::shared_ptr<ShavedMeat> m_ShavedMeat;
     std::shared_ptr<FrenchFries> m_FrenchFries;
+    std::shared_ptr<Customer> m_Customer;
 
     std::vector<std::shared_ptr<Topping>> toppings; // 儲存新增的配料
 

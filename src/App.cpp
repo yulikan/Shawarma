@@ -78,9 +78,11 @@ void App::Update() {
         m_Renderer->AddChild(m_Pickle);
         m_Renderer->AddChild(m_ShavedMeat);
 
-
-        //m_Renderer->AddChild(m_Boss);
+        // 新增客人
+        m_Customer = std::make_shared<Customer>();
+        m_Renderer->AddChild(m_Customer);
     }
+
     //
     // if (m_Fries->IsClicked() || m_Sauce->IsClicked() || m_Pickle->IsClicked() || m_ShavedMeat->IsClicked()) {
     //     LOG_TRACE("Ingredient clicked! Updating crust image.");
@@ -110,6 +112,28 @@ void App::Update() {
         LOG_TRACE("Fries");
         m_Renderer->AddChild(newTopping);
     }
+    if (m_CurrentPhase == phase::phase2 && m_Customer && m_FrenchFries) {
+        if (m_Customer->IsNearFrenchFries(*m_FrenchFries)) {
+            // 如果客人與薯條碰撞
+            m_Customer->SetEatState(Customer::EatState::READY_TO_EAT);
+            std::cout<<"READY_TO_EAT";
+             if (Util::Input::IsKeyUp(Util::Keycode::MOUSE_LB) &&
+                       m_Customer->GetEatState() == Customer::EatState::READY_TO_EAT) {
+                // 如果左鍵已放，且之前處於準備吃狀態，則確認吃掉薯條
+                m_Customer->SetEatState(Customer::EatState::EATEN);
+                m_Customer->RecordFood("fries");
+                std::cout<<"EATEN";
+                // 移除薯條物件（假設 Renderer 提供 RemoveChild 方法）
+                m_Renderer->RemoveChild(m_FrenchFries);
+                       }
+        } else {
+            // 未碰撞，狀態保持為還沒吃（除非已經吃掉）
+            if (m_Customer->GetEatState() != Customer::EatState::EATEN) {
+                m_Customer->SetEatState(Customer::EatState::NOT_EATEN);
+            }
+        }
+    }
+
 
     if (m_ShopButton->IsClicked() && (m_CurrentPhase == phase::phase1) ) {
         m_CurrentPhase= phase::phase3;
