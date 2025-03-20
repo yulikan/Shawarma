@@ -156,6 +156,33 @@ void App::Update() {
         }
     }
 
+    // 當使用者選完配料後按下 R 鍵：
+    if (Util::Input::IsKeyUp(Util::Keycode::R)) {
+        // 建立 roll 物件
+        auto roll = std::make_shared<Util::GameObject>(
+            std::make_unique<Util::Image>("C:/Shawarma/CHAO0320/Shawarma/Resources/Image/Food/roll.png"),
+            3
+        );
+        roll->m_Transform.translation = glm::vec2(250.0f, -170.0f);
+        roll->m_Transform.scale = glm::vec2(0.1f, 0.1f);
+        m_Renderer->AddChild(roll);
+
+        // 輸出 roll 內容（原本烤餅上的配料），並從畫面上移除它們
+        std::cout << "Roll contents:" << std::endl;
+        for (auto& topping : toppings) {
+            std::cout << topping->GetType() << std::endl;
+            m_Renderer->RemoveChild(topping);
+        }
+        toppings.clear();  // 清空配料列表
+
+        // 重置各配料按鈕的狀態，讓使用者可以重新選擇配料
+        m_Fries->SetPlaced(false);
+        m_Sauce->SetPlaced(false);
+        m_Pickle->SetPlaced(false);
+        m_ShavedMeat->SetPlaced(false);
+    }
+
+
     if (m_ShopButton->IsClicked() && m_CurrentPhase == phase::phase1) {
         m_CurrentPhase = phase::phase3;
         LOG_TRACE("Shop button clicked! Switching background.");
