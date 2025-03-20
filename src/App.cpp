@@ -26,11 +26,11 @@ void App::Start() {
     m_Crust = std::make_shared<Crust>();
     m_Knife = std::make_shared<Knife>();
 
-    // 建立食材物件（以 Topping 表示，帶有 type 參數）
-    m_Fries = std::make_shared<Topping>("C:/Users/yello/Shawarma/Resources/Image/Food/fries.png", "fries");
-    m_Sauce = std::make_shared<Topping>("C:/Users/yello/Shawarma/Resources/Image/Food/sauce.png", "sauce");
-    m_Pickle = std::make_shared<Topping>("C:/Users/yello/Shawarma/Resources/Image/Food/pickle.png", "pickle");
-    m_ShavedMeat = std::make_shared<Topping>("C:/Users/yello/Shawarma/Resources/Image/Food/shaved_meat.png", "shaved_meat");
+    // 配料物件
+    m_Fries = std::make_shared<Fries>();
+    m_Pickle = std::make_shared<Pickle>();
+    m_Sauce = std::make_shared<Sauce>();
+    m_ShavedMeat = std::make_shared<ShavedMeat>();
 
     // 初始畫面只加入背景與部分按鈕
     m_Renderer->AddChild(m_StartButton);
@@ -39,8 +39,7 @@ void App::Start() {
 }
 
 void App::Update() {
-    // 範例中直接使用成員 m_Fries->OnClick() 等函式處理點擊邏輯
-    m_Fries->OnClick();
+    // 移除原本呼叫的 m_Fries->OnClick();（因為我們改由下面的判斷處理）
 
     if (Util::Input::IsKeyUp(Util::Keycode::ESCAPE) || Util::Input::IfExit()) {
         m_CurrentState = State::END;
@@ -50,7 +49,7 @@ void App::Update() {
     if (m_StartButton->IsClicked() && m_CurrentPhase == phase::phase1) {
         m_CurrentPhase = phase::phase2;
         LOG_TRACE("Start button clicked! Switching background.");
-        m_Background = std::make_shared<BackgroundImage>("C:/Users/yello/Shawarma/Resources/Image/background/restaurant.png");
+        m_Background = std::make_shared<BackgroundImage>("C:/Shawarma/CHAO0320/Shawarma/Resources/Image/background/restaurant.png");
         m_Renderer = std::make_shared<Util::Renderer>(std::vector<std::shared_ptr<Util::GameObject>>{ m_Background });
 
         m_Renderer->AddChild(m_ReturnButton);
@@ -58,7 +57,7 @@ void App::Update() {
         m_Renderer->AddChild(m_Knife);
         m_Renderer->AddChild(m_Crust);
 
-        // 建立多個互動用的 FrenchFries 物件（用來檢查客人是否靠近）
+        // 建立互動用 FrenchFries 物件
         for (int i = 0; i < 3; i++) {
             auto friesObj = std::make_shared<FrenchFries>();
             friesObj->m_Transform.translation = glm::vec2(100.0f + i * 60, -100.0f);
@@ -66,13 +65,13 @@ void App::Update() {
             m_Renderer->AddChild(friesObj);
         }
 
-        // 將作為食材按鈕的 Topping 物件也加入畫面
+        // 將作為配料按鈕的物件加入畫面
         m_Renderer->AddChild(m_Fries);
         m_Renderer->AddChild(m_Sauce);
         m_Renderer->AddChild(m_Pickle);
         m_Renderer->AddChild(m_ShavedMeat);
 
-        // 建立多個客人
+        // 建立客人
         for (int i = 0; i < 2; i++) {
             auto customer = std::make_shared<Customer>();
             customer->m_Transform.translation = glm::vec2(300.0f + i * 200, 0.0f);
@@ -81,30 +80,56 @@ void App::Update() {
         }
     }
 
-    // 檢查各食材按鈕是否被點擊，若是則新增對應 Topping 物件到畫面
-    if (m_Fries->IsClicked() && m_CurrentPhase == phase::phase2) {
-        auto newTopping = std::make_shared<Topping>("C:/Users/yello/Shawarma/Resources/Image/Food/fries.png", "fries");
-        LOG_TRACE("Fries topping added");
-        m_Renderer->AddChild(newTopping);
-    }
-    else if (m_Sauce->IsClicked() && m_CurrentPhase == phase::phase2) {
-        auto newTopping = std::make_shared<Topping>("C:/Users/yello/Shawarma/Resources/Image/Food/sauce.png", "sauce");
-        LOG_TRACE("Sauce topping added");
-        m_Renderer->AddChild(newTopping);
-    }
-    else if (m_Pickle->IsClicked() && m_CurrentPhase == phase::phase2) {
-        auto newTopping = std::make_shared<Topping>("C:/Users/yello/Shawarma/Resources/Image/Food/pickle.png", "pickle");
-        LOG_TRACE("Pickle topping added");
-        m_Renderer->AddChild(newTopping);
-    }
-    else if (m_ShavedMeat->IsClicked() && m_CurrentPhase == phase::phase2) {
-        auto newTopping = std::make_shared<Topping>("C:/Users/yello/Shawarma/Resources/Image/Food/shaved_meat.png", "shaved_meat");
-        LOG_TRACE("ShavedMeat topping added");
-        m_Renderer->AddChild(newTopping);
-    }
-
-    // 檢查客人與每個 FrenchFries 物件的互動（例如當客人靠近時，改變狀態）
     if (m_CurrentPhase == phase::phase2) {
+        // 檢查 Fries 按鈕：若尚未放置且被點擊，則建立新 topping 並加入 renderer
+        if (!m_Fries->IsPlaced() && m_Fries->IsClicked()) {
+            m_Fries->SetPlaced(true);
+            auto newTopping = std::make_shared<Topping>(
+                "C:/Shawarma/CHAO0320/Shawarma/Resources/Image/Food/fries.png",
+                "fries"
+            );
+            newTopping->m_Transform.translation = glm::vec2(200.0f, -170.0f);  // 放在烤餅中心
+            m_Renderer->AddChild(newTopping);
+            toppings.push_back(newTopping);
+        }
+
+        // 檢查 Sauce 按鈕
+        if (!m_Sauce->IsPlaced() && m_Sauce->IsClicked()) {
+            m_Sauce->SetPlaced(true);
+            auto newTopping = std::make_shared<Topping>(
+                "C:/Shawarma/CHAO0320/Shawarma/Resources/Image/Food/sauce.png",
+                "sauce"
+            );
+            newTopping->m_Transform.translation = glm::vec2(200.0f, -170.0f);
+            m_Renderer->AddChild(newTopping);
+            toppings.push_back(newTopping);
+        }
+
+        // 檢查 Pickle 按鈕
+        if (!m_Pickle->IsPlaced() && m_Pickle->IsClicked()) {
+            m_Pickle->SetPlaced(true);
+            auto newTopping = std::make_shared<Topping>(
+                "C:/Shawarma/CHAO0320/Shawarma/Resources/Image/Food/pickle.png",
+                "pickle"
+            );
+            newTopping->m_Transform.translation = glm::vec2(200.0f, -170.0f);
+            m_Renderer->AddChild(newTopping);
+            toppings.push_back(newTopping);
+        }
+
+        // 檢查 ShavedMeat 按鈕
+        if (!m_ShavedMeat->IsPlaced() && m_ShavedMeat->IsClicked()) {
+            m_ShavedMeat->SetPlaced(true);
+            auto newTopping = std::make_shared<Topping>(
+                "C:/Shawarma/CHAO0320/Shawarma/Resources/Image/Food/shaved_meat.png",
+                "shaved_meat"
+            );
+            newTopping->m_Transform.translation = glm::vec2(200.0f, -170.0f);
+            m_Renderer->AddChild(newTopping);
+            toppings.push_back(newTopping);
+        }
+
+        // 處理客人與 FrenchFries 的互動邏輯…
         for (auto& customer : m_Customers) {
             for (auto it = m_FrenchFriesList.begin(); it != m_FrenchFriesList.end(); ) {
                 auto& friesObj = *it;
@@ -134,7 +159,7 @@ void App::Update() {
     if (m_ShopButton->IsClicked() && m_CurrentPhase == phase::phase1) {
         m_CurrentPhase = phase::phase3;
         LOG_TRACE("Shop button clicked! Switching background.");
-        m_Background = std::make_shared<BackgroundImage>("C:/Users/yello/Resources/Image/background/restaurant.png");
+        m_Background = std::make_shared<BackgroundImage>("C:/Shawarma/CHAO0320/Shawarma/Resources/Image/background/restaurant.png");
         m_Renderer = std::make_shared<Util::Renderer>(std::vector<std::shared_ptr<Util::GameObject>>{ m_Background });
         m_Renderer->AddChild(m_ReturnButton);
     }
@@ -154,6 +179,7 @@ void App::Update() {
         friesObj->Update();
     }
 }
+
 
 void App::End() {
     LOG_TRACE("End");
