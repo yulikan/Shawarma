@@ -157,41 +157,82 @@ void App::Update() {
                 ++it;
             }
         }
+
+        // 處理客人與 Roll 的互動邏輯
+        for (auto& customer : m_Customers) {
+            for (auto it = m_Rolls.begin(); it != m_Rolls.end(); ) {
+                auto& rollObj = *it;
+                // 計算客人與 roll 的距離（例如 50 像素內算靠近）
+                float distance = glm::distance(customer->m_Transform.translation, rollObj->m_Transform.translation);
+                if (distance < 50.0f) {
+                    customer->SetEatState(Customer::EatState::READY_TO_EAT);
+                    // 當滑鼠釋放且客人處於 READY_TO_EAT 狀態，則吃掉 roll
+                    if (Util::Input::IsKeyUp(Util::Keycode::MOUSE_LB) &&
+                        customer->GetEatState() == Customer::EatState::READY_TO_EAT) {
+                        customer->SetEatState(Customer::EatState::EATEN);
+                        // 記錄 roll 內的所有配料
+                        for (const auto& ingredient : rollObj->GetContents()) {
+                            customer->RecordFood(ingredient);
+                        }
+                        std::cout << "Roll EATEN" << std::endl;
+                        // 從 Renderer 中移除，並從 m_Rolls 容器中刪除
+                        m_Renderer->RemoveChild(rollObj);
+                        it = m_Rolls.erase(it);
+                        continue;  // 直接跳到下一個 roll
+                        }
+                }
+                else {
+                    if (customer->GetEatState() != Customer::EatState::EATEN) {
+                        customer->SetEatState(Customer::EatState::NOT_EATEN);
+                    }
+                }
+                ++it;
+            }
+        }
+
+
     }
 
     // 當使用者選完配料後按下 R 鍵
     if (Util::Input::IsKeyUp(Util::Keycode::R)) {
-        // 先檢查目前畫面上的 roll 數量是否小於 3
+        // 檢查目前畫面上的 roll 數量是否小於 3
         if (m_Rolls.size() < 3) {
-            // 取得目前烤餅上的配料，並記錄其 type
+            // 宣告 rollContents，用來儲存烤餅上的配料
             std::vector<std::string> rollContents;
             std::cout << "Roll contents:" << std::endl;
             for (auto& topping : toppings) {
                 std::string type = topping->GetType();
                 rollContents.push_back(type);
                 std::cout << type << std::endl;
-                // 同時從畫面上移除該配料
+                // 從畫面上移除該配料
                 m_Renderer->RemoveChild(topping);
             }
-            toppings.clear();  // 清空當前配料列表
+            toppings.clear();  // 清空配料列表
 
-            // 重置所有配料按鈕的狀態，使其可以重新點選
+            // 重置所有配料按鈕狀態
             m_Fries->SetPlaced(false);
             m_Sauce->SetPlaced(false);
             m_Pickle->SetPlaced(false);
             m_ShavedMeat->SetPlaced(false);
 
-            // 建立新的 Roll 物件，並記錄其配料內容
+            // 建立新的 Roll 物件
             auto roll = std::make_shared<Roll>(rollContents);
+
+            // 調整 roll 的位置
+            float baseX   = 300.0f;
+            float baseY   = -130.0f;
+            float offsetY = -40.0f * static_cast<float>(m_Rolls.size());
+            roll->m_Transform.translation = glm::vec2(baseX, baseY + offsetY);
+
+            // 加入清單與 Renderer
             m_Rolls.push_back(roll);
             m_Renderer->AddChild(roll);
         } else {
-            std::cout << "no more than three roll on table" << std::endl;
+            std::cout << "no more than 3 roll" << std::endl;
         }
+
     }
-
-
-
+    
     if (m_ShopButton->IsClicked() && m_CurrentPhase == phase::phase1) {
         m_CurrentPhase = phase::phase3;
         LOG_TRACE("Shop button clicked! Switching background.");
@@ -213,6 +254,10 @@ void App::Update() {
     m_Knife->Update();
     for (auto& friesObj : m_FrenchFriesList) {
         friesObj->Update();
+    }
+    // 新增：更新所有 roll 物件，確保它們能夠處理拖曳
+    for (auto& roll : m_Rolls) {
+        roll->Update();
     }
 }
 

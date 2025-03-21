@@ -35,7 +35,9 @@ add_executable(${PROJECT_NAME}
     ${SRC_DIR}/main.cpp
     ${SRC_FILES}
     ${HEADER_FILES}
-        include/Roll.h
+        include/Roll.hpp
+        src/Roll.cpp
+        src/Roll.cpp
 )
 
 if(MSVC)
