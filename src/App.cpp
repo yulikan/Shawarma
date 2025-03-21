@@ -7,6 +7,7 @@
 #include <filesystem>
 #include "Util/Renderer.hpp"
 #include <unordered_set>
+#include "Roll.hpp"
 #include "Util/Keycode.hpp"
 bool FrenchFries::s_IsDragging = false;
 
@@ -25,6 +26,7 @@ void App::Start() {
     m_Meat = std::make_shared<Meat>();
     m_Crust = std::make_shared<Crust>();
     m_Knife = std::make_shared<Knife>();
+    m_Paper = std::make_shared<Paper>();
 
     // 配料物件
     m_Fries = std::make_shared<Fries>();
@@ -56,11 +58,12 @@ void App::Update() {
         m_Renderer->AddChild(m_Meat);
         m_Renderer->AddChild(m_Knife);
         m_Renderer->AddChild(m_Crust);
+        m_Renderer->AddChild(m_Paper);
 
         // 建立互動用 FrenchFries 物件
         for (int i = 0; i < 3; i++) {
             auto friesObj = std::make_shared<FrenchFries>();
-            friesObj->m_Transform.translation = glm::vec2(100.0f + i * 60, -100.0f);
+            friesObj->m_Transform.translation = glm::vec2(100.0f + i * 60, -50.0f);
             m_FrenchFriesList.push_back(friesObj);
             m_Renderer->AddChild(friesObj);
         }
@@ -74,7 +77,7 @@ void App::Update() {
         // 建立客人
         for (int i = 0; i < 2; i++) {
             auto customer = std::make_shared<Customer>();
-            customer->m_Transform.translation = glm::vec2(300.0f + i * 200, 0.0f);
+            customer->m_Transform.translation = glm::vec2(100.f + i * 200, 85.0f);
             m_Customers.push_back(customer);
             m_Renderer->AddChild(customer);
         }
@@ -135,7 +138,7 @@ void App::Update() {
                 auto& friesObj = *it;
                 if (customer->IsNearFrenchFries(*friesObj)) {
                     customer->SetEatState(Customer::EatState::READY_TO_EAT);
-                    std::cout << "READY_TO_EAT" << std::endl;
+                    //std::cout << "READY_TO_EAT" << std::endl;
                     if (Util::Input::IsKeyUp(Util::Keycode::MOUSE_LB) &&
                         customer->GetEatState() == Customer::EatState::READY_TO_EAT) {
                         customer->SetEatState(Customer::EatState::EATEN);
@@ -156,31 +159,37 @@ void App::Update() {
         }
     }
 
-    // 當使用者選完配料後按下 R 鍵：
+    // 當使用者選完配料後按下 R 鍵
     if (Util::Input::IsKeyUp(Util::Keycode::R)) {
-        // 建立 roll 物件
-        auto roll = std::make_shared<Util::GameObject>(
-            std::make_unique<Util::Image>("C:/Shawarma/CHAO0320/Shawarma/Resources/Image/Food/roll.png"),
-            3
-        );
-        roll->m_Transform.translation = glm::vec2(250.0f, -170.0f);
-        roll->m_Transform.scale = glm::vec2(0.1f, 0.1f);
-        m_Renderer->AddChild(roll);
+        // 先檢查目前畫面上的 roll 數量是否小於 3
+        if (m_Rolls.size() < 3) {
+            // 取得目前烤餅上的配料，並記錄其 type
+            std::vector<std::string> rollContents;
+            std::cout << "Roll contents:" << std::endl;
+            for (auto& topping : toppings) {
+                std::string type = topping->GetType();
+                rollContents.push_back(type);
+                std::cout << type << std::endl;
+                // 同時從畫面上移除該配料
+                m_Renderer->RemoveChild(topping);
+            }
+            toppings.clear();  // 清空當前配料列表
 
-        // 輸出 roll 內容（原本烤餅上的配料），並從畫面上移除它們
-        std::cout << "Roll contents:" << std::endl;
-        for (auto& topping : toppings) {
-            std::cout << topping->GetType() << std::endl;
-            m_Renderer->RemoveChild(topping);
+            // 重置所有配料按鈕的狀態，使其可以重新點選
+            m_Fries->SetPlaced(false);
+            m_Sauce->SetPlaced(false);
+            m_Pickle->SetPlaced(false);
+            m_ShavedMeat->SetPlaced(false);
+
+            // 建立新的 Roll 物件，並記錄其配料內容
+            auto roll = std::make_shared<Roll>(rollContents);
+            m_Rolls.push_back(roll);
+            m_Renderer->AddChild(roll);
+        } else {
+            std::cout << "no more than three roll on table" << std::endl;
         }
-        toppings.clear();  // 清空配料列表
-
-        // 重置各配料按鈕的狀態，讓使用者可以重新選擇配料
-        m_Fries->SetPlaced(false);
-        m_Sauce->SetPlaced(false);
-        m_Pickle->SetPlaced(false);
-        m_ShavedMeat->SetPlaced(false);
     }
+
 
 
     if (m_ShopButton->IsClicked() && m_CurrentPhase == phase::phase1) {

@@ -10,6 +10,7 @@
 #include <unordered_set>
 #include <vector>
 #include <string>
+#include "Roll.hpp"
 
 //--------------------------------------
 // 場景背景
@@ -157,13 +158,23 @@ public:
     }
 };
 
+class Paper : public Util::GameObject {
+public:
+    Paper()
+        : Util::GameObject(std::make_unique<Util::Image>("C:/Shawarma/CHAO0320/Shawarma/Resources/Image/Object/Paper.png"), 2) {
+        m_Transform.translation = glm::vec2(-155.0f, -225.0f);
+        m_Transform.scale = glm::vec2(0.43f, 0.43f);
+    }
+};
+
+
 class Crust : public Util::GameObject {
 public:
     Crust()
         : Util::GameObject(std::make_unique<Util::Image>("C:/Shawarma/CHAO0320/Shawarma/Resources/Image/Food/crust.png"), 3),
           m_IsDragging(false) {
-        m_Transform.translation = glm::vec2(200.0f, -170.0f);
-        m_Transform.scale = glm::vec2(0.2f, 0.2f);
+        m_Transform.translation = glm::vec2(180.0f, -170.0f);
+        m_Transform.scale = glm::vec2(0.17f, 0.17f);
     }
     void Update() {
         glm::vec2 mousePos = Util::Input::GetCursorPosition();
@@ -436,7 +447,7 @@ public:
     Customer()
         : Util::GameObject(std::make_unique<Util::Image>("C:/Shawarma/CHAO0320/Shawarma/Resources/Image/Customer/customer1.png"), 4),
           m_EatState(EatState::NOT_EATEN) {
-        m_Transform.translation = glm::vec2(300.0f, -50.0f);
+        m_Transform.translation = glm::vec2(300.0f, 150.0f);
         m_Transform.scale = glm::vec2(0.5f, 0.5f);
     }
     bool IsNearFrenchFries(const FrenchFries& fries) {
@@ -476,6 +487,7 @@ private:
     std::shared_ptr<Meat> m_Meat;
     std::shared_ptr<Crust> m_Crust;
     std::shared_ptr<Knife> m_Knife;
+    std::shared_ptr<Paper> m_Paper;
     // 食材以 Topping 物件表示（使用不同 type 參數）
     std::shared_ptr<Fries> m_Fries;
     std::shared_ptr<Sauce> m_Sauce;
@@ -485,6 +497,8 @@ private:
     std::vector<std::shared_ptr<FrenchFries>> m_FrenchFriesList;
     std::vector<std::shared_ptr<Customer>> m_Customers;
     std::vector<std::shared_ptr<Topping>> toppings; // 其他新增的配料
+
+    std::vector<std::shared_ptr<Roll>> m_Rolls;
 
 };
 
