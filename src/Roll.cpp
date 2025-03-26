@@ -3,6 +3,7 @@
 //
 #include "Roll.hpp"
 
+#include <App.hpp>
 #include <iostream>
 
 #include "Util/Input.hpp"
@@ -34,18 +35,20 @@ void Roll::Update() {
     bool mouseReleased = Util::Input::IsKeyUp(Util::Keycode::MOUSE_LB);
 
     // 當滑鼠按下且位於 roll 區域，且尚未處於拖曳狀態時，開始拖曳
-    if (mouseDown && IsClicked() && !m_IsDragging) {
+    if (mouseDown && IsClicked() && !g_IsObjectDragging && !m_IsDragging) {
         //std::cout << "Dragging" << std::endl;
+        g_IsObjectDragging = true;
         m_IsDragging = true;
         m_DragOffset = m_Transform.translation - mousePos;
     }
     // 拖曳中：使用 IsKeyPressed 來更新位置
-    if (mousePressed && m_IsDragging) {
+    if (mousePressed && m_IsDragging && g_IsObjectDragging) {
         m_Transform.translation = mousePos + m_DragOffset;
     }
     // 滑鼠放開後停止拖曳
-    if (mouseReleased) {
+    if (mouseReleased && m_IsDragging && g_IsObjectDragging) {
         m_IsDragging = false;
+        g_IsObjectDragging = false;
     }
 }
 

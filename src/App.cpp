@@ -9,7 +9,6 @@
 #include <unordered_set>
 #include "Roll.hpp"
 #include "Util/Keycode.hpp"
-bool FrenchFries::s_IsDragging = false;
 
 void App::Start() {
     LOG_TRACE("Start");
@@ -51,7 +50,7 @@ void App::Update() {
     if (m_StartButton->IsClicked() && m_CurrentPhase == phase::phase1) {
         m_CurrentPhase = phase::phase2;
         LOG_TRACE("Start button clicked! Switching background.");
-        m_Background = std::make_shared<BackgroundImage>("C:/Shawarma/CHAO0320/Shawarma/Resources/Image/background/restaurant.png");
+        m_Background = std::make_shared<BackgroundImage>("C:/Users/yello/Shawarma/Resources/Image/background/restaurant.png");
         m_Renderer = std::make_shared<Util::Renderer>(std::vector<std::shared_ptr<Util::GameObject>>{ m_Background });
 
         m_Renderer->AddChild(m_ReturnButton);
@@ -88,7 +87,7 @@ void App::Update() {
         if (!m_Fries->IsPlaced() && m_Fries->IsClicked()) {
             m_Fries->SetPlaced(true);
             auto newTopping = std::make_shared<Topping>(
-                "C:/Shawarma/CHAO0320/Shawarma/Resources/Image/Food/fries.png",
+                "C:/Users/yello/Shawarma/Resources/Image/Food/fries.png",
                 "fries"
             );
             newTopping->m_Transform.translation = glm::vec2(200.0f, -170.0f);  // 放在烤餅中心
@@ -100,7 +99,7 @@ void App::Update() {
         if (!m_Sauce->IsPlaced() && m_Sauce->IsClicked()) {
             m_Sauce->SetPlaced(true);
             auto newTopping = std::make_shared<Topping>(
-                "C:/Shawarma/CHAO0320/Shawarma/Resources/Image/Food/sauce.png",
+                "C:/Users/yello/Shawarma/Resources/Image/Food/sauce.png",
                 "sauce"
             );
             newTopping->m_Transform.translation = glm::vec2(200.0f, -170.0f);
@@ -112,7 +111,7 @@ void App::Update() {
         if (!m_Pickle->IsPlaced() && m_Pickle->IsClicked()) {
             m_Pickle->SetPlaced(true);
             auto newTopping = std::make_shared<Topping>(
-                "C:/Shawarma/CHAO0320/Shawarma/Resources/Image/Food/pickle.png",
+                "C:/Users/yello/Shawarma/Resources/Image/Food/pickle.png",
                 "pickle"
             );
             newTopping->m_Transform.translation = glm::vec2(200.0f, -170.0f);
@@ -124,7 +123,7 @@ void App::Update() {
         if (!m_ShavedMeat->IsPlaced() && m_ShavedMeat->IsClicked()) {
             m_ShavedMeat->SetPlaced(true);
             auto newTopping = std::make_shared<Topping>(
-                "C:/Shawarma/CHAO0320/Shawarma/Resources/Image/Food/shaved_meat.png",
+                "C:/Users/yello/Shawarma/Resources/Image/Food/shaved_meat.png",
                 "shaved_meat"
             );
             newTopping->m_Transform.translation = glm::vec2(200.0f, -170.0f);
@@ -146,6 +145,7 @@ void App::Update() {
                         std::cout << "EATEN" << std::endl;
                         m_Renderer->RemoveChild(friesObj);
                         it = m_FrenchFriesList.erase(it);
+                        g_IsObjectDragging = false;
                         continue;
                     }
                 }
@@ -156,6 +156,15 @@ void App::Update() {
                 }
                 ++it;
             }
+        }
+        // 按下 F 鍵補充新的薯條
+        if (Util::Input::IsKeyUp(Util::Keycode::F)) {
+            auto newFries = std::make_shared<FrenchFries>();
+            // 設定新的薯條位置（可根據需要調整位置）
+            newFries->m_Transform.translation = glm::vec2(100.0f + m_FrenchFriesList.size() * 60, -50.0f);
+            m_FrenchFriesList.push_back(newFries);
+            m_Renderer->AddChild(newFries);
+            std::cout << "補充新的薯條！" << std::endl;
         }
 
         // 處理客人與 Roll 的互動邏輯
@@ -236,7 +245,7 @@ void App::Update() {
     if (m_ShopButton->IsClicked() && m_CurrentPhase == phase::phase1) {
         m_CurrentPhase = phase::phase3;
         LOG_TRACE("Shop button clicked! Switching background.");
-        m_Background = std::make_shared<BackgroundImage>("C:/Shawarma/CHAO0320/Shawarma/Resources/Image/background/restaurant.png");
+        m_Background = std::make_shared<BackgroundImage>("C:/Users/yello/Shawarma/Resources/Image/background/restaurant.png");
         m_Renderer = std::make_shared<Util::Renderer>(std::vector<std::shared_ptr<Util::GameObject>>{ m_Background });
         m_Renderer->AddChild(m_ReturnButton);
     }
