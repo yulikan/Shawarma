@@ -9,6 +9,11 @@
 #include <unordered_set>
 #include "Roll.hpp"
 #include "Util/Keycode.hpp"
+#include <vector>
+#include <glm/vec2.hpp>
+#include <cmath>
+
+
 std::vector<LevelData> levels = {
     // Level 1
     { "C:/.../homePage.png", { { "C:/.../Customer/customer1.png", glm::vec2(100, 150), "fries" } } },
@@ -72,10 +77,10 @@ void App::Update() {
         if (!m_Fries->IsPlaced() && m_Fries->IsClicked()) {
             m_Fries->SetPlaced(true);
             auto newTopping = std::make_shared<Topping>(
-                "C:/Users/yello/Shawarma/Resources/Image/Food/fries.png",
+                "C:/Shawarma/CHAO0327/Shawarma/Resources/Image/Food/topping_fries.png",
                 "fries"
             );
-            newTopping->m_Transform.translation = glm::vec2(200.0f, -170.0f);  // 放在烤餅中心
+            newTopping->m_Transform.translation = glm::vec2(180.0f, -174.0f);
             m_Renderer->AddChild(newTopping);
             toppings.push_back(newTopping);
         }
@@ -84,10 +89,10 @@ void App::Update() {
         if (!m_Sauce->IsPlaced() && m_Sauce->IsClicked()) {
             m_Sauce->SetPlaced(true);
             auto newTopping = std::make_shared<Topping>(
-                "C:/Users/yello/Shawarma/Resources/Image/Food/sauce.png",
+                "C:/Shawarma/CHAO0327/Shawarma/Resources/Image/Food/topping_sauce.png",
                 "sauce"
             );
-            newTopping->m_Transform.translation = glm::vec2(200.0f, -170.0f);
+            newTopping->m_Transform.translation = glm::vec2(180.0f, -208.0f);
             m_Renderer->AddChild(newTopping);
             toppings.push_back(newTopping);
         }
@@ -96,10 +101,10 @@ void App::Update() {
         if (!m_Pickle->IsPlaced() && m_Pickle->IsClicked()) {
             m_Pickle->SetPlaced(true);
             auto newTopping = std::make_shared<Topping>(
-                "C:/Users/yello/Shawarma/Resources/Image/Food/pickle.png",
+                "C:/Shawarma/CHAO0327/Shawarma/Resources/Image/Food/topping_pickle.png",
                 "pickle"
             );
-            newTopping->m_Transform.translation = glm::vec2(200.0f, -170.0f);
+            newTopping->m_Transform.translation = glm::vec2(180.0f, -155.0f);
             m_Renderer->AddChild(newTopping);
             toppings.push_back(newTopping);
         }
@@ -108,10 +113,10 @@ void App::Update() {
         if (!m_ShavedMeat->IsPlaced() && m_ShavedMeat->IsClicked()) {
             m_ShavedMeat->SetPlaced(true);
             auto newTopping = std::make_shared<Topping>(
-                "C:/Users/yello/Shawarma/Resources/Image/Food/shaved_meat.png",
+                "C:/Shawarma/CHAO0327/Shawarma/Resources/Image/Food/topping_meat.png",
                 "shaved_meat"
             );
-            newTopping->m_Transform.translation = glm::vec2(200.0f, -170.0f);
+            newTopping->m_Transform.translation = glm::vec2(180.0f, -192.0f);
             m_Renderer->AddChild(newTopping);
             toppings.push_back(newTopping);
         }
@@ -132,7 +137,7 @@ void App::Update() {
                         it = m_FrenchFriesList.erase(it);
                         g_IsObjectDragging = false;
                         continue;
-                    }
+                        }
                 }
                 else {
                     if (customer->GetEatState() != Customer::EatState::EATEN) {
@@ -143,6 +148,7 @@ void App::Update() {
             }
         }
         // 按下 F 鍵補充新的薯條
+        if(m_FrenchFriesList.size()<3){
         if (Util::Input::IsKeyUp(Util::Keycode::F)) {
             auto newFries = std::make_shared<FrenchFries>();
             // 設定新的薯條位置（可根據需要調整位置）
@@ -151,6 +157,7 @@ void App::Update() {
             m_Renderer->AddChild(newFries);
             std::cout << "補充新的薯條！" << std::endl;
         }
+    }
 
         // 處理客人與 Roll 的互動邏輯
         for (auto& customer : m_Customers) {
@@ -233,7 +240,7 @@ void App::Update() {
     if (m_ShopButton->IsClicked() && m_CurrentPhase == phase::phase1) {
         m_CurrentPhase = phase::phase3;
         LOG_TRACE("Shop button clicked! Switching background.");
-        m_Background = std::make_shared<BackgroundImage>("C:/Users/yello/Shawarma/Resources/Image/background/restaurant.png");
+        m_Background = std::make_shared<BackgroundImage>("C:/Shawarma/CHAO0327/Shawarma/Resources/Image/background/restaurant.png");
         m_Renderer = std::make_shared<Util::Renderer>(std::vector<std::shared_ptr<Util::GameObject>>{ m_Background });
         m_Renderer->AddChild(m_ReturnButton);
     }
@@ -268,6 +275,11 @@ void App::LoadLevel(const LevelData& level) {
     m_Renderer->AddChild(m_Knife);
     m_Renderer->AddChild(m_Crust);
     m_Renderer->AddChild(m_Paper);
+
+    m_Renderer->AddChild(m_Fries);
+    m_Renderer->AddChild(m_Sauce);
+    m_Renderer->AddChild(m_ShavedMeat);
+    m_Renderer->AddChild(m_Pickle);
     // 如果配料也是持續物件，可以在這裡加入
 
     // 加入新關卡背景
@@ -287,11 +299,8 @@ void App::LoadLevel(const LevelData& level) {
         m_Renderer->AddChild(customer);
     }
 
-    std::cout << "已加载新关卡: " << level.backgroundImage << std::endl;
+    std::cout << "new level" << level.backgroundImage << std::endl;
 }
-
-
-
 
 void App::End() {
     LOG_TRACE("End");
