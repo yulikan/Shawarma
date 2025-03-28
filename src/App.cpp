@@ -9,7 +9,16 @@
 #include <unordered_set>
 #include "Roll.hpp"
 #include "Util/Keycode.hpp"
-
+std::vector<LevelData> levels = {
+    // Level 1
+    { "C:/.../homePage.png", { { "C:/.../Customer/customer1.png", glm::vec2(100, 150), "fries" } } },
+    // Level 2
+    { "C:/.../restaurant.png", {
+             { "C:/.../Customer/customer2.png", glm::vec2(200, 100), "roll" },
+             { "C:/.../Customer/customer3.png", glm::vec2(300, 150), "sauce" }
+    } },
+    // ...
+};
 void App::Start() {
     LOG_TRACE("Start");
     m_CurrentState = State::UPDATE;
@@ -45,41 +54,17 @@ void App::Update() {
     if (Util::Input::IsKeyUp(Util::Keycode::ESCAPE) || Util::Input::IfExit()) {
         m_CurrentState = State::END;
     }
+    if (Util::Input::IsKeyUp(Util::Keycode::N)) {
+        m_LevelManager.NextLevel();
+        LoadLevel(m_LevelManager.GetCurrentLevel());
+        std::cout << "切換到下一關" << std::endl;
+    }
 
-    // 當點擊開始按鈕且處於 phase1 時，切換到餐廳畫面（phase2）
     if (m_StartButton->IsClicked() && m_CurrentPhase == phase::phase1) {
         m_CurrentPhase = phase::phase2;
-        LOG_TRACE("Start button clicked! Switching background.");
-        m_Background = std::make_shared<BackgroundImage>("C:/Users/yello/Shawarma/Resources/Image/background/restaurant.png");
-        m_Renderer = std::make_shared<Util::Renderer>(std::vector<std::shared_ptr<Util::GameObject>>{ m_Background });
-
-        m_Renderer->AddChild(m_ReturnButton);
-        m_Renderer->AddChild(m_Meat);
-        m_Renderer->AddChild(m_Knife);
-        m_Renderer->AddChild(m_Crust);
-        m_Renderer->AddChild(m_Paper);
-
-        // 建立互動用 FrenchFries 物件
-        for (int i = 0; i < 3; i++) {
-            auto friesObj = std::make_shared<FrenchFries>();
-            friesObj->m_Transform.translation = glm::vec2(100.0f + i * 60, -50.0f);
-            m_FrenchFriesList.push_back(friesObj);
-            m_Renderer->AddChild(friesObj);
-        }
-
-        // 將作為配料按鈕的物件加入畫面
-        m_Renderer->AddChild(m_Fries);
-        m_Renderer->AddChild(m_Sauce);
-        m_Renderer->AddChild(m_Pickle);
-        m_Renderer->AddChild(m_ShavedMeat);
-
-        // 建立客人
-        for (int i = 0; i < 2; i++) {
-            auto customer = std::make_shared<Customer>();
-            customer->m_Transform.translation = glm::vec2(100.f + i * 200, 85.0f);
-            m_Customers.push_back(customer);
-            m_Renderer->AddChild(customer);
-        }
+        // 直接由 LoadLevel 建立第一關的所有物件
+        LoadLevel(m_LevelManager.GetCurrentLevel());
+        std::cout << "進入第一關" << std::endl;
     }
 
     if (m_CurrentPhase == phase::phase2) {
@@ -177,7 +162,7 @@ void App::Update() {
                     customer->SetEatState(Customer::EatState::READY_TO_EAT);
                     // 當滑鼠釋放且客人處於 READY_TO_EAT 狀態，則吃掉 roll
                     if (Util::Input::IsKeyUp(Util::Keycode::MOUSE_LB) &&
-                        customer->GetEatState() == Customer::EatState::READY_TO_EAT) {
+    customer->GetEatState() == Customer::EatState::READY_TO_EAT) {
                         customer->SetEatState(Customer::EatState::EATEN);
                         // 記錄 roll 內的所有配料
                         for (const auto& ingredient : rollObj->GetContents()) {
@@ -187,8 +172,10 @@ void App::Update() {
                         // 從 Renderer 中移除，並從 m_Rolls 容器中刪除
                         m_Renderer->RemoveChild(rollObj);
                         it = m_Rolls.erase(it);
+                        g_IsObjectDragging = false;  // 重置拖曳旗標
                         continue;  // 直接跳到下一個 roll
-                        }
+    }
+
                 }
                 else {
                     if (customer->GetEatState() != Customer::EatState::EATEN) {
@@ -198,6 +185,7 @@ void App::Update() {
                 ++it;
             }
         }
+
 
 
     }
@@ -269,6 +257,40 @@ void App::Update() {
         roll->Update();
     }
 }
+
+void App::LoadLevel(const LevelData& level) {
+    // 重新建立 Renderer（清除前一關所有物件）
+    m_Renderer = std::make_shared<Util::Renderer>();
+
+    // 加入持續物件（例如返回按鈕、肉、刀、餅皮、紙張等）
+    m_Renderer->AddChild(m_ReturnButton);
+    m_Renderer->AddChild(m_Meat);
+    m_Renderer->AddChild(m_Knife);
+    m_Renderer->AddChild(m_Crust);
+    m_Renderer->AddChild(m_Paper);
+    // 如果配料也是持續物件，可以在這裡加入
+
+    // 加入新關卡背景
+    m_Background = std::make_shared<BackgroundImage>(level.backgroundImage);
+    m_Renderer->AddChild(m_Background);
+
+    // 清空原有客人容器（僅容器，不必遍歷刪除，因為 Renderer 是新建的）
+    m_Customers.clear();
+
+    // 根據 LevelData 建立客人，並加入 Renderer
+    for (const auto& custConfig : level.customers) {
+        auto customer = std::make_shared<Customer>(custConfig.customerImage);
+        customer->m_Transform.translation = custConfig.position;
+        customer->m_Transform.scale = glm::vec2(0.5f,0.5f);
+        customer->SetRequestedFood(custConfig.foodRequest);
+        m_Customers.push_back(customer);
+        m_Renderer->AddChild(customer);
+    }
+
+    std::cout << "已加载新关卡: " << level.backgroundImage << std::endl;
+}
+
+
 
 
 void App::End() {

@@ -38,6 +38,10 @@ add_executable(${PROJECT_NAME}
         include/Roll.hpp
         src/Roll.cpp
         src/Roll.cpp
+        include/LevelManager.hpp
+        src/LevelManager.cpp
+        include/GlobalVars.hpp
+        src/GlobalVars.cpp
 )
 
 if(MSVC)

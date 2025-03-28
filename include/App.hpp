@@ -11,7 +11,8 @@
 #include <vector>
 #include <string>
 #include "Roll.hpp"
-static bool g_IsObjectDragging = false;
+#include "LevelManager.hpp"
+
 
 //--------------------------------------
 // 場景背景
@@ -442,12 +443,21 @@ private:
 class Customer : public Util::GameObject {
 public:
     enum class EatState { NOT_EATEN, READY_TO_EAT, EATEN };
-    Customer()
-        : Util::GameObject(std::make_unique<Util::Image>("C:/Users/yello/Shawarma/Resources/Image/Customer/customer1.png"), 4),
+
+    // 你可以新增一個建構子讓你設定客人的圖片路徑
+    Customer(const std::string& imagePath)
+        : Util::GameObject(std::make_unique<Util::Image>(imagePath), 4),
           m_EatState(EatState::NOT_EATEN) {
-        m_Transform.translation = glm::vec2(300.0f, 150.0f);
-        m_Transform.scale = glm::vec2(0.5f, 0.5f);
+        // 預設位置與縮放可以稍後再設定
     }
+
+    void SetRequestedFood(const std::string& food) {
+        m_RequestedFood = food;
+    }
+
+    const std::string& GetRequestedFood() const { return m_RequestedFood; }
+
+    // 原有功能...
     bool IsNearFrenchFries(const FrenchFries& fries) {
         float distance = glm::distance(m_Transform.translation, fries.GetTransform().translation);
         return distance < 50.0f;
@@ -459,7 +469,9 @@ public:
 private:
     EatState m_EatState;
     std::vector<std::string> m_EatenFoods;
+    std::string m_RequestedFood;  // 新增：客人的食物要求
 };
+
 
 //--------------------------------------
 // App 類別
@@ -472,7 +484,10 @@ public:
     void Start();
     void Update();
     void End();
+    void LoadLevel(const LevelData& level);
+
 private:
+    LevelManager m_LevelManager;
     void ValidTask();
 private:
     State m_CurrentState = State::START;
