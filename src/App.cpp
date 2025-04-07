@@ -9,6 +9,7 @@
 #include <unordered_set>
 #include "Roll.hpp"
 #include "Util/Keycode.hpp"
+#include <algorithm> // 為 std::find 引入
 std::vector<LevelData> levels = {
     // Level 1
     { "C:/.../homePage.png", { { "C:/.../Customer/customer1.png", glm::vec2(100, 150), "fries" } } },
@@ -54,17 +55,36 @@ void App::Update() {
     if (Util::Input::IsKeyUp(Util::Keycode::ESCAPE) || Util::Input::IfExit()) {
         m_CurrentState = State::END;
     }
-    if (Util::Input::IsKeyUp(Util::Keycode::N)) {
-        m_LevelManager.NextLevel();
-        LoadLevel(m_LevelManager.GetCurrentLevel());
-        std::cout << "切換到下一關" << std::endl;
+
+
+
+    // 檢查所有客人的要求是否都滿足
+    // 只有在關卡正式開始且客人列表不為空時檢查
+    if (m_CurrentPhase == phase::phase2 && !m_Customers.empty()) {
+        bool allSatisfied = true;
+        for (const auto& customer : m_Customers) {
+            const auto& eatenFoods = customer->GetEatenFoods();
+            // 如果該客人要求的食物不在其已吃紀錄中，就表示還沒滿足
+            if (std::find(eatenFoods.begin(), eatenFoods.end(), customer->GetRequestedFood()) == eatenFoods.end()) {
+                allSatisfied = false;
+                break;
+            }
+        }
+        if (allSatisfied) {
+            // 當所有客人都滿足時，再切換關卡
+            m_LevelManager.NextLevel();
+            LoadLevel(m_LevelManager.GetCurrentLevel());
+            std::cout << "切換到下一關" << std::endl;
+            return; // 避免在同一 Update 中繼續處理其他邏輯
+        }
     }
+
+
 
     if (m_StartButton->IsClicked() && m_CurrentPhase == phase::phase1) {
         m_CurrentPhase = phase::phase2;
         // 直接由 LoadLevel 建立第一關的所有物件
         LoadLevel(m_LevelManager.GetCurrentLevel());
-        std::cout << "進入第一關" << std::endl;
     }
 
     if (m_CurrentPhase == phase::phase2) {
@@ -126,7 +146,16 @@ void App::Update() {
                     if (Util::Input::IsKeyUp(Util::Keycode::MOUSE_LB) &&
                         customer->GetEatState() == Customer::EatState::READY_TO_EAT) {
                         customer->SetEatState(Customer::EatState::EATEN);
-                        customer->RecordFood("fries");
+                        customer->RecordFood("FrenchFries");
+
+                        // 印出所有客人的吃掉食物記錄（僅供除錯用）
+                        for (const auto& customer : m_Customers) {
+                            std::cout << " RequestFood:"<< customer->GetRequestedFood() << " EatenFood:";
+                            for (const auto& food : customer->GetEatenFoods()) {
+                                std::cout << food << " ";
+                            }
+                            std::cout << std::endl;
+                        }
                         std::cout << "EATEN" << std::endl;
                         m_Renderer->RemoveChild(friesObj);
                         it = m_FrenchFriesList.erase(it);
@@ -149,7 +178,6 @@ void App::Update() {
             newFries->m_Transform.translation = glm::vec2(100.0f + m_FrenchFriesList.size() * 60, -50.0f);
             m_FrenchFriesList.push_back(newFries);
             m_Renderer->AddChild(newFries);
-            std::cout << "補充新的薯條！" << std::endl;
         }
 
         // 處理客人與 Roll 的互動邏輯
@@ -165,10 +193,10 @@ void App::Update() {
     customer->GetEatState() == Customer::EatState::READY_TO_EAT) {
                         customer->SetEatState(Customer::EatState::EATEN);
                         // 記錄 roll 內的所有配料
+                        customer->RecordFood("Roll");
                         for (const auto& ingredient : rollObj->GetContents()) {
                             customer->RecordFood(ingredient);
                         }
-                        std::cout << "Roll EATEN" << std::endl;
                         // 從 Renderer 中移除，並從 m_Rolls 容器中刪除
                         m_Renderer->RemoveChild(rollObj);
                         it = m_Rolls.erase(it);
@@ -256,6 +284,7 @@ void App::Update() {
     for (auto& roll : m_Rolls) {
         roll->Update();
     }
+
 }
 
 void App::LoadLevel(const LevelData& level) {
@@ -269,7 +298,10 @@ void App::LoadLevel(const LevelData& level) {
     m_Renderer->AddChild(m_Crust);
     m_Renderer->AddChild(m_Paper);
     // 如果配料也是持續物件，可以在這裡加入
-
+    m_Renderer->AddChild(m_Fries);
+    m_Renderer->AddChild(m_Sauce);
+    m_Renderer->AddChild(m_ShavedMeat);
+    m_Renderer->AddChild(m_Pickle);
     // 加入新關卡背景
     m_Background = std::make_shared<BackgroundImage>(level.backgroundImage);
     m_Renderer->AddChild(m_Background);
@@ -287,7 +319,6 @@ void App::LoadLevel(const LevelData& level) {
         m_Renderer->AddChild(customer);
     }
 
-    std::cout << "已加载新关卡: " << level.backgroundImage << std::endl;
 }
 
 

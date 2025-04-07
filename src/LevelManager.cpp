@@ -15,7 +15,7 @@ void LevelManager::LoadLevels() {
     CustomerConfig cust1;
     cust1.customerImage = "C:/Users/yello/Shawarma/Resources/Image/Customer/customer1.png";
     cust1.position = glm::vec2(100.0f, 85.0f);
-    cust1.foodRequest = "fries";
+    cust1.foodRequest = "FrenchFries";
     level1.customers.push_back(cust1);
 
     // 關卡 2
@@ -24,12 +24,12 @@ void LevelManager::LoadLevels() {
     CustomerConfig cust2;
     cust2.customerImage = "C:/Users/yello/Shawarma/Resources/Image/Customer/customer2.png";
     cust2.position = glm::vec2(100.0f, 85.0f);
-    cust2.foodRequest = "roll";
+    cust2.foodRequest = "Roll";
     level2.customers.push_back(cust2);
     CustomerConfig cust3;
     cust3.customerImage = "C:/Users/yello/Shawarma/Resources/Image/Customer/customer3.png";
     cust3.position = glm::vec2(300.0f, 85.0f);
-    cust3.foodRequest = "sauce";
+    cust3.foodRequest = "FrenchFries";
     level2.customers.push_back(cust3);
 
     m_Levels.push_back(level1);
