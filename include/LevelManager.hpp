@@ -10,6 +10,7 @@ struct CustomerConfig {
     std::string customerImage;  // 客人的圖片路徑或識別字串
     glm::vec2 position;         // 客人的出現位置
     std::string foodRequest;    // 客人要求的食物（例如 "fries", "roll", "sauce"）
+    std::string foodIcon;      //客人頭上要有食物要求
 };
 
 // 定義整個關卡的設定

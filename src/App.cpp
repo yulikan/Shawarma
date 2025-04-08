@@ -92,7 +92,7 @@ void App::Update() {
         if (!m_Fries->IsPlaced() && m_Fries->IsClicked()) {
             m_Fries->SetPlaced(true);
             auto newTopping = std::make_shared<Topping>(
-                "C:/Users/yello/Shawarma/Resources/Image/Food/fries.png",
+                "C:/Shawarma/CHAO0408/Shawarma/Resources/Image/Food/fries.png",
                 "fries"
             );
             newTopping->m_Transform.translation = glm::vec2(200.0f, -170.0f);  // 放在烤餅中心
@@ -104,7 +104,7 @@ void App::Update() {
         if (!m_Sauce->IsPlaced() && m_Sauce->IsClicked()) {
             m_Sauce->SetPlaced(true);
             auto newTopping = std::make_shared<Topping>(
-                "C:/Users/yello/Shawarma/Resources/Image/Food/sauce.png",
+                "C:/Shawarma/CHAO0408/Shawarma/Resources/Image/Food/sauce.png",
                 "sauce"
             );
             newTopping->m_Transform.translation = glm::vec2(200.0f, -170.0f);
@@ -116,7 +116,7 @@ void App::Update() {
         if (!m_Pickle->IsPlaced() && m_Pickle->IsClicked()) {
             m_Pickle->SetPlaced(true);
             auto newTopping = std::make_shared<Topping>(
-                "C:/Users/yello/Shawarma/Resources/Image/Food/pickle.png",
+                "C:/Shawarma/CHAO0408/Shawarma/Resources/Image/Food/pickle.png",
                 "pickle"
             );
             newTopping->m_Transform.translation = glm::vec2(200.0f, -170.0f);
@@ -128,7 +128,7 @@ void App::Update() {
         if (!m_ShavedMeat->IsPlaced() && m_ShavedMeat->IsClicked()) {
             m_ShavedMeat->SetPlaced(true);
             auto newTopping = std::make_shared<Topping>(
-                "C:/Users/yello/Shawarma/Resources/Image/Food/shaved_meat.png",
+                "C:/Shawarma/CHAO0408/Shawarma/Resources/Image/Food/shaved_meat.png",
                 "shaved_meat"
             );
             newTopping->m_Transform.translation = glm::vec2(200.0f, -170.0f);
@@ -261,7 +261,7 @@ void App::Update() {
     if (m_ShopButton->IsClicked() && m_CurrentPhase == phase::phase1) {
         m_CurrentPhase = phase::phase3;
         LOG_TRACE("Shop button clicked! Switching background.");
-        m_Background = std::make_shared<BackgroundImage>("C:/Users/yello/Shawarma/Resources/Image/background/restaurant.png");
+        m_Background = std::make_shared<BackgroundImage>("C:/Shawarma/CHAO0408/Shawarma/Resources/Image/background/restaurant.png");
         m_Renderer = std::make_shared<Util::Renderer>(std::vector<std::shared_ptr<Util::GameObject>>{ m_Background });
         m_Renderer->AddChild(m_ReturnButton);
     }
@@ -315,8 +315,36 @@ void App::LoadLevel(const LevelData& level) {
         customer->m_Transform.translation = custConfig.position;
         customer->m_Transform.scale = glm::vec2(0.5f,0.5f);
         customer->SetRequestedFood(custConfig.foodRequest);
+
+
+        // 建立食物 icon，並根據 foodRequest 做微調
+        std::shared_ptr<Util::GameObject> foodIcon;
+        if (custConfig.foodRequest == "Roll") {
+            // 對 Roll 做較小的 scale 與略微不同的偏移
+            foodIcon = std::make_shared<Util::GameObject>(
+                std::make_unique<Util::Image>(custConfig.foodIcon), 5);
+            foodIcon->m_Transform.scale = glm::vec2(0.08f, 0.08f);
+            foodIcon->m_Transform.translation = custConfig.position + glm::vec2(0.0f, -55.0f);
+        } else {
+            // 其他食物 icon 預設 scale 與偏移
+            foodIcon = std::make_shared<Util::GameObject>(
+                std::make_unique<Util::Image>(custConfig.foodIcon), 5);
+            foodIcon->m_Transform.scale = glm::vec2(0.3f, 0.3f);
+            foodIcon->m_Transform.translation = custConfig.position + glm::vec2(0.0f, -60.0f);
+        }
+
+        // 直接建立食物 icon 並設定位置（例如與客人位置相差一個偏移量）
+        //auto foodIcon = std::make_shared<Util::GameObject>(
+            //std::make_unique<Util::Image>(custConfig.foodIcon), 5
+        //);
+        //foodIcon->m_Transform.scale = glm::vec2(0.2f, 0.2f);
+        // 偏移量：讓 icon 顯示在客人頭上，可根據客人圖片調整
+        //foodIcon->m_Transform.translation = custConfig.position + glm::vec2(0.0f, -60.0f);
+
         m_Customers.push_back(customer);
         m_Renderer->AddChild(customer);
+        m_Renderer->AddChild(foodIcon);
+
     }
 
 }
