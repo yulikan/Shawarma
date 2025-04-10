@@ -10,6 +10,18 @@
 #include "Roll.hpp"
 #include "Util/Keycode.hpp"
 #include <algorithm> // 為 std::find 引入
+#include "App.hpp"
+#include <iostream>
+#include "Util/Image.hpp"
+#include "Util/Input.hpp"
+#include "Util/Keycode.hpp"
+#include "Util/Logger.hpp"
+#include <filesystem>
+#include "Util/Renderer.hpp"
+#include <unordered_set>
+#include "Roll.hpp"
+#include "Util/Keycode.hpp"
+#include <algorithm> // 為 std::find 引入
 std::vector<LevelData> levels = {
     // Level 1
     { "C:/.../homePage.png", { { "C:/.../Customer/customer1.png", glm::vec2(100, 150), "fries" } } },
@@ -58,26 +70,30 @@ void App::Update() {
 
 
 
-    // 檢查所有客人的要求是否都滿足
-    // 只有在關卡正式開始且客人列表不為空時檢查
     if (m_CurrentPhase == phase::phase2 && !m_Customers.empty()) {
-        bool allSatisfied = true;
-        for (const auto& customer : m_Customers) {
-            const auto& eatenFoods = customer->GetEatenFoods();
-            // 如果該客人要求的食物不在其已吃紀錄中，就表示還沒滿足
-            if (std::find(eatenFoods.begin(), eatenFoods.end(), customer->GetRequestedFood()) == eatenFoods.end()) {
-                allSatisfied = false;
-                break;
+        // 逐一檢查每位客人是否滿足(吃到要求的食物)
+        for (auto it = m_Customers.begin(); it != m_Customers.end(); ) {
+            // 如果該客人的已吃清單中包含了要求的食物，即視為滿足
+            if (std::find((*it)->GetEatenFoods().begin(), (*it)->GetEatenFoods().end(), (*it)->GetRequestedFood()) != (*it)->GetEatenFoods().end()) {
+                // 移除客人的訂單 icon
+                m_Renderer->RemoveChild((*it)->GetOrderIcon());
+                // 移除客人本身
+                m_Renderer->RemoveChild(*it);
+                it = m_Customers.erase(it);
+            } else {
+                ++it;
             }
         }
-        if (allSatisfied) {
-            // 當所有客人都滿足時，再切換關卡
+        if (m_Customers.empty()) {
             m_LevelManager.NextLevel();
             LoadLevel(m_LevelManager.GetCurrentLevel());
             std::cout << "切換到下一關" << std::endl;
-            return; // 避免在同一 Update 中繼續處理其他邏輯
+            return;
         }
     }
+
+
+
 
 
 
@@ -92,7 +108,7 @@ void App::Update() {
         if (!m_Fries->IsPlaced() && m_Fries->IsClicked()) {
             m_Fries->SetPlaced(true);
             auto newTopping = std::make_shared<Topping>(
-                "C:/Shawarma/CHAO0408/Shawarma/Resources/Image/Food/fries.png",
+                "C:/Users/yello/Shawarma/Resources/Image/Food/fries.png",
                 "fries"
             );
             newTopping->m_Transform.translation = glm::vec2(200.0f, -170.0f);  // 放在烤餅中心
@@ -104,7 +120,7 @@ void App::Update() {
         if (!m_Sauce->IsPlaced() && m_Sauce->IsClicked()) {
             m_Sauce->SetPlaced(true);
             auto newTopping = std::make_shared<Topping>(
-                "C:/Shawarma/CHAO0408/Shawarma/Resources/Image/Food/sauce.png",
+                "C:/Users/yello/Shawarma/Resources/Image/Food/sauce.png",
                 "sauce"
             );
             newTopping->m_Transform.translation = glm::vec2(200.0f, -170.0f);
@@ -116,7 +132,7 @@ void App::Update() {
         if (!m_Pickle->IsPlaced() && m_Pickle->IsClicked()) {
             m_Pickle->SetPlaced(true);
             auto newTopping = std::make_shared<Topping>(
-                "C:/Shawarma/CHAO0408/Shawarma/Resources/Image/Food/pickle.png",
+                "C:/Users/yello/Shawarma/Resources/Image/Food/pickle.png",
                 "pickle"
             );
             newTopping->m_Transform.translation = glm::vec2(200.0f, -170.0f);
@@ -128,7 +144,7 @@ void App::Update() {
         if (!m_ShavedMeat->IsPlaced() && m_ShavedMeat->IsClicked()) {
             m_ShavedMeat->SetPlaced(true);
             auto newTopping = std::make_shared<Topping>(
-                "C:/Shawarma/CHAO0408/Shawarma/Resources/Image/Food/shaved_meat.png",
+                "C:/Users/yello/Shawarma/Resources/Image/Food/shaved_meat.png",
                 "shaved_meat"
             );
             newTopping->m_Transform.translation = glm::vec2(200.0f, -170.0f);
@@ -261,7 +277,7 @@ void App::Update() {
     if (m_ShopButton->IsClicked() && m_CurrentPhase == phase::phase1) {
         m_CurrentPhase = phase::phase3;
         LOG_TRACE("Shop button clicked! Switching background.");
-        m_Background = std::make_shared<BackgroundImage>("C:/Shawarma/CHAO0408/Shawarma/Resources/Image/background/restaurant.png");
+        m_Background = std::make_shared<BackgroundImage>("C:/Users/yello/Shawarma/Resources/Image/background/restaurant.png");
         m_Renderer = std::make_shared<Util::Renderer>(std::vector<std::shared_ptr<Util::GameObject>>{ m_Background });
         m_Renderer->AddChild(m_ReturnButton);
     }
@@ -313,9 +329,8 @@ void App::LoadLevel(const LevelData& level) {
     for (const auto& custConfig : level.customers) {
         auto customer = std::make_shared<Customer>(custConfig.customerImage);
         customer->m_Transform.translation = custConfig.position;
-        customer->m_Transform.scale = glm::vec2(0.5f,0.5f);
+        customer->m_Transform.scale = glm::vec2(0.5f, 0.5f);
         customer->SetRequestedFood(custConfig.foodRequest);
-
 
         // 建立食物 icon，並根據 foodRequest 做微調
         std::shared_ptr<Util::GameObject> foodIcon;
@@ -333,18 +348,12 @@ void App::LoadLevel(const LevelData& level) {
             foodIcon->m_Transform.translation = custConfig.position + glm::vec2(0.0f, -60.0f);
         }
 
-        // 直接建立食物 icon 並設定位置（例如與客人位置相差一個偏移量）
-        //auto foodIcon = std::make_shared<Util::GameObject>(
-            //std::make_unique<Util::Image>(custConfig.foodIcon), 5
-        //);
-        //foodIcon->m_Transform.scale = glm::vec2(0.2f, 0.2f);
-        // 偏移量：讓 icon 顯示在客人頭上，可根據客人圖片調整
-        //foodIcon->m_Transform.translation = custConfig.position + glm::vec2(0.0f, -60.0f);
+        // 將訂單 icon 存入客人
+        customer->SetOrderIcon(foodIcon);
 
         m_Customers.push_back(customer);
         m_Renderer->AddChild(customer);
         m_Renderer->AddChild(foodIcon);
-
     }
 
 }
