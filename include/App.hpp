@@ -12,6 +12,7 @@
 #include <string>
 #include "Roll.hpp"
 #include "LevelManager.hpp"
+#include "FryingCounterText.hpp"
 
 
 //--------------------------------------
@@ -20,7 +21,7 @@
 class BackgroundImage : public Util::GameObject {
 public:
     BackgroundImage()
-        : GameObject(std::make_unique<Util::Image>("C:/Users/yello/Shawarma/Resources/Image/background/homePage.png"), 1) {
+        : GameObject(std::make_unique<Util::Image>("C:/Shawarma/CHAO0410/Shawarma/Resources/Image/background/homePage.png"), 1) {
         m_Transform.scale = glm::vec2(0.65f, 0.65f);
     }
     explicit BackgroundImage(const std::string& imagePath)
@@ -35,7 +36,7 @@ public:
 class StartButton : public Util::GameObject {
 public:
     StartButton()
-        : GameObject(std::make_unique<Util::Image>("C:/Users/yello/Shawarma/Resources/Image/Object/startBtn1.png"), 5) {
+        : GameObject(std::make_unique<Util::Image>("C:/Shawarma/CHAO0410/Shawarma/Resources/Image/Object/startBtn1.png"), 5) {
         m_Transform.translation = glm::vec2(-328.0f, 45.0f);
         m_Transform.scale = glm::vec2(0.38f, 0.38f);
     }
@@ -55,7 +56,7 @@ public:
 class ShopButton : public Util::GameObject {
 public:
     ShopButton()
-        : GameObject(std::make_unique<Util::Image>("C:/Users/yello//Shawarma/Resources/Image/Object/shopBtn.png"), 5) {
+        : GameObject(std::make_unique<Util::Image>("C:/Shawarma/CHAO0410/Shawarma/Resources/Image/Object/shopBtn.png"), 5) {
         m_Transform.translation = glm::vec2(-42.0f, -87.0f);
         m_Transform.scale = glm::vec2(0.35f, 0.35f);
     }
@@ -75,7 +76,7 @@ public:
 class ReturnButton : public Util::GameObject {
 public:
     ReturnButton()
-        : GameObject(std::make_unique<Util::Image>("C:/Users/yello//Shawarma/Resources/Image/Object/startBtn.png"), 5) {
+        : GameObject(std::make_unique<Util::Image>("C:/Shawarma/CHAO0410/Shawarma/Resources/Image/Object/startBtn.png"), 5) {
         m_Transform.translation = glm::vec2(-400.0f, 300.0f);
         m_Transform.scale = glm::vec2(0.2f, 0.2f);
     }
@@ -154,7 +155,7 @@ private:
 class Meat : public Util::GameObject {
 public:
     Meat()
-        : Util::GameObject(std::make_unique<Util::Image>("C:/Users/yello//Shawarma/Resources/Image/Food/meat.png"), 2) {
+        : Util::GameObject(std::make_unique<Util::Image>("C:/Shawarma/CHAO0410/Shawarma/Resources/Image/Food/meat.png"), 2) {
         m_Transform.translation = glm::vec2(-390.0f, 90.0f);
         m_Transform.scale = glm::vec2(0.34f, 0.34f);
     }
@@ -163,7 +164,7 @@ public:
 class Paper : public Util::GameObject {
 public:
     Paper()
-        : Util::GameObject(std::make_unique<Util::Image>("C:/Users/yello//Shawarma/Resources/Image/Object/Paper.png"), 2) {
+        : Util::GameObject(std::make_unique<Util::Image>("C:/Shawarma/CHAO0410/Shawarma/Resources/Image/Object/Paper.png"), 2) {
         m_Transform.translation = glm::vec2(-155.0f, -225.0f);
         m_Transform.scale = glm::vec2(0.43f, 0.43f);
     }
@@ -173,7 +174,7 @@ public:
 class Crust : public Util::GameObject {
 public:
     Crust()
-        : Util::GameObject(std::make_unique<Util::Image>("C:/Users/yello//Shawarma/Resources/Image/Food/crust.png"), 3),
+        : Util::GameObject(std::make_unique<Util::Image>("C:/Shawarma/CHAO0410/Shawarma/Resources/Image/Food/crust.png"), 3),
           m_IsDragging(false) {
         m_Transform.translation = glm::vec2(180.0f, -170.0f);
         m_Transform.scale = glm::vec2(0.17f, 0.17f);
@@ -213,7 +214,7 @@ private:
 class Knife : public Util::GameObject {
 public:
     Knife()
-        : Util::GameObject(std::make_unique<Util::Image>("C:/Users/yello/Shawarma/Resources/Image/Object/knife_origin.png"), 3),
+        : Util::GameObject(std::make_unique<Util::Image>("C:/Shawarma/CHAO0410/Shawarma/Resources/Image/Object/knife_origin.png"), 3),
           m_IsDragging(false) {
         m_Transform.translation = glm::vec2(-480.0f, -160.0f);
         m_Transform.scale = glm::vec2(0.2f, 0.2f);
@@ -254,7 +255,7 @@ class FrenchFries : public Util::GameObject {
 public:
     FrenchFries()
         : Util::GameObject(
-              std::make_unique<Util::Image>("C:/Users/yello/Shawarma/Resources/Image/Food/FrenchFries.png"),
+              std::make_unique<Util::Image>("C:/Shawarma/CHAO0410/Shawarma/Resources/Image/Food/FrenchFries.png"),
               5), m_IsDragging(false) {
         m_Transform.translation = glm::vec2(100.0f, -100.0f); // 初始位置
         m_Transform.scale = glm::vec2(0.5f, 0.5f);             // 縮放大小
@@ -309,7 +310,7 @@ class Fries : public Util::GameObject {
 public:
     Fries()
         : Util::GameObject(
-              std::make_unique<Util::Image>("C:/Users/yello/Shawarma/Resources/Image/Food/fries.png"),
+              std::make_unique<Util::Image>("C:/Shawarma/CHAO0410/Shawarma/Resources/Image/Food/fries.png"),
               3),
           m_IsDragging(false),
           m_IsPlaced(false) {
@@ -364,7 +365,7 @@ private:
 class Sauce : public Util::GameObject {
 public:
     Sauce() : Util::GameObject(
-        std::make_unique<Util::Image>("C:/Users/yello/Shawarma/Resources/Image/Food/sauce.png"), 3),
+        std::make_unique<Util::Image>("C:/Shawarma/CHAO0410/Shawarma/Resources/Image/Food/sauce.png"), 3),
         m_IsPlaced(false) {
         m_Transform.translation = glm::vec2(-100.0f, -120.0f);
         m_Transform.scale = glm::vec2(0.5f, 0.5f);
@@ -389,7 +390,7 @@ private:
 class Pickle : public Util::GameObject {
 public:
     Pickle() : Util::GameObject(
-        std::make_unique<Util::Image>("C:/Users/yello/Shawarma/Resources/Image/Food/pickle.png"), 3),
+        std::make_unique<Util::Image>("C:/Shawarma/CHAO0410/Shawarma/Resources/Image/Food/pickle.png"), 3),
         m_IsPlaced(false) {
         m_Transform.translation = glm::vec2(-220.0f, -120.0f);
         m_Transform.scale = glm::vec2(0.5f, 0.5f);
@@ -414,7 +415,7 @@ private:
 class ShavedMeat : public Util::GameObject {
 public:
     ShavedMeat() : Util::GameObject(
-        std::make_unique<Util::Image>("C:/Users/yello/Shawarma/Resources/Image/Food/shaved_meat.png"), 3),
+        std::make_unique<Util::Image>("C:/Shawarma/CHAO0410/Shawarma/Resources/Image/Food/shaved_meat.png"), 3),
         m_IsPlaced(false) {
         m_Transform.translation = glm::vec2(-335.0f, -120.0f);
         m_Transform.scale = glm::vec2(0.5f, 0.5f);
@@ -436,6 +437,30 @@ private:
     bool m_IsPlaced;
 };
 
+class Potato : public Util::GameObject {
+public:
+    Potato() : Util::GameObject(
+        std::make_unique<Util::Image>("C:/Shawarma/CHAO0410/Shawarma/Resources/Image/Food/potato.png"), 3),
+        m_IsPlaced(false) {
+        m_Transform.translation = glm::vec2(590.0f, -88.0f);
+        m_Transform.scale = glm::vec2(0.5f, 0.5f);
+    }
+    bool IsClicked() {
+        glm::vec2 mousePos = Util::Input::GetCursorPosition();
+        bool mousePressed = Util::Input::IsKeyPressed(Util::Keycode::MOUSE_LB);
+        float imageWidth = 200.0f * m_Transform.scale.x;
+        float imageHeight = 250.0f * m_Transform.scale.y;
+        glm::vec2 buttonMin = m_Transform.translation - glm::vec2(imageWidth / 2, imageHeight / 2);
+        glm::vec2 buttonMax = m_Transform.translation + glm::vec2(imageWidth / 2, imageHeight / 2);
+        return mousePressed &&
+               mousePos.x >= buttonMin.x && mousePos.x <= buttonMax.x &&
+               mousePos.y >= buttonMin.y && mousePos.y <= buttonMax.y;
+    }
+    bool IsPlaced() const { return m_IsPlaced; }
+    void SetPlaced(bool placed) { m_IsPlaced = placed; }
+private:
+    bool m_IsPlaced;
+};
 
 //--------------------------------------
 // 客人類別（包含吃東西的狀態）
@@ -475,6 +500,23 @@ private:
     std::shared_ptr<Util::GameObject> m_OrderIcon;
 };
 
+class PoorMan : public Util::GameObject {
+public:
+    enum class EatState { NOT_EATEN, READY_TO_EAT, EATEN };
+    PoorMan()
+        : Util::GameObject(std::make_unique<Util::Image>("C:/Shawarma/CHAO0410/Shawarma/Resources/Image/Object/poorMan.png"), 2) {
+        m_Transform.translation = glm::vec2(500.0f, -270.0f);
+        m_Transform.scale = glm::vec2(0.47f, 0.47f);
+    }
+    bool IsNearFrenchFries(const FrenchFries& fries) {
+        float distance = glm::distance(m_Transform.translation, fries.GetTransform().translation);
+        return distance < 50.0f;
+    }
+    void SetEatState(EatState state) { m_EatState = state; }
+    EatState GetEatState() const { return m_EatState; }
+private:
+    EatState m_EatState;
+};
 
 
 //--------------------------------------
@@ -505,17 +547,24 @@ private:
     std::shared_ptr<Crust> m_Crust;
     std::shared_ptr<Knife> m_Knife;
     std::shared_ptr<Paper> m_Paper;
+    std::shared_ptr<PoorMan>m_PoorMan;
     // 食材以 Topping 物件表示（使用不同 type 參數）
     std::shared_ptr<Fries> m_Fries;
     std::shared_ptr<Sauce> m_Sauce;
     std::shared_ptr<Pickle> m_Pickle;
     std::shared_ptr<ShavedMeat> m_ShavedMeat;
+    std::shared_ptr<Potato> m_Potato;
     // 互動用的 FrenchFries 物件（例如用來檢查客人是否靠近）
     std::vector<std::shared_ptr<FrenchFries>> m_FrenchFriesList;
     std::vector<std::shared_ptr<Customer>> m_Customers;
     std::vector<std::shared_ptr<Topping>> toppings; // 其他新增的配料
 
     std::vector<std::shared_ptr<Roll>> m_Rolls;
+    int m_Pstate = 2;  // 初始值為2：未放置
+    int m_FryingCounter = 0;
+    std::shared_ptr<Topping> m_Frying;  // 儲存frying topping物件指標
+
+    std::shared_ptr<FryingCounterText>m_FryingCounterText;
 
 };
 

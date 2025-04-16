@@ -11,27 +11,27 @@ void LevelManager::LoadLevels() {
 
     // 關卡 1
     LevelData level1;
-    level1.backgroundImage = "C:/Users/yello/Shawarma/Resources/Image/background/restaurant.png";
+    level1.backgroundImage = "C:/Shawarma/CHAO0410/Shawarma/Resources/Image/background/restaurant.png";
     CustomerConfig cust1;
-    cust1.customerImage = "C:/Users/yello/Shawarma/Resources/Image/Customer/customer1.png";
+    cust1.customerImage = "C:/Shawarma/CHAO0410/Shawarma/Resources/Image/Customer/customer1.png";
     cust1.position = glm::vec2(100.0f, 85.0f);
-    cust1.foodIcon = "C:/Users/yello/Shawarma/Resources/Image/Food/FrenchFries.png";
+    cust1.foodIcon = "C:/Shawarma/CHAO0410/Shawarma/Resources/Image/Food/FrenchFries.png";
     cust1.foodRequest = "FrenchFries";
     level1.customers.push_back(cust1);
 
     // 關卡 2
     LevelData level2;
-    level2.backgroundImage = "C:/Users/yello/Shawarma/Resources/Image/background/restaurant.png";
+    level2.backgroundImage = "C:/Shawarma/CHAO0410/Shawarma/Resources/Image/background/restaurant.png";
     CustomerConfig cust2;
-    cust2.customerImage = "C:/Users/yello/Shawarma/Resources/Image/Customer/customer2.png";
+    cust2.customerImage = "C:/Shawarma/CHAO0410/Shawarma/Resources/Image/Customer/customer2.png";
     cust2.position = glm::vec2(100.0f, 85.0f);
-    cust2.foodIcon = "C:/Users/yello/Shawarma/Resources/Image/Food/Roll.png";
+    cust2.foodIcon = "C:/Shawarma/CHAO0410/Shawarma/Resources/Image/Food/Roll.png";
     cust2.foodRequest = "Roll";
     level2.customers.push_back(cust2);
     CustomerConfig cust3;
-    cust3.customerImage = "C:/Users/yello/Shawarma/Resources/Image/Customer/customer3.png";
+    cust3.customerImage = "C:/Shawarma/CHAO0410/Shawarma/Resources/Image/Customer/customer3.png";
     cust3.position = glm::vec2(300.0f, 85.0f);
-    cust3.foodIcon = "C:/Users/yello/Shawarma/Resources/Image/Food/FrenchFries.png";
+    cust3.foodIcon = "C:/Shawarma/CHAO0410/Shawarma/Resources/Image/Food/FrenchFries.png";
     cust3.foodRequest = "FrenchFries";
     level2.customers.push_back(cust3);
 

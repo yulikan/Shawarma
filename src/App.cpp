@@ -48,12 +48,18 @@ void App::Start() {
     m_Crust = std::make_shared<Crust>();
     m_Knife = std::make_shared<Knife>();
     m_Paper = std::make_shared<Paper>();
+    m_PoorMan = std::make_shared<PoorMan>();
 
     // 配料物件
     m_Fries = std::make_shared<Fries>();
     m_Pickle = std::make_shared<Pickle>();
     m_Sauce = std::make_shared<Sauce>();
     m_ShavedMeat = std::make_shared<ShavedMeat>();
+
+    m_Potato = std::make_shared<Potato>();
+
+    // 顯示 Frying Counter 文字
+    m_FryingCounterText = std::make_shared<FryingCounterText>();
 
     // 初始畫面只加入背景與部分按鈕
     m_Renderer->AddChild(m_StartButton);
@@ -108,10 +114,10 @@ void App::Update() {
         if (!m_Fries->IsPlaced() && m_Fries->IsClicked()) {
             m_Fries->SetPlaced(true);
             auto newTopping = std::make_shared<Topping>(
-                "C:/Users/yello/Shawarma/Resources/Image/Food/fries.png",
+                "C:/Shawarma/CHAO0410/Shawarma/Resources/Image/Food/topping_fries.png",
                 "fries"
             );
-            newTopping->m_Transform.translation = glm::vec2(200.0f, -170.0f);  // 放在烤餅中心
+            newTopping->m_Transform.translation = glm::vec2(180.0f, -174.0f);  // 放在烤餅中心
             m_Renderer->AddChild(newTopping);
             toppings.push_back(newTopping);
         }
@@ -120,10 +126,10 @@ void App::Update() {
         if (!m_Sauce->IsPlaced() && m_Sauce->IsClicked()) {
             m_Sauce->SetPlaced(true);
             auto newTopping = std::make_shared<Topping>(
-                "C:/Users/yello/Shawarma/Resources/Image/Food/sauce.png",
+                "C:/Shawarma/CHAO0410/Shawarma/Resources/Image/Food/topping_sauce.png",
                 "sauce"
             );
-            newTopping->m_Transform.translation = glm::vec2(200.0f, -170.0f);
+            newTopping->m_Transform.translation = glm::vec2(180.0f, -208.0f);
             m_Renderer->AddChild(newTopping);
             toppings.push_back(newTopping);
         }
@@ -132,10 +138,10 @@ void App::Update() {
         if (!m_Pickle->IsPlaced() && m_Pickle->IsClicked()) {
             m_Pickle->SetPlaced(true);
             auto newTopping = std::make_shared<Topping>(
-                "C:/Users/yello/Shawarma/Resources/Image/Food/pickle.png",
+                "C:/Shawarma/CHAO0410/Shawarma/Resources/Image/Food/topping_pickle.png",
                 "pickle"
             );
-            newTopping->m_Transform.translation = glm::vec2(200.0f, -170.0f);
+            newTopping->m_Transform.translation = glm::vec2(180.0f, -155.0f);
             m_Renderer->AddChild(newTopping);
             toppings.push_back(newTopping);
         }
@@ -144,12 +150,44 @@ void App::Update() {
         if (!m_ShavedMeat->IsPlaced() && m_ShavedMeat->IsClicked()) {
             m_ShavedMeat->SetPlaced(true);
             auto newTopping = std::make_shared<Topping>(
-                "C:/Users/yello/Shawarma/Resources/Image/Food/shaved_meat.png",
+                "C:/Shawarma/CHAO0410/Shawarma/Resources/Image/Food/topping_meat.png",
                 "shaved_meat"
             );
-            newTopping->m_Transform.translation = glm::vec2(200.0f, -170.0f);
+            newTopping->m_Transform.translation = glm::vec2(180.0f, -192.0f);
             m_Renderer->AddChild(newTopping);
             toppings.push_back(newTopping);
+        }
+
+        if (!m_Potato->IsPlaced() && m_Potato->IsClicked()) {
+            m_Potato->SetPlaced(true);
+            m_Frying = std::make_shared<Topping>(
+                "C:/Shawarma/CHAO0410/Shawarma/Resources/Image/Food/frying.png",
+                "potato"
+            );
+            m_Frying->m_Transform.translation = glm::vec2(480.0f, -40.0f);
+            m_Renderer->AddChild(m_Frying);
+            m_Pstate = 0;
+        }
+
+        // 只有當 Pstate == 0（已生成 frying）時才檢查點擊 frying
+        if (m_Pstate == 0 && m_Frying) {
+            glm::vec2 mousePos = Util::Input::GetCursorPosition();
+            if (Util::Input::IsKeyDown(Util::Keycode::MOUSE_LB) &&
+                mousePos.x >= 400 && mousePos.x <= 550 &&
+                mousePos.y >= -100 && mousePos.y <= 0)
+            {
+                m_Pstate = 1;
+            }
+
+            if (m_Pstate == 1) {
+                m_Pstate = 0;
+                m_FryingCounter++;
+                if (m_FryingCounterText) {
+                    m_FryingCounterText->UpdateCounter(m_FryingCounter);
+                }
+
+                std::cout << "Frying topping clicked, count: " << m_FryingCounter << std::endl;
+            }
         }
 
         // 處理客人與 FrenchFries 的互動邏輯…
@@ -177,7 +215,7 @@ void App::Update() {
                         it = m_FrenchFriesList.erase(it);
                         g_IsObjectDragging = false;
                         continue;
-                    }
+                        }
                 }
                 else {
                     if (customer->GetEatState() != Customer::EatState::EATEN) {
@@ -187,14 +225,30 @@ void App::Update() {
                 ++it;
             }
         }
+
         // 按下 F 鍵補充新的薯條
-        if (Util::Input::IsKeyUp(Util::Keycode::F)) {
+        if (m_FryingCounter == 5) {
+            // 1. 加入新的薯條
             auto newFries = std::make_shared<FrenchFries>();
-            // 設定新的薯條位置（可根據需要調整位置）
             newFries->m_Transform.translation = glm::vec2(100.0f + m_FrenchFriesList.size() * 60, -50.0f);
             m_FrenchFriesList.push_back(newFries);
             m_Renderer->AddChild(newFries);
+
+            // 2. 移除 frying 物件
+            if (m_Frying) {
+                m_Renderer->RemoveChild(m_Frying);
+                m_Frying.reset();  // 釋放指標
+            }
+
+            // 3. 重設計數器與 potato 狀態
+            m_FryingCounter = 0;
+            if (m_FryingCounterText) {
+                m_FryingCounterText->UpdateCounter(0);
+            }
+            m_Potato->SetPlaced(false);
+            m_Pstate = 2;  // 若你使用 2 表示尚未開始
         }
+
 
         // 處理客人與 Roll 的互動邏輯
         for (auto& customer : m_Customers) {
@@ -205,8 +259,7 @@ void App::Update() {
                 if (distance < 50.0f) {
                     customer->SetEatState(Customer::EatState::READY_TO_EAT);
                     // 當滑鼠釋放且客人處於 READY_TO_EAT 狀態，則吃掉 roll
-                    if (Util::Input::IsKeyUp(Util::Keycode::MOUSE_LB) &&
-    customer->GetEatState() == Customer::EatState::READY_TO_EAT) {
+                    if (Util::Input::IsKeyUp(Util::Keycode::MOUSE_LB) && customer->GetEatState() == Customer::EatState::READY_TO_EAT) {
                         customer->SetEatState(Customer::EatState::EATEN);
                         // 記錄 roll 內的所有配料
                         customer->RecordFood("Roll");
@@ -230,9 +283,60 @@ void App::Update() {
             }
         }
 
+        // 處理乞丐與 Roll 的互動邏輯
+        if (m_PoorMan) {
+            for (auto it = m_Rolls.begin(); it != m_Rolls.end(); ) {
+                auto& rollObj = *it;
+                // 計算客人與 roll 的距離（例如 50 像素內算靠近）
+                float distance = glm::distance(m_PoorMan->m_Transform.translation, rollObj->m_Transform.translation);
+                if (distance < 50.0f) {
+                    m_PoorMan->SetEatState(PoorMan::EatState::READY_TO_EAT);
+                    // 當滑鼠釋放且客人處於 READY_TO_EAT 狀態，則吃掉 roll
+                    if (Util::Input::IsKeyUp(Util::Keycode::MOUSE_LB) && m_PoorMan->GetEatState() == PoorMan::EatState::READY_TO_EAT) {
+                        m_PoorMan->SetEatState(PoorMan::EatState::EATEN);
+                        // 從 Renderer 中移除，並從 m_Rolls 容器中刪除
+                        m_Renderer->RemoveChild(rollObj);
+                        it = m_Rolls.erase(it);
+                        g_IsObjectDragging = false;  // 重置拖曳旗標
+                        continue;  // 直接跳到下一個 roll
+                    }
 
-
+                }
+                else {
+                    if (m_PoorMan->GetEatState() != PoorMan::EatState::EATEN) {
+                        m_PoorMan->SetEatState(PoorMan::EatState::NOT_EATEN);
+                    }
+                }
+                ++it;
+            }
+        }
+        // 處理乞丐與 FrenchFries 的互動邏輯
+        if(m_PoorMan) {
+            for (auto it = m_FrenchFriesList.begin(); it != m_FrenchFriesList.end(); ) {
+                auto& friesObj = *it;
+                if (m_PoorMan->IsNearFrenchFries(*friesObj)) {
+                    m_PoorMan->SetEatState(PoorMan::EatState::READY_TO_EAT);
+                    //std::cout << "READY_TO_EAT" << std::endl;
+                    if (Util::Input::IsKeyUp(Util::Keycode::MOUSE_LB) &&
+                        m_PoorMan->GetEatState() == PoorMan::EatState::READY_TO_EAT) {
+                        m_PoorMan->SetEatState(PoorMan::EatState::EATEN);
+                        std::cout << "EATEN" << std::endl;
+                        m_Renderer->RemoveChild(friesObj);
+                        it = m_FrenchFriesList.erase(it);
+                        g_IsObjectDragging = false;
+                        continue;
+                        }
+                }
+                else {
+                    if (m_PoorMan->GetEatState() != PoorMan::EatState::EATEN) {
+                        m_PoorMan->SetEatState(PoorMan::EatState::NOT_EATEN);
+                    }
+                }
+                ++it;
+            }
+        }
     }
+
 
     // 當使用者選完配料後按下 R 鍵
     if (Util::Input::IsKeyUp(Util::Keycode::R)) {
@@ -277,7 +381,7 @@ void App::Update() {
     if (m_ShopButton->IsClicked() && m_CurrentPhase == phase::phase1) {
         m_CurrentPhase = phase::phase3;
         LOG_TRACE("Shop button clicked! Switching background.");
-        m_Background = std::make_shared<BackgroundImage>("C:/Users/yello/Shawarma/Resources/Image/background/restaurant.png");
+        m_Background = std::make_shared<BackgroundImage>("C:/Shawarma/CHAO0410/Shawarma/Resources/Image/background/restaurant.png");
         m_Renderer = std::make_shared<Util::Renderer>(std::vector<std::shared_ptr<Util::GameObject>>{ m_Background });
         m_Renderer->AddChild(m_ReturnButton);
     }
@@ -318,6 +422,10 @@ void App::LoadLevel(const LevelData& level) {
     m_Renderer->AddChild(m_Sauce);
     m_Renderer->AddChild(m_ShavedMeat);
     m_Renderer->AddChild(m_Pickle);
+    m_Renderer->AddChild(m_PoorMan);
+    m_Renderer->AddChild(m_Potato);
+    m_Potato->SetPlaced(false);  // 重設為未放置
+    m_Renderer->AddChild(m_FryingCounterText);
     // 加入新關卡背景
     m_Background = std::make_shared<BackgroundImage>(level.backgroundImage);
     m_Renderer->AddChild(m_Background);
