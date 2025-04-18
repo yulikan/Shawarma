@@ -13,6 +13,7 @@
 #include "Roll.hpp"
 #include "LevelManager.hpp"
 #include "FryingCounterText.hpp"
+#include "MoneyManager.hpp"
 
 
 //--------------------------------------
@@ -565,6 +566,9 @@ private:
     std::shared_ptr<Topping> m_Frying;  // 儲存frying topping物件指標
 
     std::shared_ptr<FryingCounterText>m_FryingCounterText;
+    MoneyManager m_MoneyManager;
+    std::shared_ptr<Util::Text> m_MoneyText;
+    std::shared_ptr<Util::GameObject> m_MoneyTextGO;
 
 };
 

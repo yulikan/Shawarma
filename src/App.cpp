@@ -60,6 +60,26 @@ void App::Start() {
 
     // 顯示 Frying Counter 文字
     m_FryingCounterText = std::make_shared<FryingCounterText>();
+    // Money text: 建立 Text 與 GameObject 包裝
+    m_MoneyManager = MoneyManager(0);
+    // Text drawable
+    auto textDrawable = std::make_shared<Util::Text>(
+        "C:/Windows/Fonts/msyh.ttc",  // 字體路徑
+        30,
+        "$0",
+        Util::Color{255, 255, 255}
+    );
+    // 包裝成 GameObject
+    m_MoneyTextGO = std::make_shared<Util::GameObject>(
+        textDrawable, /*zOrder=*/10
+    );
+    m_MoneyTextGO->m_Transform.translation = glm::vec2(460.0f, 325.0f);
+    m_MoneyText = textDrawable;
+
+    // 綁定回調：餘額改變即更新文字內容
+    m_MoneyManager.SetOnChangeCallback([this](int newBal) {
+        m_MoneyText->SetText("$" + std::to_string(newBal));
+    });
 
     // 初始畫面只加入背景與部分按鈕
     m_Renderer->AddChild(m_StartButton);
@@ -76,19 +96,25 @@ void App::Update() {
 
 
 
+    // 只有第2階段且有客人時，檢查是否完成訂單
     if (m_CurrentPhase == phase::phase2 && !m_Customers.empty()) {
-        // 逐一檢查每位客人是否滿足(吃到要求的食物)
         for (auto it = m_Customers.begin(); it != m_Customers.end(); ) {
-            // 如果該客人的已吃清單中包含了要求的食物，即視為滿足
-            if (std::find((*it)->GetEatenFoods().begin(), (*it)->GetEatenFoods().end(), (*it)->GetRequestedFood()) != (*it)->GetEatenFoods().end()) {
-                // 移除客人的訂單 icon
-                m_Renderer->RemoveChild((*it)->GetOrderIcon());
-                // 移除客人本身
-                m_Renderer->RemoveChild(*it);
+            auto& cust = *it;
+            const auto& eaten = cust->GetEatenFoods();
+            if (std::find(eaten.begin(), eaten.end(), cust->GetRequestedFood()) != eaten.end()) {
+                // 根據食物類型增加金錢
+                std::string food = cust->GetRequestedFood();
+                if (food == "Roll")         m_MoneyManager.Add(50);
+                else if (food == "FrenchFries") m_MoneyManager.Add(30);
+                else if (food == "sauce")   m_MoneyManager.Add(10);
+
+                // 移除訂單圖示與客人
+                m_Renderer->RemoveChild(cust->GetOrderIcon());
+                m_Renderer->RemoveChild(cust);
                 it = m_Customers.erase(it);
-            } else {
-                ++it;
+                continue;
             }
+            ++it;
         }
         if (m_Customers.empty()) {
             m_LevelManager.NextLevel();
@@ -426,6 +452,7 @@ void App::LoadLevel(const LevelData& level) {
     m_Renderer->AddChild(m_Potato);
     m_Potato->SetPlaced(false);  // 重設為未放置
     m_Renderer->AddChild(m_FryingCounterText);
+    m_Renderer->AddChild(m_MoneyTextGO);
     // 加入新關卡背景
     m_Background = std::make_shared<BackgroundImage>(level.backgroundImage);
     m_Renderer->AddChild(m_Background);

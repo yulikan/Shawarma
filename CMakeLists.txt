@@ -42,6 +42,8 @@ add_executable(${PROJECT_NAME}
         src/LevelManager.cpp
         include/GlobalVars.hpp
         src/GlobalVars.cpp
+        include/MoneyManager.hpp
+        "src/MoneyManager.cpp"
 )
 
 if(MSVC)
