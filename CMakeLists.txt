@@ -44,6 +44,8 @@ add_executable(${PROJECT_NAME}
         src/GlobalVars.cpp
         include/MoneyManager.hpp
         "src/MoneyManager.cpp"
+        include/NextButton.hpp
+        src/NextButton.cpp
 )
 
 if(MSVC)

@@ -22,6 +22,8 @@
 #include "Roll.hpp"
 #include "Util/Keycode.hpp"
 #include <algorithm> // 為 std::find 引入
+#include "NextButton.hpp"
+
 std::vector<LevelData> levels = {
     // Level 1
     { "C:/.../homePage.png", { { "C:/.../Customer/customer1.png", glm::vec2(100, 150), "fries" } } },
@@ -49,6 +51,18 @@ void App::Start() {
     m_Knife = std::make_shared<Knife>();
     m_Paper = std::make_shared<Paper>();
     m_PoorMan = std::make_shared<PoorMan>();
+    m_LevelCompleteScreen = std::make_shared<Util::GameObject>(
+    std::make_unique<Util::Image>(
+        "C:/Shawarma/CHAO0410/Shawarma/Resources/Image/background/nextLevel.png"
+         ),
+    /*layer=*/5    // 指定一個比背景高，但比按鈕低的圖層
+    );
+
+    m_LevelCompleteScreen->m_Transform.translation = glm::vec2(0.0f, 0.0f);
+    m_LevelCompleteScreen->m_Transform.scale       = glm::vec2(0.7f, 0.7f);
+
+
+    m_NextButton = std::make_shared<NextButton>();
 
     // 配料物件
     m_Fries = std::make_shared<Fries>();
@@ -88,12 +102,26 @@ void App::Start() {
 }
 
 void App::Update() {
-    // 移除原本呼叫的 m_Fries->OnClick();（因為我們改由下面的判斷處理）
-
     if (Util::Input::IsKeyUp(Util::Keycode::ESCAPE) || Util::Input::IfExit()) {
         m_CurrentState = State::END;
     }
-
+    // 如果在「結算畫面」階段
+    if (m_CurrentPhase == phase::levelComplete) {
+        // 檢查玩家點按鈕
+        if (m_NextButton->IsClicked()) {
+            // 移掉結算 UI
+            m_Renderer->RemoveChild(m_LevelCompleteScreen);
+            m_Renderer->RemoveChild(m_NextButton);
+            // 換到下一關
+            m_LevelManager.NextLevel();                                   // :contentReference[oaicite:0]{index=0}&#8203;:contentReference[oaicite:1]{index=1}
+            LoadLevel(m_LevelManager.GetCurrentLevel());
+            // 進入遊玩階段
+            m_CurrentPhase = phase::phase2;
+        }
+        // 仍要更新 Renderer 進行繪製
+        if (m_Renderer) m_Renderer->Update();
+        return;
+    }
 
 
     // 只有第2階段且有客人時，檢查是否完成訂單
@@ -117,17 +145,13 @@ void App::Update() {
             ++it;
         }
         if (m_Customers.empty()) {
-            m_LevelManager.NextLevel();
-            LoadLevel(m_LevelManager.GetCurrentLevel());
-            std::cout << "切換到下一關" << std::endl;
+            // 進入結算畫面階段，先把 UI 加進去
+            m_Renderer->AddChild(m_LevelCompleteScreen);
+            m_Renderer->AddChild(m_NextButton);
+            m_CurrentPhase = phase::levelComplete;
             return;
         }
     }
-
-
-
-
-
 
     if (m_StartButton->IsClicked() && m_CurrentPhase == phase::phase1) {
         m_CurrentPhase = phase::phase2;
@@ -421,7 +445,7 @@ void App::Update() {
     if (m_Renderer) {
         m_Renderer->Update();
     }
-    m_Crust->Update();
+    //m_Crust->Update();
     m_Knife->Update();
     for (auto& friesObj : m_FrenchFriesList) {
         friesObj->Update();
@@ -434,6 +458,17 @@ void App::Update() {
 }
 
 void App::LoadLevel(const LevelData& level) {
+    // 1. 清空上一關殘留的捲餅與薯條
+    m_Rolls.clear();
+    m_FrenchFriesList.clear();
+    // 如果你還有 toppings 暫存，也一併清除
+    toppings.clear();
+
+    // 2. 重置炸薯條計數（如果需要）
+    m_FryingCounter = 0;
+    if (m_FryingCounterText) {
+        m_FryingCounterText->UpdateCounter(0);
+    }
     // 重新建立 Renderer（清除前一關所有物件）
     m_Renderer = std::make_shared<Util::Renderer>();
 

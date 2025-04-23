@@ -14,7 +14,7 @@
 #include "LevelManager.hpp"
 #include "FryingCounterText.hpp"
 #include "MoneyManager.hpp"
-
+#include "NextButton.hpp"
 
 //--------------------------------------
 // 場景背景
@@ -525,8 +525,8 @@ private:
 //--------------------------------------
 class App {
 public:
-    enum class State { START, UPDATE, END };
-    enum class phase { phase1, phase2, phase3 };
+    enum class State { START, UPDATE, LEVEL_END, END };
+    enum class phase { phase1, phase2, phase3, levelComplete };
     State GetCurrentState() const { return m_CurrentState; }
     void Start();
     void Update();
@@ -569,6 +569,14 @@ private:
     MoneyManager m_MoneyManager;
     std::shared_ptr<Util::Text> m_MoneyText;
     std::shared_ptr<Util::GameObject> m_MoneyTextGO;
+
+    std::shared_ptr<Util::GameObject> m_LevelCompleteScreen;
+    std::shared_ptr<NextButton> m_NextButton;
+
+
+    // --- 輔助函式 ---
+    bool IsCurrentLevelComplete() const;   // 判斷關卡是否完成
+    void ResetLevelObjects();             // 切換關卡前重置場景
 
 };
 

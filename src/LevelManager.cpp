@@ -24,13 +24,13 @@ void LevelManager::LoadLevels() {
     level2.backgroundImage = "C:/Shawarma/CHAO0410/Shawarma/Resources/Image/background/restaurant.png";
     CustomerConfig cust2;
     cust2.customerImage = "C:/Shawarma/CHAO0410/Shawarma/Resources/Image/Customer/customer2.png";
-    cust2.position = glm::vec2(100.0f, 85.0f);
+    cust2.position = glm::vec2(100.0f, 55.0f);
     cust2.foodIcon = "C:/Shawarma/CHAO0410/Shawarma/Resources/Image/Food/Roll.png";
     cust2.foodRequest = "Roll";
     level2.customers.push_back(cust2);
     CustomerConfig cust3;
     cust3.customerImage = "C:/Shawarma/CHAO0410/Shawarma/Resources/Image/Customer/customer3.png";
-    cust3.position = glm::vec2(300.0f, 85.0f);
+    cust3.position = glm::vec2(300.0f, 55.0f);
     cust3.foodIcon = "C:/Shawarma/CHAO0410/Shawarma/Resources/Image/Food/FrenchFries.png";
     cust3.foodRequest = "FrenchFries";
     level2.customers.push_back(cust3);

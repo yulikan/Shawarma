@@ -12,7 +12,7 @@ public:
               std::make_unique<Util::Text>("C:/Windows/Fonts/arial.ttf", 24,
                                            "0",
                                            Util::Color::FromName(Util::Colors::RED)),
-              100) {
+              4) {
         m_Transform.translation = {490.0F, -120.0F};  // 顯示在畫面右上
         m_Transform.scale = glm::vec2(1.0f, 1.0f);
     }
