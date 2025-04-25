@@ -55,7 +55,7 @@ void App::Start() {
     std::make_unique<Util::Image>(
         "C:/Shawarma/CHAO0410/Shawarma/Resources/Image/background/nextLevel.png"
          ),
-    /*layer=*/5    // 指定一個比背景高，但比按鈕低的圖層
+    /*layer=*/7    // 指定一個比背景高，但比按鈕低的圖層
     );
 
     m_LevelCompleteScreen->m_Transform.translation = glm::vec2(0.0f, 0.0f);
@@ -85,7 +85,7 @@ void App::Start() {
     );
     // 包裝成 GameObject
     m_MoneyTextGO = std::make_shared<Util::GameObject>(
-        textDrawable, /*zOrder=*/10
+        textDrawable, /*zOrder=*/5
     );
     m_MoneyTextGO->m_Transform.translation = glm::vec2(460.0f, 325.0f);
     m_MoneyText = textDrawable;
@@ -160,6 +160,60 @@ void App::Update() {
     }
 
     if (m_CurrentPhase == phase::phase2) {
+            // 1. 處理已吃完的客人並移除
+    for (auto it = m_Customers.begin(); it != m_Customers.end();) {
+        auto& cust = *it;
+        const auto& eaten = cust->GetEatenFoods();
+        if (std::find(eaten.begin(), eaten.end(),
+                      cust->GetRequestedFood()) != eaten.end())
+        {
+            // 加錢
+            if (cust->GetRequestedFood() == "Roll")         m_MoneyManager.Add(50);
+            else if (cust->GetRequestedFood() == "FrenchFries") m_MoneyManager.Add(30);
+            else if (cust->GetRequestedFood() == "sauce")   m_MoneyManager.Add(10);
+
+            // 移除圖示與客人
+            m_Renderer->RemoveChild(cust->GetOrderIcon());
+            m_Renderer->RemoveChild(cust);
+            it = m_Customers.erase(it);
+            continue;
+        }
+        ++it;
+    }
+
+    // 2. 如果所有 pending 都出完且現在場上客人都沒了，進結算
+    if (m_LevelManager.IsLevelFinished() && m_Customers.empty()) {
+        m_Renderer->AddChild(m_LevelCompleteScreen);
+        m_Renderer->AddChild(m_NextButton);
+        m_CurrentPhase = phase::levelComplete;
+        return;
+    }
+
+    // 3. 補客人：每幀呼一次，最多補到上限
+    auto newCfgs = m_LevelManager.SpawnCustomers((int)m_Customers.size());
+    for (auto& cfg : newCfgs) {
+        // 建立 Customer 與它的 OrderIcon
+        auto customer = std::make_shared<Customer>(cfg.customerImage);
+        customer->m_Transform.translation = cfg.position;
+        customer->m_Transform.scale       = glm::vec2(0.5f, 0.5f);
+        customer->SetRequestedFood(cfg.foodRequest);
+
+        auto foodIcon = std::make_shared<Util::GameObject>(
+            std::make_unique<Util::Image>(cfg.foodIcon), 5);
+        if (cfg.foodRequest == "Roll") {
+            foodIcon->m_Transform.scale       = glm::vec2(0.08f, 0.08f);
+            foodIcon->m_Transform.translation = cfg.position + glm::vec2(0.0f, -55.0f);
+        } else {
+            foodIcon->m_Transform.scale       = glm::vec2(0.3f, 0.3f);
+            foodIcon->m_Transform.translation = cfg.position + glm::vec2(0.0f, -60.0f);
+        }
+        customer->SetOrderIcon(foodIcon);
+
+        // 放回容器與 Renderer
+        m_Customers.push_back(customer);
+        m_Renderer->AddChild(customer);
+        m_Renderer->AddChild(foodIcon);
+    }
         // 檢查 Fries 按鈕：若尚未放置且被點擊，則建立新 topping 並加入 renderer
         if (!m_Fries->IsPlaced() && m_Fries->IsClicked()) {
             m_Fries->SetPlaced(true);
@@ -494,37 +548,39 @@ void App::LoadLevel(const LevelData& level) {
 
     // 清空原有客人容器（僅容器，不必遍歷刪除，因為 Renderer 是新建的）
     m_Customers.clear();
+    // 重新初始化 LevelManager 的 pending list
+    m_LevelManager.StartLevel();
 
     // 根據 LevelData 建立客人，並加入 Renderer
-    for (const auto& custConfig : level.customers) {
-        auto customer = std::make_shared<Customer>(custConfig.customerImage);
-        customer->m_Transform.translation = custConfig.position;
-        customer->m_Transform.scale = glm::vec2(0.5f, 0.5f);
-        customer->SetRequestedFood(custConfig.foodRequest);
-
-        // 建立食物 icon，並根據 foodRequest 做微調
-        std::shared_ptr<Util::GameObject> foodIcon;
-        if (custConfig.foodRequest == "Roll") {
-            // 對 Roll 做較小的 scale 與略微不同的偏移
-            foodIcon = std::make_shared<Util::GameObject>(
-                std::make_unique<Util::Image>(custConfig.foodIcon), 5);
-            foodIcon->m_Transform.scale = glm::vec2(0.08f, 0.08f);
-            foodIcon->m_Transform.translation = custConfig.position + glm::vec2(0.0f, -55.0f);
-        } else {
-            // 其他食物 icon 預設 scale 與偏移
-            foodIcon = std::make_shared<Util::GameObject>(
-                std::make_unique<Util::Image>(custConfig.foodIcon), 5);
-            foodIcon->m_Transform.scale = glm::vec2(0.3f, 0.3f);
-            foodIcon->m_Transform.translation = custConfig.position + glm::vec2(0.0f, -60.0f);
-        }
-
-        // 將訂單 icon 存入客人
-        customer->SetOrderIcon(foodIcon);
-
-        m_Customers.push_back(customer);
-        m_Renderer->AddChild(customer);
-        m_Renderer->AddChild(foodIcon);
-    }
+    // for (const auto& custConfig : level.customers) {
+    //     auto customer = std::make_shared<Customer>(custConfig.customerImage);
+    //     customer->m_Transform.translation = custConfig.position;
+    //     customer->m_Transform.scale = glm::vec2(0.5f, 0.5f);
+    //     customer->SetRequestedFood(custConfig.foodRequest);
+    //
+    //     // 建立食物 icon，並根據 foodRequest 做微調
+    //     std::shared_ptr<Util::GameObject> foodIcon;
+    //     if (custConfig.foodRequest == "Roll") {
+    //         // 對 Roll 做較小的 scale 與略微不同的偏移
+    //         foodIcon = std::make_shared<Util::GameObject>(
+    //             std::make_unique<Util::Image>(custConfig.foodIcon), 5);
+    //         foodIcon->m_Transform.scale = glm::vec2(0.08f, 0.08f);
+    //         foodIcon->m_Transform.translation = custConfig.position + glm::vec2(0.0f, -55.0f);
+    //     } else {
+    //         // 其他食物 icon 預設 scale 與偏移
+    //         foodIcon = std::make_shared<Util::GameObject>(
+    //             std::make_unique<Util::Image>(custConfig.foodIcon), 5);
+    //         foodIcon->m_Transform.scale = glm::vec2(0.3f, 0.3f);
+    //         foodIcon->m_Transform.translation = custConfig.position + glm::vec2(0.0f, -60.0f);
+    //     }
+    //
+    //     // 將訂單 icon 存入客人
+    //     customer->SetOrderIcon(foodIcon);
+    //
+    //     m_Customers.push_back(customer);
+    //     m_Renderer->AddChild(customer);
+    //     m_Renderer->AddChild(foodIcon);
+    // }
 
 }
 

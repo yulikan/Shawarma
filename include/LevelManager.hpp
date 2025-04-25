@@ -36,9 +36,31 @@ public:
     // 重置關卡（例如回到第一關）
     void Reset();
 
+    // ----- 新增這些函式 -----
+    // 切換到新關卡時呼叫：初始化 pendingConfigs、索引歸零
+    void StartLevel();
+
+    // 場上還能補新的客人嗎？
+    bool HasPendingCustomer() const;
+
+    // 取出下一個客人設定（並把索引往後推）
+    CustomerConfig GetNextCustomer();
+
+    // 本關所有客人都已經出完了嗎？
+    bool IsLevelFinished() const;
+
+    // 新增這兩行 ↓↓↓
+    std::vector<CustomerConfig> SpawnCustomers(int currentActiveCount) ;
+    int GetMaxActiveCustomers() const { return m_MaxActiveCustomers; }
+
 private:
     std::vector<LevelData> m_Levels;
     size_t m_CurrentLevelIndex;
+
+    // 新增
+    std::vector<CustomerConfig> m_PendingConfigs; // 本關剩下還沒出場的客人設定
+    int m_NextCustomerIdx;                         // 下一位要出場的索引
+    int m_MaxActiveCustomers = 3;                  // 同一關最多同時在場的客人數
 };
 
 #endif // LEVEL_MANAGER_HPP
