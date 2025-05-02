@@ -1,6 +1,3 @@
-//
-// Created by louise on 4/18/2025.
-//
 
 #ifndef NEXTBUTTON_HPP
 #define NEXTBUTTON_HPP

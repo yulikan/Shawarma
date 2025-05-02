@@ -6,7 +6,7 @@
 NextButton::NextButton()
 : Util::GameObject(
       std::make_unique<Util::Image>(
-          "C:/Shawarma/CHAO0410/Shawarma/Resources/Image/Object/nextLevelBtn.png"
+          "C:/Users/yello/Shawarma/Resources/Image/Object/nextLevelBtn.png"
       ),
       /*layer=*/8
   )

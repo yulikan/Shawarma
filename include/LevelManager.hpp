@@ -48,6 +48,8 @@ public:
 
     // 本關所有客人都已經出完了嗎？
     bool IsLevelFinished() const;
+    size_t GetCurrentLevelIndex() const;
+    int GetCurrentLevelNumber() const;
 
     // 新增這兩行 ↓↓↓
     std::vector<CustomerConfig> SpawnCustomers(int currentActiveCount) ;

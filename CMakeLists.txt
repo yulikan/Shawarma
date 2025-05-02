@@ -46,6 +46,7 @@ add_executable(${PROJECT_NAME}
         "src/MoneyManager.cpp"
         include/NextButton.hpp
         src/NextButton.cpp
+        include/PatienceText.hpp
 )
 
 if(MSVC)
