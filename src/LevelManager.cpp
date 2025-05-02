@@ -9,8 +9,6 @@ LevelManager::LevelManager() : m_CurrentLevelIndex(0) {
 LevelManager::~LevelManager() {}
 
 void LevelManager::LoadLevels() {
-    // 以下示例中直接硬編碼關卡數據，實際可以考慮從 JSON 或其他格式讀取
-
     // 關卡 1
     LevelData level1;
     level1.backgroundImage = "C:/Shawarma/CHAO0410/Shawarma/Resources/Image/background/restaurant.png";
@@ -20,14 +18,14 @@ void LevelManager::LoadLevels() {
         "C:/Shawarma/CHAO0410/Shawarma/Resources/Image/Customer/customer1.png",
         "C:/Shawarma/CHAO0410/Shawarma/Resources/Image/Customer/customer2.png",
         "C:/Shawarma/CHAO0410/Shawarma/Resources/Image/Customer/customer3.png",
-        "C:/Shawarma/CHAO0410/Shawarma/Resources/Image/Customer/customer1.png",
-        "C:/Shawarma/CHAO0410/Shawarma/Resources/Image/Customer/customer2.png"
+        "C:/Shawarma/CHAO0410/Shawarma/Resources/Image/Customer/customer4.png",
+        "C:/Shawarma/CHAO0410/Shawarma/Resources/Image/Customer/customer5.png"
     };
     std::vector<glm::vec2> positions = {
         {100.0f, 85.0f},
         {0.0f, 55.0f},
         {300.0f, 40.0f},
-        {-200.0f, 85.0f},
+        {-200.0f, 50.0f},
         {-100.0f, 55.0f}
     };
     // 這邊示範前兩位要薯條，後三位要卷餅
