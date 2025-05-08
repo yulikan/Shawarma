@@ -173,17 +173,38 @@ void App::Update() {
             m_Renderer->AddChild(customer);
             m_Renderer->AddChild(foodIcon);
         }
-
-        // Update patience & handle timeouts
+        
+        // Phase2 主迴圈中，更新耐心、處理逾時
         for (auto it = m_Customers.begin(); it != m_Customers.end();) {
             auto& customer = *it;
             if (auto pt = customer->GetPatienceText()) {
                 pt->Update();
                 if (pt->GetRemaining() <= 0) {
+                    // 1. 移除畫面元素
                     m_Renderer->RemoveChild(pt);
                     customer->SetPatienceText(nullptr);
                     if (customer->GetOrderIcon()) m_Renderer->RemoveChild(customer->GetOrderIcon());
                     m_Renderer->RemoveChild(customer);
+
+                    // 2. 計數：此人因耐心離開
+                    m_PatienceFailures++;
+
+                    std::cout << m_PatienceFailures << m_TotalCustomersThisLevel << std::endl;
+                    // 3. 如果「離開人數 == 總客人數」，顯示失敗畫面並停止後續
+                    if (m_PatienceFailures >= m_TotalCustomersThisLevel) {
+                        m_FailureScreen = std::make_shared<Util::GameObject>(
+                            std::make_unique<Util::Image>(
+                                "C:/Users/yello/Shawarma/Resources/Image/background/StartPage.png"
+                            ),
+                            /*layer=*/7
+                        );
+                        m_FailureScreen->m_Transform.translation = glm::vec2(0.0f, 0.0f);
+                        m_FailureScreen->m_Transform.scale       = glm::vec2(0.7f, 0.7f);
+                        m_Renderer->AddChild(m_FailureScreen);
+                        return;  // 直接跳出，顯示失敗畫面
+                    }
+
+                    // 4. 繼續補客人
                     it = m_Customers.erase(it);
                     continue;
                 }
@@ -467,7 +488,9 @@ void App::LoadLevel(const LevelData& level) {
 
     m_Background = std::make_shared<BackgroundImage>(level.backgroundImage);
     m_Renderer->AddChild(m_Background);
-
+    m_TotalCustomersThisLevel = (int)level.customers.size();
+    m_PatienceFailures = 0;
+    m_FailureScreen.reset();
     m_Customers.clear();
     m_LevelManager.StartLevel();
 }

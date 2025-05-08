@@ -580,6 +580,12 @@ private:
     std::shared_ptr<Util::GameObject> m_LevelTextGO;    // 包裝成 GameObject
     std::shared_ptr<Util::GameObject> m_LevelCompleteScreen;
     std::shared_ptr<NextButton> m_NextButton;
+    // 整關總客人數
+    int m_TotalCustomersThisLevel = 0;
+    // 耐心耗盡離開的人數
+    int m_PatienceFailures = 0;
+    // 失敗畫面
+    std::shared_ptr<Util::GameObject> m_FailureScreen;
 
 
     // --- 輔助函式 ---
