@@ -45,7 +45,6 @@ add_executable(${PROJECT_NAME}
         include/MoneyManager.hpp
         "src/MoneyManager.cpp"
         include/NextButton.hpp
-        src/NextButton.cpp
         include/PatienceText.hpp
 )
 

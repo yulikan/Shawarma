@@ -11,15 +11,15 @@ LevelManager::~LevelManager() {}
 void LevelManager::LoadLevels() {
     // 關卡 1
     LevelData level1;
-    level1.backgroundImage = "C:/Users/yello/Shawarma/Resources/Image/background/restaurant.png";
+    level1.backgroundImage = "C:/Shawarma/CHAO0509/Shawarma/Resources/Image/background/restaurant.png";
 
     // 先準備 5 個客人的圖檔、位置和請求
     std::vector<std::string> images = {
-        "C:/Users/yello/Shawarma/Resources/Image/Customer/customer1.png",
-        "C:/Users/yello/Shawarma/Resources/Image/Customer/customer2.png",
-        "C:/Users/yello/Shawarma/Resources/Image/Customer/customer3.png",
-        "C:/Users/yello/Shawarma/Resources/Image/Customer/customer4.png",
-        "C:/Users/yello/Shawarma/Resources/Image/Customer/customer5.png"
+        "C:/Shawarma/CHAO0509/Shawarma/Resources/Image/Customer/customer1.png",
+        "C:/Shawarma/CHAO0509/Shawarma/Resources/Image/Customer/customer2.png",
+        "C:/Shawarma/CHAO0509/Shawarma/Resources/Image/Customer/customer3.png",
+        "C:/Shawarma/CHAO0509/Shawarma/Resources/Image/Customer/customer4.png",
+        "C:/Shawarma/CHAO0509/Shawarma/Resources/Image/Customer/customer5.png"
     };
     std::vector<glm::vec2> positions = {
         {100.0f, 85.0f},
@@ -39,7 +39,7 @@ void LevelManager::LoadLevels() {
         cust.customerImage = images[i];
         cust.position      = positions[i];
         cust.foodRequest   = requests[i];
-        cust.foodIcon      = "C:/Users/yello/Shawarma/Resources/Image/Food/"
+        cust.foodIcon      = "C:/Shawarma/CHAO0509/Shawarma/Resources/Image/Food/"
                              + requests[i] + ".png";
         level1.customers.push_back(cust);
     }
@@ -47,16 +47,16 @@ void LevelManager::LoadLevels() {
 
     // 關卡 2
     LevelData level2;
-    level2.backgroundImage = "C:/Users/yello/Shawarma/Resources/Image/background/restaurant.png";
+    level2.backgroundImage = "C:/Shawarma/CHAO0509/Shawarma/Resources/Image/background/restaurant.png";
 
     // 先準備 6 個客人的圖檔、位置和請求
     std::vector<std::string> images2 = {
-        "C:/Users/yello/Shawarma/Resources/Image/Customer/customer1.png",
-        "C:/Users/yello/Shawarma/Resources/Image/Customer/customer2.png",
-        "C:/Users/yello/Shawarma/Resources/Image/Customer/customer3.png",
-        "C:/Users/yello/Shawarma/Resources/Image/Customer/customer4.png",
-        "C:/Users/yello/Shawarma/Resources/Image/Customer/customer5.png",
-        "C:/Users/yello/Shawarma/Resources/Image/Customer/customer6.png",
+        "C:/Shawarma/CHAO0509/Shawarma/Resources/Image/Customer/customer1.png",
+        "C:/Shawarma/CHAO0509/Shawarma/Resources/Image/Customer/customer2.png",
+        "C:/Shawarma/CHAO0509/Shawarma/Resources/Image/Customer/customer3.png",
+        "C:/Shawarma/CHAO0509/Shawarma/Resources/Image/Customer/customer4.png",
+        "C:/Shawarma/CHAO0509/Shawarma/Resources/Image/Customer/customer5.png",
+        "C:/Shawarma/CHAO0509/Shawarma/Resources/Image/Customer/customer6.png",
     };
     std::vector<glm::vec2> positions2 = {
         {100.0f, 85.0f},
@@ -77,7 +77,7 @@ void LevelManager::LoadLevels() {
         cust.customerImage = images2[i];
         cust.position      = positions2[i];
         cust.foodRequest   = requests2[i];
-        cust.foodIcon      = "C:/Users/yello/Shawarma/Resources/Image/Food/"
+        cust.foodIcon      = "C:/Shawarma/CHAO0509/Shawarma/Resources/Image/Food/"
                              + requests2[i] + ".png";
         level2.customers.push_back(cust);
     }
@@ -85,17 +85,17 @@ void LevelManager::LoadLevels() {
 
     // 關卡3
     LevelData level3;
-    level3.backgroundImage = "C:/Users/yello/Shawarma/Resources/Image/background/restaurant.png";
+    level3.backgroundImage = "C:/Shawarma/CHAO0509/Shawarma/Resources/Image/background/restaurant.png";
 
     // 先準備 7 個客人的圖檔、位置和請求
     std::vector<std::string> images3 = {
-        "C:/Users/yello/Shawarma/Resources/Image/Customer/customer1.png",
-        "C:/Users/yello/Shawarma/Resources/Image/Customer/customer2.png",
-        "C:/Users/yello/Shawarma/Resources/Image/Customer/customer3.png",
-        "C:/Users/yello/Shawarma/Resources/Image/Customer/customer4.png",
-        "C:/Users/yello/Shawarma/Resources/Image/Customer/customer5.png",
-        "C:/Users/yello/Shawarma/Resources/Image/Customer/customer6.png",
-        "C:/Users/yello/Shawarma/Resources/Image/Customer/customer7.png",
+        "C:/Shawarma/CHAO0509/Shawarma/Resources/Image/Customer/customer1.png",
+        "C:/Shawarma/CHAO0509/Shawarma/Resources/Image/Customer/customer2.png",
+        "C:/Shawarma/CHAO0509/Shawarma/Resources/Image/Customer/customer3.png",
+        "C:/Shawarma/CHAO0509/Shawarma/Resources/Image/Customer/customer4.png",
+        "C:/Shawarma/CHAO0509/Shawarma/Resources/Image/Customer/customer5.png",
+        "C:/Shawarma/CHAO0509/Shawarma/Resources/Image/Customer/customer6.png",
+        "C:/Shawarma/CHAO0509/Shawarma/Resources/Image/Customer/customer7.png",
     };
     std::vector<glm::vec2> positions3 = {
         {100.0f, 85.0f},
@@ -117,7 +117,7 @@ void LevelManager::LoadLevels() {
         cust.customerImage = images3[i];
         cust.position      = positions3[i];
         cust.foodRequest   = requests3[i];
-        cust.foodIcon      = "C:/Users/yello/Shawarma/Resources/Image/Food/"
+        cust.foodIcon      = "C:/Shawarma/CHAO0509/Shawarma/Resources/Image/Food/"
                              + requests3[i] + ".png";
         level3.customers.push_back(cust);
     }
@@ -126,17 +126,17 @@ void LevelManager::LoadLevels() {
 
     // 關卡4
     LevelData level4;
-    level4.backgroundImage = "C:/Users/yello/Shawarma/Resources/Image/background/restaurant.png";
+    level4.backgroundImage = "C:/Shawarma/CHAO0509/Shawarma/Resources/Image/background/restaurant.png";
 
     // 先準備 7 個客人的圖檔、位置和請求
     std::vector<std::string> images4 = {
-        "C:/Users/yello/Shawarma/Resources/Image/Customer/customer1.png",
-        "C:/Users/yello/Shawarma/Resources/Image/Customer/customer2.png",
-        "C:/Users/yello/Shawarma/Resources/Image/Customer/customer3.png",
-        "C:/Users/yello/Shawarma/Resources/Image/Customer/customer4.png",
-        "C:/Users/yello/Shawarma/Resources/Image/Customer/customer5.png",
-        "C:/Users/yello/Shawarma/Resources/Image/Customer/customer6.png",
-        "C:/Users/yello/Shawarma/Resources/Image/Customer/customer7.png",
+        "C:/Shawarma/CHAO0509/Shawarma/Resources/Image/Customer/customer1.png",
+        "C:/Shawarma/CHAO0509/Shawarma/Resources/Image/Customer/customer2.png",
+        "C:/Shawarma/CHAO0509/Shawarma/Resources/Image/Customer/customer3.png",
+        "C:/Shawarma/CHAO0509/Shawarma/Resources/Image/Customer/customer4.png",
+        "C:/Shawarma/CHAO0509/Shawarma/Resources/Image/Customer/customer5.png",
+        "C:/Shawarma/CHAO0509/Shawarma/Resources/Image/Customer/customer6.png",
+        "C:/Shawarma/CHAO0509/Shawarma/Resources/Image/Customer/customer7.png",
     };
     std::vector<glm::vec2> positions4 = {
         {100.0f, 85.0f},
@@ -158,7 +158,7 @@ void LevelManager::LoadLevels() {
         cust.customerImage = images4[i];
         cust.position      = positions4[i];
         cust.foodRequest   = requests4[i];
-        cust.foodIcon      = "C:/Users/yello/Shawarma/Resources/Image/Food/"
+        cust.foodIcon      = "C:/Shawarma/CHAO0509/Shawarma/Resources/Image/Food/"
                              + requests4[i] + ".png";
         level4.customers.push_back(cust);
     }
@@ -166,13 +166,13 @@ void LevelManager::LoadLevels() {
 
     // 關卡5
     LevelData level5;
-    level5.backgroundImage = "C:/Users/yello/Shawarma/Resources/Image/background/restaurant.png";
+    level5.backgroundImage = "C:/Shawarma/CHAO0509/Shawarma/Resources/Image/background/restaurant.png";
 
     // 先準備 7 個客人的圖檔、位置和請求
     std::vector<std::string> images5 = {
-        "C:/Users/yello/Shawarma/Resources/Image/Customer/customer1.png",
-        "C:/Users/yello/Shawarma/Resources/Image/Customer/customer2.png",
-        "C:/Users/yello/Shawarma/Resources/Image/Customer/customer3.png",
+        "C:/Shawarma/CHAO0509/Shawarma/Resources/Image/Customer/customer1.png",
+        "C:/Shawarma/CHAO0509/Shawarma/Resources/Image/Customer/customer2.png",
+        "C:/Shawarma/CHAO0509/Shawarma/Resources/Image/Customer/customer3.png",
     };
     std::vector<glm::vec2> positions5 = {
         {100.0f, 85.0f},
@@ -190,7 +190,7 @@ void LevelManager::LoadLevels() {
         cust.customerImage = images5[i];
         cust.position      = positions5[i];
         cust.foodRequest   = requests5[i];
-        cust.foodIcon      = "C:/Users/yello/Shawarma/Resources/Image/Food/"
+        cust.foodIcon      = "C:/Shawarma/CHAO0509/Shawarma/Resources/Image/Food/"
                              + requests5[i] + ".png";
         level5.customers.push_back(cust);
     }

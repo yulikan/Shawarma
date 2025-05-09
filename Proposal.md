@@ -30,10 +30,10 @@ https://www.canva.com/design/DAGgWp1QP6Q/0cS11Gn_jNURw-WAl8LjMA/edit?utm_content
 - Week 4：製作餐點組合功能
   - ✅ 餐點可以依照順序疊加圖片（烤餅->肉or配料）
 - Week 5：增加餐點特性(第五關以後)
-  - 🆘 配料使用後會變少
+  - 🆘 配料使用後會變少(pickle OK)
   - 🆘 點擊老闆會增加配料
-- Week 6：建立食譜庫（沙威瑪、飲料）
-  - ✅ 嘗試發出random的訂單訊息
+- Wee6：建立食譜庫（沙威瑪、飲料）
+  - ✅k  嘗試發出random的訂單訊息
 - Week 7：增加垃圾桶功能
   - ✅ 按鍵盤/滑鼠拖曳可以丟棄食物
 - Week 8：客人生成
@@ -46,7 +46,7 @@ https://www.canva.com/design/DAGgWp1QP6Q/0cS11Gn_jNURw-WAl8LjMA/edit?utm_content
   - ✅ 出餐後可以依據資料庫的價格增加玩家金錢
 - Week 12：~~增加購物選單（暫停、購物）~~
   - 💬 製作選單介面，並在點開選單時遊戲暫停
-  - [ ] ~~建立選單資料庫（可購買甜點、飲料、更多配料）~~
+  - 🆘 耐心值(剩下bug)
 - Week 13：新增設備
   - [ ] 點擊選單購買後，對應商品出現在遊戲介面
 - Week 14：新增設備
