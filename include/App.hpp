@@ -368,11 +368,29 @@ class Sauce : public Util::GameObject {
 public:
     Sauce() : Util::GameObject(
         std::make_unique<Util::Image>("C:/Shawarma/CHAO0509/Shawarma/Resources/Image/Food/sauce.png"), 3),
-        m_IsPlaced(false) {
+        m_IsPlaced(false), m_Count(5)
+    {
         m_Transform.translation = glm::vec2(-100.0f, -120.0f);
         m_Transform.scale = glm::vec2(0.5f, 0.5f);
+
+        m_CountText = std::make_shared<Util::Text>(
+            "C:/Windows/Fonts/arial.ttf", 24,
+            std::to_string(m_Count),
+            Util::Color::FromName(Util::Colors::WHITE)
+        );
+        m_CountGO = std::make_shared<Util::GameObject>(m_CountText, 4);
+        m_CountGO->m_Transform.translation = glm::vec2(-100.0f, -160.0f);
+        m_CountGO->m_Transform.scale = glm::vec2(1.0f, 1.0f);
     }
+
+    void EnableLimit(bool enable) {
+        m_LimitEnabled = enable;
+    }
+
     bool IsClicked() {
+
+        if (m_LimitEnabled && m_Count <= 0) return false;
+
         glm::vec2 mousePos = Util::Input::GetCursorPosition();
         bool mousePressed = Util::Input::IsKeyPressed(Util::Keycode::MOUSE_LB);
         float imageWidth = 200.0f * m_Transform.scale.x;
@@ -383,11 +401,43 @@ public:
                mousePos.x >= buttonMin.x && mousePos.x <= buttonMax.x &&
                mousePos.y >= buttonMin.y && mousePos.y <= buttonMax.y;
     }
+
+    void DecreaseCount() {
+        if (m_LimitEnabled && m_Count > 0) {
+            --m_Count;
+            m_CountText->SetText(std::to_string(m_Count));
+        }
+    }
+
+    void IncreaseCount() {
+        if (m_LimitEnabled && m_Count < 5) {
+            ++m_Count;
+            m_CountText->SetText(std::to_string(m_Count));
+        }
+    }
+
+    void ResetCount() {
+        m_Count = 5;
+        if (m_CountText) {
+            m_CountText->SetText(std::to_string(m_Count));
+        }
+    }
+
+    std::shared_ptr<Util::GameObject> GetCounterObject() const {
+        return m_CountGO;
+    }
+
     bool IsPlaced() const { return m_IsPlaced; }
     void SetPlaced(bool placed) { m_IsPlaced = placed; }
+
 private:
     bool m_IsPlaced;
+    int m_Count;
+    bool m_LimitEnabled = false;
+    std::shared_ptr<Util::Text> m_CountText;
+    std::shared_ptr<Util::GameObject> m_CountGO;
 };
+
 
 class Pickle : public Util::GameObject {
 public:
@@ -522,20 +572,69 @@ public:
     }
 
     bool IsClicked() {
+        static bool wasPressedOnHand = false;
+
         glm::vec2 mousePos = Util::Input::GetCursorPosition();
-        bool mousePressed = Util::Input::IsKeyPressed(Util::Keycode::MOUSE_LB);
-
-        float imageWidth = 200.0f * m_Transform.scale.x;
-        float imageHeight = 200.0f * m_Transform.scale.y;
-
+        float imageWidth = 100.0f * m_Transform.scale.x;
+        float imageHeight = 100.0f * m_Transform.scale.y;
         glm::vec2 buttonMin = m_Transform.translation - glm::vec2(imageWidth / 2, imageHeight / 2);
         glm::vec2 buttonMax = m_Transform.translation + glm::vec2(imageWidth / 2, imageHeight / 2);
 
-        return mousePressed &&
-               mousePos.x >= buttonMin.x && mousePos.x <= buttonMax.x &&
-               mousePos.y >= buttonMin.y && mousePos.y <= buttonMax.y;
+        bool inRange = mousePos.x >= buttonMin.x && mousePos.x <= buttonMax.x &&
+                       mousePos.y >= buttonMin.y && mousePos.y <= buttonMax.y;
+
+        if (Util::Input::IsKeyDown(Util::Keycode::MOUSE_LB) && inRange) {
+            wasPressedOnHand = true;
+        }
+
+        if (Util::Input::IsKeyUp(Util::Keycode::MOUSE_LB)) {
+            bool result = wasPressedOnHand && inRange;
+            wasPressedOnHand = false;
+            return result;
+        }
+
+        return false;
     }
+
 };
+
+class SauceHand : public Util::GameObject {
+public:
+    SauceHand()
+        : Util::GameObject(std::make_unique<Util::Image>(
+            "C:/Shawarma/CHAO0509/Shawarma/Resources/Image/Food/hand_sauce.png"), 3)
+    {
+        m_Transform.translation = glm::vec2(-300.0f, 100.0f);  // 放在 sauce 上方
+        m_Transform.scale = glm::vec2(1.5f, 1.5f);
+    }
+
+    bool IsClicked() {
+        static bool wasPressedOnHand = false;
+
+        glm::vec2 mousePos = Util::Input::GetCursorPosition();
+        float imageWidth = 100.0f * m_Transform.scale.x;
+        float imageHeight = 100.0f * m_Transform.scale.y;
+        glm::vec2 buttonMin = m_Transform.translation - glm::vec2(imageWidth / 2, imageHeight / 2);
+        glm::vec2 buttonMax = m_Transform.translation + glm::vec2(imageWidth / 2, imageHeight / 2);
+
+        bool inRange = mousePos.x >= buttonMin.x && mousePos.x <= buttonMax.x &&
+                       mousePos.y >= buttonMin.y && mousePos.y <= buttonMax.y;
+
+        if (Util::Input::IsKeyDown(Util::Keycode::MOUSE_LB) && inRange) {
+            wasPressedOnHand = true;
+        }
+
+        if (Util::Input::IsKeyUp(Util::Keycode::MOUSE_LB)) {
+            bool result = wasPressedOnHand && inRange;
+            wasPressedOnHand = false;
+            return result;
+        }
+
+        return false;
+    }
+
+};
+
 
 
 //--------------------------------------
@@ -647,7 +746,12 @@ private:
     int m_FryingCounter = 0;
     std::shared_ptr<Topping> m_Frying;  // 儲存frying topping物件指標
 
+    //第二關開始新增此功能
     int m_PickleRefillState = 2;
+    int m_SauceRefillState = 2;
+
+    bool m_IsPickleHandPressed = false;
+    bool m_IsSauceHandPressed = false;
 
     std::shared_ptr<FryingCounterText>m_FryingCounterText;
     MoneyManager m_MoneyManager;
@@ -659,6 +763,8 @@ private:
     std::shared_ptr<NextButton> m_NextButton;
     std::shared_ptr<NextButton> m_RetryButton;
     std::shared_ptr<class CucumberHand> m_CucumberHand;
+    std::shared_ptr<SauceHand> m_SauceHand;
+
     // 整關總客人數
     int m_TotalCustomersThisLevel = 0;
     // 耐心耗盡離開的人數

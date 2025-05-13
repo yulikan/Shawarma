@@ -236,6 +236,7 @@ void App::Update() {
         // Sauce button
         if (!m_Sauce->IsPlaced() && m_Sauce->IsClicked()) {
             m_Sauce->SetPlaced(true);
+            m_Sauce->DecreaseCount();
             auto newTopping = std::make_shared<Topping>(
                 "C:/Shawarma/CHAO0509/Shawarma/Resources/Image/Food/topping_sauce.png",
                 "sauce"
@@ -257,26 +258,28 @@ void App::Update() {
             m_Renderer->AddChild(newTopping);
             toppings.push_back(newTopping);
         }
-        // 點擊手補充黃瓜（但最多 5）
+
+        // --- 黃瓜補充 ---
         if (m_CucumberHand && m_EnableIngredientLimit && m_Pickle) {
-            glm::vec2 mousePos = Util::Input::GetCursorPosition();
-
-            if (m_PickleRefillState == 2 && m_CucumberHand->IsClicked()) {
-                m_PickleRefillState = 0;  // 開始點擊流程
+            if (!m_IsPickleHandPressed && m_CucumberHand->IsClicked()) {
+                m_IsPickleHandPressed = true;
             }
-
-            if (m_PickleRefillState == 0 &&
-                Util::Input::IsKeyDown(Util::Keycode::MOUSE_LB)) {
-                m_PickleRefillState = 1;  // 正在點擊中
-                }
-
-            if (m_PickleRefillState == 1 &&
+            if (m_IsPickleHandPressed && !m_CucumberHand->IsClicked() &&
                 Util::Input::IsKeyUp(Util::Keycode::MOUSE_LB)) {
-                m_PickleRefillState = 2;  // 重設為等待下一次點擊
-
-                // ✅ 補 1 顆黃瓜
+                m_IsPickleHandPressed = false;
                 m_Pickle->IncreaseCount();
-                std::cout << "Refilled pickle: " << std::endl;
+                }
+        }
+
+        // --- 醬料補充 ---
+        if (m_SauceHand && m_EnableIngredientLimit && m_Sauce) {
+            if (!m_IsSauceHandPressed && m_SauceHand->IsClicked()) {
+                m_IsSauceHandPressed = true;
+            }
+            if (m_IsSauceHandPressed && !m_SauceHand->IsClicked() &&
+                Util::Input::IsKeyUp(Util::Keycode::MOUSE_LB)) {
+                m_IsSauceHandPressed = false;
+                m_Sauce->IncreaseCount();
                 }
         }
 
@@ -542,10 +545,20 @@ void App::LoadLevel(const LevelData& level) {
 
     if (m_EnableIngredientLimit) {
         m_CucumberHand = std::make_shared<CucumberHand>();
-        m_Renderer->AddChild(m_CucumberHand);
+        m_SauceHand = std::make_shared<SauceHand>();
+        m_Renderer->AddChild(m_CucumberHand);   // ⬅️ 加上這行
+        m_Renderer->AddChild(m_SauceHand);
     } else {
-        m_CucumberHand = nullptr;  // 清除上一關的手
+        m_CucumberHand = nullptr;
+        m_SauceHand = nullptr;
     }
+
+
+
+
+
+
+
 
     m_Renderer->AddChild(m_PoorMan);
     m_Renderer->AddChild(m_Potato);
@@ -556,6 +569,10 @@ void App::LoadLevel(const LevelData& level) {
     m_Renderer->AddChild(m_Pickle->GetCounterObject());
     m_Pickle->EnableLimit(m_EnableIngredientLimit);
     m_Pickle->ResetCount();
+
+    m_Renderer->AddChild(m_Sauce->GetCounterObject());
+    m_Sauce->EnableLimit(m_EnableIngredientLimit);
+    m_Sauce->ResetCount();
 
     m_Background = std::make_shared<BackgroundImage>(level.backgroundImage);
     m_Renderer->AddChild(m_Background);
