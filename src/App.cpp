@@ -29,7 +29,7 @@ void App::Start() {
     // Level complete screen
     m_LevelCompleteScreen = std::make_shared<Util::GameObject>(
         std::make_unique<Util::Image>(
-            "C:/Shawarma/CHAO0509/Shawarma/Resources/Image/background/nextLevel.png"),
+            "C:/Users/yello/Shawarma/Resources/Image/background/nextLevel.png"),
         /*layer=*/7
     );
     m_LevelCompleteScreen->m_Transform.translation = glm::vec2(0.0f, 0.0f);
@@ -116,7 +116,7 @@ void App::Update() {
             // 失敗：顯示失敗畫面與重試按鈕
             m_FailureScreen = std::make_shared<Util::GameObject>(
                 std::make_unique<Util::Image>(
-                    "C:/Shawarma/CHAO0509/Shawarma/Resources/Image/background/FailPage.png"
+                    "C:/Users/yello/Shawarma/Resources/Image/background/FailPage.png"
                 ), 7
             );
             m_FailureScreen->m_Transform.translation = {0,0};
@@ -124,7 +124,7 @@ void App::Update() {
             m_Renderer->AddChild(m_FailureScreen);
 
             m_RetryButton = std::make_shared<NextButton>(
-                "C:/Shawarma/CHAO0509/Shawarma/Resources/Image/Object/retryBtn.png"
+                "C:/Users/yello/Shawarma/Resources/Image/Object/retryBtn.png"
             );
             m_Renderer->AddChild(m_RetryButton);
 
@@ -162,7 +162,7 @@ void App::Update() {
 
             // Patience text
             auto patienceText = std::make_shared<PatienceText>();
-            patienceText->SetPatience(10);
+            patienceText->SetPatience(100);
             patienceText->m_Transform.translation = cfg.position + glm::vec2(0.0f, -100.0f);
             customer->SetPatienceText(patienceText);
             m_Renderer->AddChild(patienceText);
@@ -225,7 +225,7 @@ void App::Update() {
         if (!m_Fries->IsPlaced() && m_Fries->IsClicked()) {
             m_Fries->SetPlaced(true);
             auto newTopping = std::make_shared<Topping>(
-                "C:/Shawarma/CHAO0509/Shawarma/Resources/Image/Food/topping_fries.png",
+                "C:/Users/yello/Shawarma/Resources/Image/Food/topping_fries.png",
                 "fries"
             );
             newTopping->m_Transform.translation = glm::vec2(180.0f, -174.0f);
@@ -238,7 +238,7 @@ void App::Update() {
             m_Sauce->SetPlaced(true);
             m_Sauce->DecreaseCount();
             auto newTopping = std::make_shared<Topping>(
-                "C:/Shawarma/CHAO0509/Shawarma/Resources/Image/Food/topping_sauce.png",
+                "C:/Users/yello/Shawarma/Resources/Image/Food/topping_sauce.png",
                 "sauce"
             );
             newTopping->m_Transform.translation = glm::vec2(180.0f, -208.0f);
@@ -251,7 +251,7 @@ void App::Update() {
             m_Pickle->SetPlaced(true);
             m_Pickle->DecreaseCount();  // 扣除一次
             auto newTopping = std::make_shared<Topping>(
-                "C:/Shawarma/CHAO0509/Shawarma/Resources/Image/Food/topping_pickle.png",
+                "C:/Users/yello/Shawarma/Resources/Image/Food/topping_pickle.png",
                 "pickle"
             );
             newTopping->m_Transform.translation = glm::vec2(180.0f, -155.0f);
@@ -288,7 +288,7 @@ void App::Update() {
         if (!m_ShavedMeat->IsPlaced() && m_ShavedMeat->IsClicked()) {
             m_ShavedMeat->SetPlaced(true);
             auto newTopping = std::make_shared<Topping>(
-                "C:/Shawarma/CHAO0509/Shawarma/Resources/Image/Food/topping_meat.png",
+                "C:/Users/yello/Shawarma/Resources/Image/Food/topping_meat.png",
                 "shaved_meat"
             );
             newTopping->m_Transform.translation = glm::vec2(180.0f, -192.0f);
@@ -300,7 +300,7 @@ void App::Update() {
         if (!m_Potato->IsPlaced() && m_Potato->IsClicked()) {
             m_Potato->SetPlaced(true);
             m_Frying = std::make_shared<Topping>(
-                "C:/Shawarma/CHAO0509/Shawarma/Resources/Image/Food/frying.png",
+                "C:/Users/yello/Shawarma/Resources/Image/Food/frying.png",
                 "potato"
             );
             m_Frying->m_Transform.translation = glm::vec2(480.0f, -40.0f);
@@ -322,6 +322,111 @@ void App::Update() {
                 std::cout << "Frying topping clicked, count: " << m_FryingCounter << std::endl;
             }
         }
+//飲料杯子邏輯
+         for (auto& cup : m_Cups) cup->Update();
+
+    // 1) 服务顾客：先检测是否“给杯子喝”，删旧杯、加空杯
+    bool served = false;
+    for (auto cust : m_Customers) {
+        glm::vec2 cp = cust->m_Transform.translation;
+        for (size_t i = 0; i < m_Cups.size(); ++i) {
+            auto& cup = m_Cups[i];
+            if (cup->GetState()==CupState::FULL
+             && Util::Input::IsKeyUp(Util::Keycode::MOUSE_LB)
+             && glm::distance(cp, cup->m_Transform.translation)
+                   < 50.0f * cup->m_Transform.scale.x)
+            {
+                // 赚取
+                if (cup->GetType()==DrinkType::SODA)   m_MoneyManager.Add(20);
+                else if (cup->GetType()==DrinkType::COLA) m_MoneyManager.Add(25);
+
+                // 先存类型，再删，再加空杯
+                DrinkType type = cup->GetType();
+                m_Renderer->RemoveChild(cup);
+                m_Cups.erase(m_Cups.begin() + i);
+
+                glm::vec2 off = (type==DrinkType::SODA
+                    ? glm::vec2(-50,-50) : glm::vec2(50,-50));
+                auto emptyCup = std::make_shared<Cup>(
+                    type,
+                    m_BevMachine->GetPosition() + off * m_BevMachine->GetScale(),
+                    CupState::EMPTY);
+                m_Cups.push_back(emptyCup);
+                m_Renderer->AddChild(emptyCup);
+
+                served = true;
+                break;
+            }
+        }
+        if (served) break;
+    }
+
+    // 2) 补充按钮逻辑：只有当存在空杯时才允许补，且一次只补一杯
+    if (m_BevMachine->IsButtonClicked(DrinkType::SODA)) {
+        for (auto& cup : m_Cups) {
+            if (cup->GetType()==DrinkType::SODA
+             && cup->GetState()==CupState::EMPTY)
+            {
+                cup->Refill();
+                cup->SetPosition(
+                  m_BevMachine->GetPosition()
+                  + glm::vec2(-50,-50) * m_BevMachine->GetScale());
+                break;
+            }
+        }
+    }
+    if (m_BevMachine->IsButtonClicked(DrinkType::COLA)) {
+        for (auto& cup : m_Cups) {
+            if (cup->GetType()==DrinkType::COLA
+             && cup->GetState()==CupState::EMPTY)
+            {
+                cup->Refill();
+                cup->SetPosition(
+                  m_BevMachine->GetPosition()
+                  + glm::vec2(50,-50) * m_BevMachine->GetScale());
+                break;
+            }
+        }
+    }
+    // 3) 检测“给客人喝”
+        // App::Update()
+        for (auto cust : m_Customers) {
+            glm::vec2 custPos = cust->m_Transform.translation;
+            for (size_t i = 0; i < m_Cups.size(); ++i) {
+                auto& cup = m_Cups[i];
+                if (cup->GetState()==CupState::FULL
+                 && Util::Input::IsKeyUp(Util::Keycode::MOUSE_LB))
+                {
+                    float dist = glm::distance(custPos, cup->m_Transform.translation);
+                    float interactRadius = 50.0f * cup->m_Transform.scale.x;
+                    if (dist < interactRadius) {
+                        // 1) 處理獲利
+                        if (cup->GetType()==DrinkType::SODA)   m_MoneyManager.Add(20);
+                        else if (cup->GetType()==DrinkType::COLA) m_MoneyManager.Add(25);
+
+                        // 2) 刪除舊杯、補一個空杯（同前面範例）
+                        auto oldCup = cup;
+                        m_Renderer->RemoveChild(oldCup);
+                        m_Cups.erase(m_Cups.begin() + i);
+
+                        auto newCup = std::make_shared<Cup>(
+                            cup->GetType(),
+                            m_BevMachine->GetPosition() +
+                              (cup->GetType()==DrinkType::SODA
+                                 ? glm::vec2(-50,-50)
+                                 : glm::vec2( 50,-50)
+                              ) * m_BevMachine->GetScale(),
+                            CupState::EMPTY);
+                        m_Cups.push_back(newCup);
+                        m_Renderer->AddChild(newCup);
+
+                        // 既然已經服務完，跳出內層迴圈
+                        break;
+                    }
+                }
+            }
+        }
+
 
         // Customer <> FrenchFries interaction
         for (auto& customer : m_Customers) {
@@ -479,7 +584,7 @@ void App::Update() {
     // Shop & return
     if (m_ShopButton->IsClicked() && m_CurrentPhase == phase::phase1) {
         m_CurrentPhase = phase::phase3;
-        m_Background = std::make_shared<BackgroundImage>("C:/Shawarma/CHAO0509/Shawarma/Resources/Image/background/restaurant.png");
+        m_Background = std::make_shared<BackgroundImage>("C:/Users/yello/Shawarma/Resources/Image/background/restaurant.png");
         m_Renderer = std::make_shared<Util::Renderer>(std::vector<std::shared_ptr<Util::GameObject>>{ m_Background });
         m_Renderer->AddChild(m_ReturnButton);
     }
@@ -543,20 +648,42 @@ void App::LoadLevel(const LevelData& level) {
     m_Renderer->AddChild(m_ShavedMeat);
     m_Renderer->AddChild(m_Pickle);
 
+    m_BevMachine = std::make_shared<BeverageMachine>(
+    glm::vec2(300.0f, -100.0f),
+    glm::vec2(0.5f)   // 放大 150%
+);
+    m_Renderer->AddChild(m_BevMachine);
+
+    glm::vec2 basePos = m_BevMachine->GetPosition();
+    glm::vec2 scale   = m_BevMachine->GetScale();
+    glm::vec2 off1(-50.0f, -50.0f), off2(50.0f, -50.0f);
+
+    // 生成第一杯汽水
+    auto sodaCup = std::make_shared<Cup>(
+        DrinkType::SODA,
+        basePos + off1 * scale,    // *scale
+        CupState::EMPTY);
+    m_Cups.push_back(sodaCup);
+    m_Renderer->AddChild(sodaCup);
+
+    // 生成第一杯可乐
+    auto colaCup = std::make_shared<Cup>(
+        DrinkType::COLA,
+        basePos + off2 * scale,    // *scale
+        CupState::EMPTY);
+    m_Cups.push_back(colaCup);
+    m_Renderer->AddChild(colaCup);
+
+
     if (m_EnableIngredientLimit) {
         m_CucumberHand = std::make_shared<CucumberHand>();
         m_SauceHand = std::make_shared<SauceHand>();
-        m_Renderer->AddChild(m_CucumberHand);   // ⬅️ 加上這行
+        m_Renderer->AddChild(m_CucumberHand);
         m_Renderer->AddChild(m_SauceHand);
     } else {
         m_CucumberHand = nullptr;
         m_SauceHand = nullptr;
     }
-
-
-
-
-
 
 
 

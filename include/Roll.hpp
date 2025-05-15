@@ -12,7 +12,7 @@ class Roll : public Util::GameObject {
 public:
     // 建構子接受配料內容列表
     Roll(const std::vector<std::string>& contents)
-        : Util::GameObject(std::make_unique<Util::Image>("C:/Shawarma/CHAO0509/Shawarma/Resources/Image/Food/roll.png"), 5),
+        : Util::GameObject(std::make_unique<Util::Image>("C:/Users/yello/Shawarma/Resources/Image/Food/roll.png"), 5),
           m_Contents(contents),
           m_IsDragging(false) {
         // 設定 roll 的初始位置與縮放（根據需求調整）
