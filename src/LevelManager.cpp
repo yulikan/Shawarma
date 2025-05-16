@@ -110,10 +110,10 @@ void LevelManager::LoadLevels() {
         {0.0f, 55.0f},
     };
     std::vector<std::vector<std::string>> allToppings = {
-        {"fries", "sauce"},
-        {"pickle", "sauce"},
-        {"fries", "pickle"},
-    {"fries", "pickle", "sauce"}
+        {"fries", "sauce" , "shaved_meat"}, //沒黃瓜
+        {"fries", "pickle", "sauce", "shaved_meat"},
+        {"fries", "pickle", "shaved_meat"},//沒醬
+    {"fries", "pickle", "sauce", "shaved_meat"}
     };
     // 這邊示範前兩位要薯條，後三位要卷餅
     std::vector<std::string> requests3 = {
@@ -132,6 +132,11 @@ void LevelManager::LoadLevels() {
             // 依序給每位客人不同的 requiredToppings
             cust.requiredToppings = allToppings[j];
             j++;
+            if (cust.requiredToppings == allToppings[0]) {
+            cust.foodIcon = "C:/Users/yello/Shawarma/Resources/Image/Food/roll_no_pickle.png";           // 沒 pickle
+        } else if (cust.requiredToppings == allToppings[2]) {
+            cust.foodIcon = "C:/Users/yello/Shawarma/Resources/Image/Food/roll_no_sauce.png";            // 沒 sauce
+        }
         }
         level3.customers.push_back(cust);
     }
