@@ -5,7 +5,12 @@ LevelManager::LevelManager() : m_CurrentLevelIndex(0) {
     // 載入完所有關卡設定後，初始化第一關的 pendingConfigs、索引
     StartLevel();
 }
-
+void LevelManager::SetLevelIndex(size_t index) {
+    if (index < m_Levels.size()) {
+        m_CurrentLevelIndex = index;
+        StartLevel();  // 重設 pending customer 列表等
+    }
+}
 LevelManager::~LevelManager() {}
 
 void LevelManager::LoadLevels() {

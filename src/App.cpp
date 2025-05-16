@@ -137,7 +137,37 @@ void App::Update() {
         m_CurrentPhase = phase::phase2;
         LoadLevel(m_LevelManager.GetCurrentLevel());
     }
+    if (m_CurrentPhase == phase::phase3) {
+        glm::vec2 mousePos = Util::Input::GetCursorPosition();
 
+        if (Util::Input::IsKeyUp(Util::Keycode::MOUSE_LB)) {
+            glm::vec2 levelSize(230.0f, 200.0f);  // 統一的大小
+            std::vector<glm::vec2> levelCenters = {
+                {-500.0f, 235.0f}, // 第1關
+                {-250.0f, 235.0f}, // 第2關
+                 {  0.0f, 235.0f}, // 第3關
+                 {250.0f, 235.0f}, // 第4關
+                 {500.0f, 235.0f}, // 第5關
+            };
+
+            for (size_t i = 0; i < levelCenters.size(); ++i) {
+                glm::vec2 min = levelCenters[i] - levelSize * 0.5f;
+                glm::vec2 max = levelCenters[i] + levelSize * 0.5f;
+
+                if (mousePos.x >= min.x && mousePos.x <= max.x &&
+                    mousePos.y >= min.y && mousePos.y <= max.y)
+                {
+                    m_LevelManager.SetLevelIndex(i);  // ← i = 0 對應第1關
+                    LoadLevel(m_LevelManager.GetCurrentLevel());
+                    m_CurrentPhase = phase::phase2;
+                    return;
+                }
+            }
+        }
+
+        if (m_Renderer) m_Renderer->Update();  // 持續畫面
+        return;
+    }
     // Phase 2 main logic
     if (m_CurrentPhase == phase::phase2) {
         // Spawn new customers
@@ -614,7 +644,7 @@ for (auto& customer : m_Customers) {
     // Shop & return
     if (m_ShopButton->IsClicked() && m_CurrentPhase == phase::phase1) {
         m_CurrentPhase = phase::phase3;
-        m_Background = std::make_shared<BackgroundImage>("C:/Users/yello/Shawarma/Resources/Image/background/restaurant.png");
+        m_Background = std::make_shared<BackgroundImage>("C:/Users/yello/Shawarma/Resources/Image/background/LevelPage1.png");
         m_Renderer = std::make_shared<Util::Renderer>(std::vector<std::shared_ptr<Util::GameObject>>{ m_Background });
         m_Renderer->AddChild(m_ReturnButton);
     }

@@ -28,8 +28,12 @@ public:
         m_Transform.scale = glm::vec2(0.65f, 0.65f);
     }
     explicit BackgroundImage(const std::string& imagePath)
-        : GameObject(std::make_unique<Util::Image>(imagePath), 1) {
-        m_Transform.scale = glm::vec2(1.8f, 1.85f);
+    : GameObject(std::make_unique<Util::Image>(imagePath), 1) {
+        if (imagePath.find("LevelPage1.png") != std::string::npos) {
+            m_Transform.scale = glm::vec2(0.66f, 0.69f); // 🔽 調小這張圖的比例
+        } else {
+            m_Transform.scale = glm::vec2(1.8f, 1.85f); // 其他背景維持原本大小
+        }
     }
 };
 
