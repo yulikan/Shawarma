@@ -152,7 +152,13 @@ void App::Update() {
             auto foodIcon = std::make_shared<Util::GameObject>(
                 std::make_unique<Util::Image>(cfg.foodIcon), 5);
             if (cfg.foodRequest == "Roll") {
-                customer->SetRequiredToppings(cfg.requiredToppings);
+                if (m_EnableCustomTopping) {
+                    // 第3關之後：套用 LevelManager 預先設定好的 requiredToppings
+                    customer->SetRequiredToppings(cfg.requiredToppings);
+                } else {
+                    // 前兩關：不檢查，任何配料都 OK
+                    customer->SetRequiredToppings({});
+                }
                 foodIcon->m_Transform.scale       = glm::vec2(0.08f, 0.08f);
                 foodIcon->m_Transform.translation = cfg.position + glm::vec2(0.0f, -55.0f);
             } else {
@@ -508,50 +514,54 @@ void App::Update() {
         }
 
         // Customer <> Roll interaction
-        // App.cpp 大約第 460 行左右的 Customer<>Roll 互動
-        for (auto& customer : m_Customers) {
-            for (auto it = m_Rolls.begin(); it != m_Rolls.end();) {
-                auto& rollObj = *it;
-                float distance = glm::distance(customer->m_Transform.translation,
-                                               rollObj->m_Transform.translation);
-                if (distance < 50.0f) {
-                    customer->SetEatState(Customer::EatState::READY_TO_EAT);
-                    if (Util::Input::IsKeyUp(Util::Keycode::MOUSE_LB) &&
-                        customer->GetEatState() == Customer::EatState::READY_TO_EAT)
-                    {
-                        // 取得玩家實際放的配料
-                        auto actual = rollObj->GetContents();
-                        // 取得客人所需的配料
-                        auto required = customer->GetRequiredToppings();
-                        // 比對（可考慮順序無關，先排序再比）
-                        std::sort(actual.begin(), actual.end());
-                        std::sort(required.begin(), required.end());
-                        if (actual == required) {
-                            // 成功：如原本邏輯，加錢、記錄、移除
-                            customer->SetEatState(Customer::EatState::EATEN);
-                            customer->RecordFood("Roll");
-                            for (const auto& ing : actual)
-                                customer->RecordFood(ing);
-                            // 加錢
-                            m_MoneyManager.Add(50);
-                        } else {
-                            // 失敗：不加錢，直接移除或顯示錯誤
-                            // 這裡示意直接移除，不給錢
-                            customer->SetEatState(Customer::EatState::EATEN); // 標記為處理完畢
-                        }
-                        // 清除
-                        m_Renderer->RemoveChild(rollObj);
-                        it = m_Rolls.erase(it);
-                        g_IsObjectDragging = false;
-                        continue;
-                    }
+// App.cpp – Customer <> Roll interaction （修改自原始 App.cpp 第460行左右） :contentReference[oaicite:0]{index=0}:contentReference[oaicite:1]{index=1}
+for (auto& customer : m_Customers) {
+    for (auto it = m_Rolls.begin(); it != m_Rolls.end();) {
+        auto& rollObj = *it;
+        float distance = glm::distance(customer->m_Transform.translation,
+                                       rollObj->m_Transform.translation);
+        if (distance < 50.0f) {
+            customer->SetEatState(Customer::EatState::READY_TO_EAT);
+            if (Util::Input::IsKeyUp(Util::Keycode::MOUSE_LB) &&
+                customer->GetEatState() == Customer::EatState::READY_TO_EAT)
+            {
+                // 取得玩家實際放的配料
+                auto actual = rollObj->GetContents();
+                // 取得客人所需的配料
+                auto required = customer->GetRequiredToppings();
+                // 排序：順序無關才可比對
+                std::sort(actual.begin(),   actual.end());
+                std::sort(required.begin(), required.end());
+
+                // 核心：如果還沒到第3關（m_EnableCustomTopping==false），
+                // 或者配料完全吻合，都視為成功
+                bool isMatch = (!m_EnableCustomTopping) || (actual == required);
+                if (isMatch) {
+                    // 成功：給錢、記錄、移除
+                    customer->SetEatState(Customer::EatState::EATEN);
+                    customer->RecordFood("Roll");
+                    for (const auto& ing : actual)
+                        customer->RecordFood(ing);
+                    m_MoneyManager.Add(50);
                 } else {
-                    if (customer->GetEatState() != Customer::EatState::EATEN)
-                        customer->SetEatState(Customer::EatState::NOT_EATEN);
+                    // 失敗（第3關後才可能到這裡）：不加錢、不記錄
+                    customer->SetEatState(Customer::EatState::EATEN);
+                    // TODO: 如需扣分或顯示失敗UI可在此加入
                 }
-                ++it;
+
+                // 清除卷餅物件，結束拖曳
+                m_Renderer->RemoveChild(rollObj);
+                it = m_Rolls.erase(it);
+                g_IsObjectDragging = false;
+                continue;
             }
+        } else {
+            if (customer->GetEatState() != Customer::EatState::EATEN)
+                customer->SetEatState(Customer::EatState::NOT_EATEN);
         }
+        ++it;
+    }
+}
 
         // PoorMan <> Roll interaction
         if (m_PoorMan) {
@@ -646,11 +656,18 @@ void App::LoadLevel(const LevelData& level) {
     m_Pickle->SetPlaced(false);
     m_ShavedMeat->SetPlaced(false);
 
-    int currentIndex = m_LevelManager.GetCurrentLevelIndex();  // 請新增這個 Getter
-    std::cout << "current level" << currentIndex << std::endl;  // 除錯用
+    // App.cpp::LoadLevel :contentReference[oaicite:2]{index=2}:contentReference[oaicite:3]{index=3}
+    int currentIndex = m_LevelManager.GetCurrentLevelIndex();  // 0-based
+    std::cout << "current level: " << currentIndex + 1 << std::endl;
 
-    m_EnableIngredientLimit = (currentIndex >= 1);  // 從第2關起限制
+    // 保持原有的「從第2關起才限量」機制
+    m_EnableIngredientLimit = (currentIndex >= 1);
     m_Pickle->EnableLimit(m_EnableIngredientLimit);
+    m_Sauce->EnableLimit(m_EnableIngredientLimit);
+
+    // 新增：從第3關 (currentIndex >= 2) 起啟用「客製配料檢查」
+    m_EnableCustomTopping = (currentIndex >= 2);
+
 
     // Reset frying counter
     m_FryingCounter = 0;

@@ -718,7 +718,6 @@ public:
 private:
     LevelManager m_LevelManager;
     void ValidTask();
-private:
     State m_CurrentState = State::START;
     phase m_CurrentPhase = phase::phase1;
     std::shared_ptr<BackgroundImage> m_Background;
@@ -748,6 +747,8 @@ private:
     int m_FryingCounter = 0;
     std::shared_ptr<Topping> m_Frying;  // 儲存frying topping物件指標
 
+    bool m_EnableIngredientLimit = false;    // 原：第2關後才有數量限制
+    bool m_EnableCustomTopping   = false;    // 新：第3關後才檢查客製化配料
     //第二關開始新增此功能
     int m_PickleRefillState = 2;
     int m_SauceRefillState = 2;
@@ -775,12 +776,9 @@ private:
     int m_PatienceFailures = 0;
     // 失敗畫面
     std::shared_ptr<Util::GameObject> m_FailureScreen;
-
-    bool m_EnableIngredientLimit = false;  //第5關後才有食物限制功能
     // --- 輔助函式 ---
     bool IsCurrentLevelComplete() const;   // 判斷關卡是否完成
     void ResetLevelObjects();             // 切換關卡前重置場景
-
 };
 
 #endif

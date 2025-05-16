@@ -109,12 +109,18 @@ void LevelManager::LoadLevels() {
         {100.0f, 85.0f},
         {0.0f, 55.0f},
     };
+    std::vector<std::vector<std::string>> allToppings = {
+        {"fries", "sauce"},
+        {"pickle", "sauce"},
+        {"fries", "pickle"},
+    {"fries", "pickle", "sauce"}
+    };
     // 這邊示範前兩位要薯條，後三位要卷餅
     std::vector<std::string> requests3 = {
         "FrenchFries", "FrenchFries",
         "Roll", "Roll", "Roll", "Roll", "FrenchFries"
     };
-
+    int j=0;
     for (int i = 0; i < 7; ++i) {
         CustomerConfig cust;
         cust.customerImage = images3[i];
@@ -122,7 +128,11 @@ void LevelManager::LoadLevels() {
         cust.foodRequest   = requests3[i];
         cust.foodIcon      = "C:/Users/yello/Shawarma/Resources/Image/Food/"
                              + requests3[i] + ".png";
-
+        if (requests[i] == "Roll") {
+            // 依序給每位客人不同的 requiredToppings
+            cust.requiredToppings = allToppings[j];
+            j++;
+        }
         level3.customers.push_back(cust);
     }
     m_Levels.push_back(level3);
@@ -156,12 +166,7 @@ void LevelManager::LoadLevels() {
         "FrenchFries", "FrenchFries",
         "Roll", "Roll", "Roll", "Roll", "FrenchFries"
     };
-    std::vector<std::vector<std::string>> allToppings = {
-        {"fries", "sauce"},
-        {"pickle", "sauce"},
-        {"fries", "pickle", "sauce"}
-    };
-    int j;
+
     for (int i = 0; i < 7; ++i) {
         CustomerConfig cust;
         cust.customerImage = images4[i];
@@ -169,12 +174,7 @@ void LevelManager::LoadLevels() {
         cust.foodRequest   = requests4[i];
         cust.foodIcon      = "C:/Users/yello/Shawarma/Resources/Image/Food/"
                              + requests4[i] + ".png";
-        if (requests[i] == "Roll") {
-            cust.requiredToppings = allToppings[j];  // 例如要薯條+醬料
-            j++;
-        } else {
-            cust.requiredToppings.clear();
-        }
+
         level4.customers.push_back(cust);
     }
     m_Levels.push_back(level4);
