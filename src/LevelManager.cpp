@@ -34,6 +34,8 @@ void LevelManager::LoadLevels() {
         "Roll", "Roll", "Roll"
     };
 
+
+
     for (int i = 0; i < 5; ++i) {
         CustomerConfig cust;
         cust.customerImage = images[i];
@@ -41,6 +43,7 @@ void LevelManager::LoadLevels() {
         cust.foodRequest   = requests[i];
         cust.foodIcon      = "C:/Users/yello/Shawarma/Resources/Image/Food/"
                              + requests[i] + ".png";
+
         level1.customers.push_back(cust);
     }
     m_Levels.push_back(level1);
@@ -119,6 +122,7 @@ void LevelManager::LoadLevels() {
         cust.foodRequest   = requests3[i];
         cust.foodIcon      = "C:/Users/yello/Shawarma/Resources/Image/Food/"
                              + requests3[i] + ".png";
+
         level3.customers.push_back(cust);
     }
     m_Levels.push_back(level3);
@@ -152,7 +156,12 @@ void LevelManager::LoadLevels() {
         "FrenchFries", "FrenchFries",
         "Roll", "Roll", "Roll", "Roll", "FrenchFries"
     };
-
+    std::vector<std::vector<std::string>> allToppings = {
+        {"fries", "sauce"},
+        {"pickle", "sauce"},
+        {"fries", "pickle", "sauce"}
+    };
+    int j;
     for (int i = 0; i < 7; ++i) {
         CustomerConfig cust;
         cust.customerImage = images4[i];
@@ -160,6 +169,12 @@ void LevelManager::LoadLevels() {
         cust.foodRequest   = requests4[i];
         cust.foodIcon      = "C:/Users/yello/Shawarma/Resources/Image/Food/"
                              + requests4[i] + ".png";
+        if (requests[i] == "Roll") {
+            cust.requiredToppings = allToppings[j];  // 例如要薯條+醬料
+            j++;
+        } else {
+            cust.requiredToppings.clear();
+        }
         level4.customers.push_back(cust);
     }
     m_Levels.push_back(level4);

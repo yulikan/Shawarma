@@ -16,7 +16,7 @@ public:
           m_Contents(contents),
           m_IsDragging(false) {
         // 設定 roll 的初始位置與縮放（根據需求調整）
-        m_Transform.translation = glm::vec2(350.0f, -170.0f);
+        m_Transform.translation = glm::vec2(0.0f, 0.0f);
         m_Transform.scale = glm::vec2(0.08f, 0.08f);
     }
 

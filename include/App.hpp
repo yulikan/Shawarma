@@ -123,7 +123,7 @@ public:
     void OnClick() {
         if (!m_IsPlaced && IsClicked()) {
             m_IsPlaced = true;
-            m_Transform.translation = glm::vec2(200.0f, -170.0f);
+            m_Transform.translation = glm::vec2(0.0f, -210.0f);
         }
     }
     void Update() {
@@ -179,8 +179,8 @@ public:
     Crust()
         : Util::GameObject(std::make_unique<Util::Image>("C:/Users/yello/Shawarma/Resources/Image/Food/crust.png"), 3),
           m_IsDragging(false) {
-        m_Transform.translation = glm::vec2(180.0f, -170.0f);
-        m_Transform.scale = glm::vec2(0.17f, 0.17f);
+        m_Transform.translation = glm::vec2(0.0f, -210.0f);
+        m_Transform.scale = glm::vec2(0.15f, 0.15f);
     }
     void Update() {
         glm::vec2 mousePos = Util::Input::GetCursorPosition();
@@ -670,7 +670,8 @@ public:
     // App.txt 中 Customer 類別新增
     void SetPatienceText(std::shared_ptr<PatienceText> pt) { m_PatienceText = pt; }
     std::shared_ptr<PatienceText> GetPatienceText() const { return m_PatienceText; }
-
+    void SetRequiredToppings(const std::vector<std::string>& t) { m_RequiredToppings = t; }
+    const std::vector<std::string>& GetRequiredToppings() const { return m_RequiredToppings; }
 private:
     EatState m_EatState;
     std::vector<std::string> m_EatenFoods;
@@ -678,7 +679,7 @@ private:
     // 新增成員：客人對應的訂單 icon
     std::shared_ptr<Util::GameObject> m_OrderIcon;
     std::shared_ptr<PatienceText> m_PatienceText;
-
+    std::vector<std::string> m_RequiredToppings;
 
 };
 

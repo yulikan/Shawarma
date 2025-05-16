@@ -152,6 +152,7 @@ void App::Update() {
             auto foodIcon = std::make_shared<Util::GameObject>(
                 std::make_unique<Util::Image>(cfg.foodIcon), 5);
             if (cfg.foodRequest == "Roll") {
+                customer->SetRequiredToppings(cfg.requiredToppings);
                 foodIcon->m_Transform.scale       = glm::vec2(0.08f, 0.08f);
                 foodIcon->m_Transform.translation = cfg.position + glm::vec2(0.0f, -55.0f);
             } else {
@@ -228,7 +229,7 @@ void App::Update() {
                 "C:/Users/yello/Shawarma/Resources/Image/Food/topping_fries.png",
                 "fries"
             );
-            newTopping->m_Transform.translation = glm::vec2(180.0f, -174.0f);
+            newTopping->m_Transform.translation = glm::vec2(0.0f, -214.0f);
             m_Renderer->AddChild(newTopping);
             toppings.push_back(newTopping);
         }
@@ -241,7 +242,7 @@ void App::Update() {
                 "C:/Users/yello/Shawarma/Resources/Image/Food/topping_sauce.png",
                 "sauce"
             );
-            newTopping->m_Transform.translation = glm::vec2(180.0f, -208.0f);
+            newTopping->m_Transform.translation = glm::vec2(0.0f, -248.0f);
             m_Renderer->AddChild(newTopping);
             toppings.push_back(newTopping);
         }
@@ -254,7 +255,7 @@ void App::Update() {
                 "C:/Users/yello/Shawarma/Resources/Image/Food/topping_pickle.png",
                 "pickle"
             );
-            newTopping->m_Transform.translation = glm::vec2(180.0f, -155.0f);
+            newTopping->m_Transform.translation = glm::vec2(0.0f, -195.0f);
             m_Renderer->AddChild(newTopping);
             toppings.push_back(newTopping);
         }
@@ -291,7 +292,7 @@ void App::Update() {
                 "C:/Users/yello/Shawarma/Resources/Image/Food/topping_meat.png",
                 "shaved_meat"
             );
-            newTopping->m_Transform.translation = glm::vec2(180.0f, -192.0f);
+            newTopping->m_Transform.translation = glm::vec2(0.0f, -232.0f);
             m_Renderer->AddChild(newTopping);
             toppings.push_back(newTopping);
         }
@@ -492,7 +493,7 @@ void App::Update() {
                 auto roll = std::make_shared<Roll>(rollContents);
 
                 // 調整 roll 的位置
-                float baseX   = 300.0f;
+                float baseX   = 145.0f;
                 float baseY   = -130.0f;
                 float offsetY = -40.0f * static_cast<float>(m_Rolls.size());
                 roll->m_Transform.translation = glm::vec2(baseX, baseY + offsetY);
@@ -507,19 +508,38 @@ void App::Update() {
         }
 
         // Customer <> Roll interaction
+        // App.cpp 大約第 460 行左右的 Customer<>Roll 互動
         for (auto& customer : m_Customers) {
             for (auto it = m_Rolls.begin(); it != m_Rolls.end();) {
                 auto& rollObj = *it;
-                float distance = glm::distance(customer->m_Transform.translation, rollObj->m_Transform.translation);
+                float distance = glm::distance(customer->m_Transform.translation,
+                                               rollObj->m_Transform.translation);
                 if (distance < 50.0f) {
                     customer->SetEatState(Customer::EatState::READY_TO_EAT);
                     if (Util::Input::IsKeyUp(Util::Keycode::MOUSE_LB) &&
-                        customer->GetEatState() == Customer::EatState::READY_TO_EAT
-                    ) {
-                        customer->SetEatState(Customer::EatState::EATEN);
-                        customer->RecordFood("Roll");
-                        for (const auto& ing : rollObj->GetContents())
-                            customer->RecordFood(ing);
+                        customer->GetEatState() == Customer::EatState::READY_TO_EAT)
+                    {
+                        // 取得玩家實際放的配料
+                        auto actual = rollObj->GetContents();
+                        // 取得客人所需的配料
+                        auto required = customer->GetRequiredToppings();
+                        // 比對（可考慮順序無關，先排序再比）
+                        std::sort(actual.begin(), actual.end());
+                        std::sort(required.begin(), required.end());
+                        if (actual == required) {
+                            // 成功：如原本邏輯，加錢、記錄、移除
+                            customer->SetEatState(Customer::EatState::EATEN);
+                            customer->RecordFood("Roll");
+                            for (const auto& ing : actual)
+                                customer->RecordFood(ing);
+                            // 加錢
+                            m_MoneyManager.Add(50);
+                        } else {
+                            // 失敗：不加錢，直接移除或顯示錯誤
+                            // 這裡示意直接移除，不給錢
+                            customer->SetEatState(Customer::EatState::EATEN); // 標記為處理完畢
+                        }
+                        // 清除
                         m_Renderer->RemoveChild(rollObj);
                         it = m_Rolls.erase(it);
                         g_IsObjectDragging = false;
