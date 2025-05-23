@@ -681,6 +681,7 @@ void App::LoadLevel(const LevelData& level) {
     m_Rolls.clear();
     m_FrenchFriesList.clear();
     toppings.clear();
+    m_Cups.clear();                    
     m_Fries->SetPlaced(false);
     m_Sauce->SetPlaced(false);
     m_Pickle->SetPlaced(false);
