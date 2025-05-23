@@ -639,6 +639,36 @@ for (auto& customer : m_Customers) {
                 ++it;
             }
         }
+
+        // 點擊 juicepack 生成 juice（場上只能一個）
+        if (!m_Juice && Util::Input::IsKeyUp(Util::Keycode::MOUSE_LB)) {
+            glm::vec2 mousePos = Util::Input::GetCursorPosition();
+            float w = 300.0f * m_JuicePack->m_Transform.scale.x;
+            float h = 300.0f * m_JuicePack->m_Transform.scale.y;
+            glm::vec2 min = m_JuicePack->m_Transform.translation - glm::vec2(w/2, h/2);
+            glm::vec2 max = m_JuicePack->m_Transform.translation + glm::vec2(w/2, h/2);
+            if (mousePos.x >= min.x && mousePos.x <= max.x &&
+                mousePos.y >= min.y && mousePos.y <= max.y) {
+                m_Juice = std::make_shared<Juice>();
+                m_Renderer->AddChild(m_Juice);
+                }
+        }
+
+        // juice 拖拉
+        if (m_Juice) {
+            m_Juice->Update();
+            // 檢查是否靠近某位客人
+            for (auto& cust : m_Customers) {
+                float dist = glm::distance(cust->m_Transform.translation, m_Juice->m_Transform.translation);
+                if (dist < 50.0f && Util::Input::IsKeyUp(Util::Keycode::MOUSE_LB)) {
+                    m_MoneyManager.Add(15); // 加錢
+                    m_Renderer->RemoveChild(m_Juice);
+                    m_Juice.reset();
+                    break;
+                }
+            }
+        }
+
     }
 
     // Shop & return
@@ -742,6 +772,11 @@ void App::LoadLevel(const LevelData& level) {
     m_Cups.push_back(colaCup);
     m_Renderer->AddChild(colaCup);
 
+    m_JuicePack = std::make_shared<Util::GameObject>(
+        std::make_unique<Util::Image>("C:/Users/yello/Shawarma/Resources/Image/Food/juicepack.png"), 4);
+    m_JuicePack->m_Transform.translation = glm::vec2(-420.0f, -210.0f);
+    m_JuicePack->m_Transform.scale = glm::vec2(0.5f, 0.5f);
+    m_Renderer->AddChild(m_JuicePack);
 
     if (m_EnableIngredientLimit) {
         m_CucumberHand = std::make_shared<CucumberHand>();

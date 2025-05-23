@@ -33,6 +33,7 @@ public:
         // 1) 按下开始拖动
         if (down && !m_IsDragging && IsMouseOver(mouse)) {
             m_IsDragging   = true;
+            g_IsObjectDragging = true;
             m_DragOffset   = m_Transform.translation - mouse;
         }
 
@@ -44,6 +45,7 @@ public:
         // 3) 松开结束拖拽
         if (m_IsDragging && up) {
             m_IsDragging   = false;
+            g_IsObjectDragging = false;
         }
     }
 

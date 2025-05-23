@@ -326,6 +326,7 @@ public:
     }
 
     bool IsClicked() {
+        if (g_IsObjectDragging) return false;  // <<< 新增這行，避免誤觸
         glm::vec2 mousePos = Util::Input::GetCursorPosition();
         bool mousePressed = Util::Input::IsKeyPressed(Util::Keycode::MOUSE_LB);
 
@@ -396,6 +397,7 @@ public:
 
         if (m_LimitEnabled && m_Count <= 0) return false;
 
+        if (g_IsObjectDragging) return false;  // <<< 新增這行，避免誤觸
         glm::vec2 mousePos = Util::Input::GetCursorPosition();
         bool mousePressed = Util::Input::IsKeyPressed(Util::Keycode::MOUSE_LB);
         float imageWidth = 200.0f * m_Transform.scale.x;
@@ -469,6 +471,7 @@ public:
     bool IsClicked() {
         if (m_LimitEnabled && m_Count <= 0) return false;
 
+        if (g_IsObjectDragging) return false;  // <<< 新增這行，避免誤觸
         glm::vec2 mousePos = Util::Input::GetCursorPosition();
         bool mousePressed = Util::Input::IsKeyPressed(Util::Keycode::MOUSE_LB);
         float imageWidth = 200.0f * m_Transform.scale.x;
@@ -524,6 +527,7 @@ public:
         m_Transform.scale = glm::vec2(0.5f, 0.5f);
     }
     bool IsClicked() {
+        if (g_IsObjectDragging) return false;  // <<< 新增這行，避免誤觸
         glm::vec2 mousePos = Util::Input::GetCursorPosition();
         bool mousePressed = Util::Input::IsKeyPressed(Util::Keycode::MOUSE_LB);
         float imageWidth = 200.0f * m_Transform.scale.x;
@@ -705,6 +709,54 @@ private:
     EatState m_EatState;
 };
 
+class Juice : public Util::GameObject {
+public:
+    Juice()
+        : GameObject(
+              std::make_unique<Util::Image>("C:/Users/yello/Shawarma/Resources/Image/Food/juice.png"),
+              5), m_IsDragging(false) {
+        m_Transform.translation = glm::vec2(-400.0f, -210.0f);
+        m_Transform.scale = glm::vec2(0.5f, 0.5f);
+    }
+
+    void Update() {
+        glm::vec2 mousePos = Util::Input::GetCursorPosition();
+        bool mousePressed = Util::Input::IsKeyPressed(Util::Keycode::MOUSE_LB);
+        bool mouseDown = Util::Input::IsKeyDown(Util::Keycode::MOUSE_LB);
+        bool mouseReleased = Util::Input::IsKeyUp(Util::Keycode::MOUSE_LB);
+
+        if (mouseDown && IsClicked() && !g_IsObjectDragging && !m_IsDragging) {
+            m_IsDragging = true;
+            g_IsObjectDragging = true;
+            m_Offset = m_Transform.translation - mousePos;
+        }
+
+        if (mousePressed && m_IsDragging) {
+            m_Transform.translation = mousePos + m_Offset;
+        }
+
+        if (mouseReleased && m_IsDragging) {
+            m_IsDragging = false;
+            g_IsObjectDragging = false;
+        }
+    }
+
+private:
+    bool IsClicked() {
+        glm::vec2 mousePos = Util::Input::GetCursorPosition();
+        float w = 150.0f * m_Transform.scale.x;
+        float h = 150.0f * m_Transform.scale.y;
+        glm::vec2 min = m_Transform.translation - glm::vec2(w/2, h/2);
+        glm::vec2 max = m_Transform.translation + glm::vec2(w/2, h/2);
+        return Util::Input::IsKeyPressed(Util::Keycode::MOUSE_LB) &&
+               mousePos.x >= min.x && mousePos.x <= max.x &&
+               mousePos.y >= min.y && mousePos.y <= max.y;
+    }
+
+    bool m_IsDragging;
+    glm::vec2 m_Offset;
+};
+
 
 //--------------------------------------
 // App 類別
@@ -773,7 +825,8 @@ private:
     std::shared_ptr<SauceHand> m_SauceHand;
     std::shared_ptr<BeverageMachine> m_BevMachine;
     std::vector<std::shared_ptr<Cup>> m_Cups;
-
+    std::shared_ptr<Util::GameObject> m_JuicePack;
+    std::shared_ptr<Juice> m_Juice;
     // 整關總客人數
     int m_TotalCustomersThisLevel = 0;
     // 耐心耗盡離開的人數
