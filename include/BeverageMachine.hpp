@@ -14,7 +14,7 @@ public:
                     const glm::vec2& scale = glm::vec2(1.0f),
                     int layer = 4)
       : GameObject(std::make_unique<Util::Image>(
-            "C:/Users/yello/Shawarma/Resources/Image/Food/machine.png"),
+            "C:/Shawarma/CHAO0524/Shawarma/Resources/Image/Food/machine.png"),
           layer)
       , m_Pos(pos)
       , m_Scale(scale)

@@ -56,6 +56,7 @@ public:
     std::vector<CustomerConfig> SpawnCustomers(int currentActiveCount) ;
     int GetMaxActiveCustomers() const { return m_MaxActiveCustomers; }
     void SetLevelIndex(size_t index);  // 新增：手動設定要跳的關卡
+    int GetTotalLevelCount() const;
 private:
     std::vector<LevelData> m_Levels;
     size_t m_CurrentLevelIndex;

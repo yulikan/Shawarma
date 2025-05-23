@@ -25,11 +25,12 @@ void App::Start() {
     m_Crust       = std::make_shared<Crust>();
     m_Knife       = std::make_shared<Knife>();
     m_Paper       = std::make_shared<Paper>();
+    m_CurrentLevelPage = "LevelPage1";
 
     // Level complete screen
     m_LevelCompleteScreen = std::make_shared<Util::GameObject>(
         std::make_unique<Util::Image>(
-            "C:/Users/yello/Shawarma/Resources/Image/background/nextLevel.png"),
+            "C:/Shawarma/CHAO0524/Shawarma/Resources/Image/background/nextLevel.png"),
         /*layer=*/7
     );
     m_LevelCompleteScreen->m_Transform.translation = glm::vec2(0.0f, 0.0f);
@@ -125,7 +126,7 @@ void App::Update() {
             m_Renderer->RemoveChild(m_DayTextGO);
             m_FailureScreen = std::make_shared<Util::GameObject>(
                 std::make_unique<Util::Image>(
-                    "C:/Users/yello/Shawarma/Resources/Image/background/FailPage.png"
+                    "C:/Shawarma/CHAO0524/Shawarma/Resources/Image/background/FailPage.png"
                 ), 7
             );
             m_FailureScreen->m_Transform.translation = {0,0};
@@ -133,7 +134,7 @@ void App::Update() {
             m_Renderer->AddChild(m_FailureScreen);
 
             m_RetryButton = std::make_shared<NextButton>(
-                "C:/Users/yello/Shawarma/Resources/Image/Object/retryBtn.png"
+                "C:/Shawarma/CHAO0524/Shawarma/Resources/Image/Object/retryBtn.png"
             );
             m_Renderer->AddChild(m_RetryButton);
 
@@ -146,17 +147,36 @@ void App::Update() {
         m_CurrentPhase = phase::phase2;
         LoadLevel(m_LevelManager.GetCurrentLevel());
     }
-    if (m_CurrentPhase == phase::phase3) {
-        glm::vec2 mousePos = Util::Input::GetCursorPosition();
+if (m_CurrentPhase == phase::phase3) {
+    glm::vec2 mousePos = Util::Input::GetCursorPosition();
 
-        if (Util::Input::IsKeyUp(Util::Keycode::MOUSE_LB)) {
-            glm::vec2 levelSize(230.0f, 200.0f);  // 統一的大小
+    // 按 N 換到 LevelPage2（只能從 LevelPage1 進）
+    if (Util::Input::IsKeyUp(Util::Keycode::N) && m_CurrentLevelPage == "LevelPage1") {
+        m_CurrentLevelPage = "LevelPage2";
+        m_Background = std::make_shared<BackgroundImage>(
+            "C:/Shawarma/CHAO0524/Shawarma/Resources/Image/background/LevelPage2.png");
+        m_Renderer = std::make_shared<Util::Renderer>(
+            std::vector<std::shared_ptr<Util::GameObject>>{ m_Background });
+        m_Renderer->AddChild(m_ReturnButton);
+    }
+
+    // 按 P 回到 LevelPage1（只能從 LevelPage2 回）
+    if (Util::Input::IsKeyUp(Util::Keycode::P) && m_CurrentLevelPage == "LevelPage2") {
+        m_CurrentLevelPage = "LevelPage1";
+        m_Background = std::make_shared<BackgroundImage>(
+            "C:/Shawarma/CHAO0524/Shawarma/Resources/Image/background/LevelPage1.png");
+        m_Renderer = std::make_shared<Util::Renderer>(
+            std::vector<std::shared_ptr<Util::GameObject>>{ m_Background });
+        m_Renderer->AddChild(m_ReturnButton);
+    }
+
+    // 滑鼠左鍵點擊關卡按鈕（只有在 LevelPage1 時才有反應）
+    if (Util::Input::IsKeyUp(Util::Keycode::MOUSE_LB)) {
+        if (m_CurrentLevelPage == "LevelPage1") {
+            glm::vec2 levelSize(230.0f, 200.0f);
             std::vector<glm::vec2> levelCenters = {
-                {-500.0f, 235.0f}, // 第1關
-                {-250.0f, 235.0f}, // 第2關
-                 {  0.0f, 235.0f}, // 第3關
-                 {250.0f, 235.0f}, // 第4關
-                 {500.0f, 235.0f}, // 第5關
+                {-500.0f, 235.0f}, {-250.0f, 235.0f}, {0.0f, 235.0f},
+                {250.0f, 235.0f},  {500.0f, 235.0f},
             };
 
             for (size_t i = 0; i < levelCenters.size(); ++i) {
@@ -166,7 +186,12 @@ void App::Update() {
                 if (mousePos.x >= min.x && mousePos.x <= max.x &&
                     mousePos.y >= min.y && mousePos.y <= max.y)
                 {
-                    m_LevelManager.SetLevelIndex(i);  // ← i = 0 對應第1關
+                    size_t levelIndex = i;  // 第1～5關
+                    if (levelIndex >= m_LevelManager.GetTotalLevelCount()) {
+                        std::cout << "尚未實作關卡 index = " << levelIndex << std::endl;
+                        continue;
+                    }
+                    m_LevelManager.SetLevelIndex(levelIndex);
                     LoadLevel(m_LevelManager.GetCurrentLevel());
                     m_CurrentPhase = phase::phase2;
                     return;
@@ -174,9 +199,18 @@ void App::Update() {
             }
         }
 
-        if (m_Renderer) m_Renderer->Update();  // 持續畫面
-        return;
+        // 預留未來擴充 LevelPage2 的點擊邏輯
+        /*
+        if (m_CurrentLevelPage == "LevelPage2") {
+            // 這裡可以定義第16～30關的位置和跳轉邏輯
+        }
+        */
     }
+
+    if (m_Renderer) m_Renderer->Update();  // 持續畫面
+    return;
+}
+
     // Phase 2 main logic
     if (m_CurrentPhase == phase::phase2) {
         // Spawn new customers
@@ -271,7 +305,7 @@ void App::Update() {
         if (!m_Fries->IsPlaced() && m_Fries->IsClicked()) {
             m_Fries->SetPlaced(true);
             auto newTopping = std::make_shared<Topping>(
-                "C:/Users/yello/Shawarma/Resources/Image/Food/topping_fries.png",
+                "C:/Shawarma/CHAO0524/Shawarma/Resources/Image/Food/topping_fries.png",
                 "fries"
             );
             newTopping->m_Transform.translation = glm::vec2(0.0f, -214.0f);
@@ -284,7 +318,7 @@ void App::Update() {
             m_Sauce->SetPlaced(true);
             m_Sauce->DecreaseCount();
             auto newTopping = std::make_shared<Topping>(
-                "C:/Users/yello/Shawarma/Resources/Image/Food/topping_sauce.png",
+                "C:/Shawarma/CHAO0524/Shawarma/Resources/Image/Food/topping_sauce.png",
                 "sauce"
             );
             newTopping->m_Transform.translation = glm::vec2(0.0f, -248.0f);
@@ -297,7 +331,7 @@ void App::Update() {
             m_Pickle->SetPlaced(true);
             m_Pickle->DecreaseCount();  // 扣除一次
             auto newTopping = std::make_shared<Topping>(
-                "C:/Users/yello/Shawarma/Resources/Image/Food/topping_pickle.png",
+                "C:/Shawarma/CHAO0524/Shawarma/Resources/Image/Food/topping_pickle.png",
                 "pickle"
             );
             newTopping->m_Transform.translation = glm::vec2(0.0f, -195.0f);
@@ -334,7 +368,7 @@ void App::Update() {
         if (!m_ShavedMeat->IsPlaced() && m_ShavedMeat->IsClicked()) {
             m_ShavedMeat->SetPlaced(true);
             auto newTopping = std::make_shared<Topping>(
-                "C:/Users/yello/Shawarma/Resources/Image/Food/topping_meat.png",
+                "C:/Shawarma/CHAO0524/Shawarma/Resources/Image/Food/topping_meat.png",
                 "shaved_meat"
             );
             newTopping->m_Transform.translation = glm::vec2(0.0f, -232.0f);
@@ -346,7 +380,7 @@ void App::Update() {
         if (!m_Potato->IsPlaced() && m_Potato->IsClicked()) {
             m_Potato->SetPlaced(true);
             m_Frying = std::make_shared<Topping>(
-                "C:/Users/yello/Shawarma/Resources/Image/Food/frying.png",
+                "C:/Shawarma/CHAO0524/Shawarma/Resources/Image/Food/frying.png",
                 "potato"
             );
             m_Frying->m_Transform.translation = glm::vec2(480.0f, -40.0f);
@@ -687,7 +721,7 @@ for (auto& customer : m_Customers) {
     // Shop & return
     if (m_ShopButton->IsClicked() && m_CurrentPhase == phase::phase1) {
         m_CurrentPhase = phase::phase3;
-        m_Background = std::make_shared<BackgroundImage>("C:/Users/yello/Shawarma/Resources/Image/background/LevelPage1.png");
+        m_Background = std::make_shared<BackgroundImage>("C:/Shawarma/CHAO0524/Shawarma/Resources/Image/background/LevelPage1.png");
         m_Renderer = std::make_shared<Util::Renderer>(std::vector<std::shared_ptr<Util::GameObject>>{ m_Background });
         m_Renderer->AddChild(m_ReturnButton);
     }
@@ -790,7 +824,7 @@ void App::LoadLevel(const LevelData& level) {
     m_Renderer->AddChild(colaCup);
 
     m_JuicePack = std::make_shared<Util::GameObject>(
-        std::make_unique<Util::Image>("C:/Users/yello/Shawarma/Resources/Image/Food/juicepack.png"), 4);
+        std::make_unique<Util::Image>("C:/Shawarma/CHAO0524/Shawarma/Resources/Image/Food/juicepack.png"), 4);
     m_JuicePack->m_Transform.translation = glm::vec2(-420.0f, -210.0f);
     m_JuicePack->m_Transform.scale = glm::vec2(0.5f, 0.5f);
     m_Renderer->AddChild(m_JuicePack);
