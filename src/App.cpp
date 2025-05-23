@@ -69,7 +69,14 @@ void App::Start() {
     m_LevelTextGO = std::make_shared<Util::GameObject>(m_LevelText, 8);
     // 設定文字位置（自行調整）
     m_LevelTextGO->m_Transform.translation = glm::vec2(-5.0f, -45.0f);
-
+    // App::Start() 中初始化文字
+    m_DayText = std::make_shared<Util::Text>(
+        "C:/Windows/Fonts/arial.ttf", 26,  // 字型、字號
+        "1",                            // 初始文字
+        Util::Color::FromName(Util::Colors::BLACK)
+    );
+    m_DayTextGO = std::make_shared<Util::GameObject>(m_DayText, 8);
+    m_DayTextGO->m_Transform.translation = glm::vec2(-575.0f, 275.0f);  // 左上角位置
     // Add initial children
     m_Renderer->AddChild(m_StartButton);
     m_Renderer->AddChild(m_ShopButton);
@@ -83,6 +90,7 @@ void App::Update() {
     // Level complete phase
     if (m_CurrentPhase == phase::levelComplete) {
         // 1. 先設定文字內容為現在是第幾關
+        m_Renderer->RemoveChild(m_DayTextGO);
         int levelNum = static_cast<int>(m_LevelManager.GetCurrentLevelIndex()) + 1;
         m_LevelText->SetText(std::to_string(levelNum));
 
@@ -114,6 +122,7 @@ void App::Update() {
         }
         else {
             // 失敗：顯示失敗畫面與重試按鈕
+            m_Renderer->RemoveChild(m_DayTextGO);
             m_FailureScreen = std::make_shared<Util::GameObject>(
                 std::make_unique<Util::Image>(
                     "C:/Users/yello/Shawarma/Resources/Image/background/FailPage.png"
@@ -524,7 +533,11 @@ void App::Update() {
                 m_Sauce->SetPlaced(false);
                 m_Pickle->SetPlaced(false);
                 m_ShavedMeat->SetPlaced(false);
-
+                m_CurrentDay = m_LevelManager.GetCurrentLevelNumber();
+                if (m_DayText) {
+                    m_DayText->SetText(std::to_string(m_CurrentDay));
+                }
+                m_Renderer->AddChild(m_DayTextGO);
                 // 建立新的 Roll 物件
                 auto roll = std::make_shared<Roll>(rollContents);
 
@@ -696,12 +709,17 @@ for (auto& customer : m_Customers) {
     }
     // Final draw/update
     if (m_Renderer) m_Renderer->Update();
-    m_Knife->Update();
     for (auto& friesObj : m_FrenchFriesList) friesObj->Update();
     for (auto& roll : m_Rolls) roll->Update();
 }
 
 void App::LoadLevel(const LevelData& level) {
+    m_Renderer = std::make_shared<Util::Renderer>();
+    // 記得放在 m_Renderer = std::make_shared<...>() 之後
+    m_CurrentDay = m_LevelManager.GetCurrentLevelNumber();
+    m_DayText->SetText( std::to_string(m_CurrentDay));
+    m_Renderer->AddChild(m_DayTextGO);
+
     m_MoneyManager = MoneyManager(0);
     m_MoneyManager.SetOnChangeCallback([this](int newBal){
         m_MoneyText->SetText("$" + std::to_string(newBal));
@@ -735,7 +753,6 @@ void App::LoadLevel(const LevelData& level) {
     if (m_FryingCounterText) m_FryingCounterText->UpdateCounter(0);
 
     // New renderer
-    m_Renderer = std::make_shared<Util::Renderer>();
     m_Renderer->AddChild(m_ReturnButton);
     m_Renderer->AddChild(m_Meat);
     m_Renderer->AddChild(m_Knife);
