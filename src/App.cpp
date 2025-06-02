@@ -16,6 +16,8 @@ void App::Start() {
     m_CurrentState = State::UPDATE;
     m_Renderer = std::make_shared<Util::Renderer>();
 
+    m_IgnoreNextMouseUp = false;
+
     // Initial UI & objects
     m_Background = std::make_shared<BackgroundImage>();
     m_StartButton = std::make_shared<StartButton>();
@@ -82,6 +84,7 @@ void App::Start() {
     m_Renderer->AddChild(m_StartButton);
     m_Renderer->AddChild(m_ShopButton);
     m_Renderer->AddChild(m_Background);
+
 }
 
 void App::Update() {
@@ -149,7 +152,14 @@ void App::Update() {
     }
 if (m_CurrentPhase == phase::phase3) {
     glm::vec2 mousePos = Util::Input::GetCursorPosition();
-
+    if (m_IgnoreNextMouseUp) {
+        if (Util::Input::IsKeyUp(Util::Keycode::MOUSE_LB)) {
+            // 放開事件已經被消耗，標記為 false，下次才會真正判斷選關
+            m_IgnoreNextMouseUp = false;
+        }
+        // 無論是否真的檢測到放開，都跳出，不繼續檢查選關
+        return;
+    }
     // 按 N 換到 LevelPage2（只能從 LevelPage1 進）
     if (Util::Input::IsKeyUp(Util::Keycode::N) && m_CurrentLevelPage == "LevelPage1") {
         m_CurrentLevelPage = "LevelPage2";
@@ -171,7 +181,7 @@ if (m_CurrentPhase == phase::phase3) {
     }
 
     // 滑鼠左鍵點擊關卡按鈕（只有在 LevelPage1 時才有反應）
-    if (Util::Input::IsKeyUp(Util::Keycode::MOUSE_LB)) {
+    if (Util::Input::IsKeyPressed(Util::Keycode::MOUSE_LB)) {
         if (m_CurrentLevelPage == "LevelPage1") {
             glm::vec2 levelSize(230.0f, 200.0f);
             std::vector<glm::vec2> levelCenters = {
@@ -201,12 +211,34 @@ if (m_CurrentPhase == phase::phase3) {
             }
         }
 
-        // 預留未來擴充 LevelPage2 的點擊邏輯
-        /*
         if (m_CurrentLevelPage == "LevelPage2") {
-            // 這裡可以定義第16～30關的位置和跳轉邏輯
+            glm::vec2 levelSize(230.0f, 200.0f);
+            std::vector<glm::vec2> levelCenters = {
+                {-500.0f, 235.0f}, {-250.0f, 235.0f}, {0.0f, 235.0f},
+{250.0f, 235.0f},  {500.0f, 235.0f},{-500.0f, 0.0f}, {-250.0f, 0.0f}, {0.0f, 0.0f},
+{250.0f, 0.0f},  {500.0f, 0.0f},{-500.0f, -235.0f}, {-250.0f, -235.0f}, {0.0f, -235.0f},
+{250.0f, -235.0f},  {500.0f, -235.0f},
+            };
+
+            for (size_t i = 0; i < levelCenters.size(); ++i) {
+                glm::vec2 min = levelCenters[i] - levelSize * 0.5f;
+                glm::vec2 max = levelCenters[i] + levelSize * 0.5f;
+
+                if (mousePos.x >= min.x && mousePos.x <= max.x &&
+                    mousePos.y >= min.y && mousePos.y <= max.y)
+                {
+                    size_t levelIndex = i+15;  // 第16～30關
+                    if (levelIndex >= m_LevelManager.GetTotalLevelCount()) {
+                        std::cout << "尚未實作關卡 index = " << levelIndex << std::endl;
+                        continue;
+                    }
+                    m_LevelManager.SetLevelIndex(levelIndex);
+                    LoadLevel(m_LevelManager.GetCurrentLevel());
+                    m_CurrentPhase = phase::phase2;
+                    return;
+                }
+            }
         }
-        */
     }
 
     if (m_Renderer) m_Renderer->Update();  // 持續畫面
@@ -726,10 +758,14 @@ for (auto& customer : m_Customers) {
         m_Background = std::make_shared<BackgroundImage>("C:/Users/yello/Shawarma/Resources/Image/background/LevelPage1.png");
         m_Renderer = std::make_shared<Util::Renderer>(std::vector<std::shared_ptr<Util::GameObject>>{ m_Background });
         m_Renderer->AddChild(m_ReturnButton);
+        m_IgnoreNextMouseUp = true;
+        return;
     }
-    if (m_ReturnButton->IsClicked()) {
+    if (m_ReturnButton->IsClicked() ) {
         m_CurrentPhase = phase::phase1;
         m_CurrentState = State::START;
+        m_IgnoreNextMouseUp = true;
+        return;
     }
     if (m_CurrentPhase == phase::failed && m_RetryButton && m_RetryButton->IsClicked()) {
         // 清除失敗 UI

@@ -782,9 +782,11 @@ private:
     int m_PatienceFailures = 0;
     // 失敗畫面
     std::shared_ptr<Util::GameObject> m_FailureScreen;
+
     // --- 輔助函式 ---
     bool IsCurrentLevelComplete() const;   // 判斷關卡是否完成
     void ResetLevelObjects();             // 切換關卡前重置場景
+    bool m_IgnoreNextMouseUp;
 };
 
 #endif
