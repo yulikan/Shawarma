@@ -13,214 +13,138 @@ void LevelManager::SetLevelIndex(size_t index) {
 }
 LevelManager::~LevelManager() {}
 
-void LevelManager::LoadLevels() {
-    // 關卡 1
-    LevelData level1;
-    level1.backgroundImage = "C:/Shawarma/CHAO0524/Shawarma/Resources/Image/background/restaurant.png";
+// LevelManager.cpp
 
-    // 先準備 5 個客人的圖檔、位置和請求
-    std::vector<std::string> images = {
-        "C:/Shawarma/CHAO0524/Shawarma/Resources/Image/Customer/customer1.png",
-        "C:/Shawarma/CHAO0524/Shawarma/Resources/Image/Customer/customer2.png",
-        "C:/Shawarma/CHAO0524/Shawarma/Resources/Image/Customer/customer3.png",
-        "C:/Shawarma/CHAO0524/Shawarma/Resources/Image/Customer/customer4.png",
-        "C:/Shawarma/CHAO0524/Shawarma/Resources/Image/Customer/customer5.png"
-    };
-    std::vector<glm::vec2> positions = {
-        {100.0f, 85.0f},
-        {0.0f, 55.0f},
-        {300.0f, 40.0f},
-        {-200.0f, 50.0f},
-        {-100.0f, 55.0f}
-    };
-    // 這邊示範前兩位要薯條，後三位要卷餅
-    std::vector<std::string> requests = {
-        "FrenchFries", "FrenchFries",
-        "Roll", "Roll", "Roll"
-    };
+#include "LevelManager.hpp"
 
-
-
-    for (int i = 0; i < 5; ++i) {
-        CustomerConfig cust;
-        cust.customerImage = images[i];
-        cust.position      = positions[i];
-        cust.foodRequest   = requests[i];
-        cust.foodIcon      = "C:/Shawarma/CHAO0524/Shawarma/Resources/Image/Food/"
-                             + requests[i] + ".png";
-
-        level1.customers.push_back(cust);
-    }
-    m_Levels.push_back(level1);
-
-    // 關卡 2
-    LevelData level2;
-    level2.backgroundImage = "C:/Shawarma/CHAO0524/Shawarma/Resources/Image/background/restaurant.png";
-
-    // 先準備 6 個客人的圖檔、位置和請求
-    std::vector<std::string> images2 = {
-        "C:/Shawarma/CHAO0524/Shawarma/Resources/Image/Customer/customer1.png",
-        "C:/Shawarma/CHAO0524/Shawarma/Resources/Image/Customer/customer2.png",
-        "C:/Shawarma/CHAO0524/Shawarma/Resources/Image/Customer/customer3.png",
-        "C:/Shawarma/CHAO0524/Shawarma/Resources/Image/Customer/customer4.png",
-        "C:/Shawarma/CHAO0524/Shawarma/Resources/Image/Customer/customer5.png",
-        "C:/Shawarma/CHAO0524/Shawarma/Resources/Image/Customer/customer6.png",
-    };
-    std::vector<glm::vec2> positions2 = {
-        {100.0f, 85.0f},
-        {0.0f, 55.0f},
-        {300.0f, 40.0f},
-        {-200.0f, 50.0f},
-        {-100.0f, 55.0f},
-        {-350.0f, 55.0f},
-    };
-    // 這邊示範前兩位要薯條，後三位要卷餅
-    std::vector<std::string> requests2 = {
-        "FrenchFries", "FrenchFries",
-        "Roll", "Roll", "Roll", "Roll"
-    };
-
-    for (int i = 0; i < 6; ++i) {
-        CustomerConfig cust;
-        cust.customerImage = images2[i];
-        cust.position      = positions2[i];
-        cust.foodRequest   = requests2[i];
-        cust.foodIcon      = "C:/Shawarma/CHAO0524/Shawarma/Resources/Image/Food/"
-                             + requests2[i] + ".png";
-        level2.customers.push_back(cust);
-    }
-    m_Levels.push_back(level2);
-
-    // 關卡3
-    LevelData level3;
-    level3.backgroundImage = "C:/Shawarma/CHAO0524/Shawarma/Resources/Image/background/restaurant.png";
-
-    // 先準備 7 個客人的圖檔、位置和請求
-    std::vector<std::string> images3 = {
-        "C:/Shawarma/CHAO0524/Shawarma/Resources/Image/Customer/customer1.png",
-        "C:/Shawarma/CHAO0524/Shawarma/Resources/Image/Customer/customer2.png",
-        "C:/Shawarma/CHAO0524/Shawarma/Resources/Image/Customer/customer3.png",
-        "C:/Shawarma/CHAO0524/Shawarma/Resources/Image/Customer/customer4.png",
-        "C:/Shawarma/CHAO0524/Shawarma/Resources/Image/Customer/customer5.png",
-        "C:/Shawarma/CHAO0524/Shawarma/Resources/Image/Customer/customer6.png",
-        "C:/Shawarma/CHAO0524/Shawarma/Resources/Image/Customer/customer7.png",
-    };
-    std::vector<glm::vec2> positions3 = {
-        {100.0f, 85.0f},
-        {0.0f, 55.0f},
-        {300.0f, 40.0f},
-        {-200.0f, 50.0f},
-        {-100.0f, 55.0f},
-        {100.0f, 85.0f},
-        {0.0f, 55.0f},
-    };
-    std::vector<std::vector<std::string>> allToppings = {
-        {"fries", "sauce" , "shaved_meat"}, //沒黃瓜
-        {"fries", "pickle", "sauce", "shaved_meat"},
-        {"fries", "pickle", "shaved_meat"},//沒醬
-    {"fries", "pickle", "sauce", "shaved_meat"}
-    };
-    // 這邊示範前兩位要薯條，後三位要卷餅
-    std::vector<std::string> requests3 = {
-        "FrenchFries", "FrenchFries",
-        "Roll", "Roll", "Roll", "Roll", "FrenchFries"
-    };
-    int j=0;
-    for (int i = 0; i < 7; ++i) {
-        CustomerConfig cust;
-        cust.customerImage = images3[i];
-        cust.position      = positions3[i];
-        cust.foodRequest   = requests3[i];
-        cust.foodIcon      = "C:/Shawarma/CHAO0524/Shawarma/Resources/Image/Food/"
-                             + requests3[i] + ".png";
-        if (requests[i] == "Roll") {
-            // 依序給每位客人不同的 requiredToppings
-            cust.requiredToppings = allToppings[j];
-            j++;
-            if (cust.requiredToppings == allToppings[0]) {
-            cust.foodIcon = "C:/Shawarma/CHAO0524/Shawarma/Resources/Image/Food/roll_no_pickle.png";           // 沒 pickle
-        } else if (cust.requiredToppings == allToppings[2]) {
-            cust.foodIcon = "C:/Shawarma/CHAO0524/Shawarma/Resources/Image/Food/roll_no_sauce.png";            // 沒 sauce
-        }
-        }
-        level3.customers.push_back(cust);
-    }
-    m_Levels.push_back(level3);
-
-
-    // 關卡4
-    LevelData level4;
-    level4.backgroundImage = "C:/Shawarma/CHAO0524/Shawarma/Resources/Image/background/restaurant.png";
-
-    // 先準備 7 個客人的圖檔、位置和請求
-    std::vector<std::string> images4 = {
-        "C:/Shawarma/CHAO0524/Shawarma/Resources/Image/Customer/customer1.png",
-        "C:/Shawarma/CHAO0524/Shawarma/Resources/Image/Customer/customer2.png",
-        "C:/Shawarma/CHAO0524/Shawarma/Resources/Image/Customer/customer3.png",
-        "C:/Shawarma/CHAO0524/Shawarma/Resources/Image/Customer/customer4.png",
-        "C:/Shawarma/CHAO0524/Shawarma/Resources/Image/Customer/customer5.png",
-        "C:/Shawarma/CHAO0524/Shawarma/Resources/Image/Customer/customer6.png",
-        "C:/Shawarma/CHAO0524/Shawarma/Resources/Image/Customer/customer7.png",
-    };
-    std::vector<glm::vec2> positions4 = {
-        {100.0f, 85.0f},
-        {0.0f, 55.0f},
-        {300.0f, 40.0f},
-        {-200.0f, 50.0f},
-        {-100.0f, 55.0f},
-        {100.0f, 85.0f},
-        {0.0f, 55.0f},
-    };
-    // 這邊示範前兩位要薯條，後三位要卷餅
-    std::vector<std::string> requests4 = {
-        "FrenchFries", "FrenchFries",
-        "Roll", "Roll", "Roll", "Roll", "FrenchFries"
-    };
-
-    for (int i = 0; i < 7; ++i) {
-        CustomerConfig cust;
-        cust.customerImage = images4[i];
-        cust.position      = positions4[i];
-        cust.foodRequest   = requests4[i];
-        cust.foodIcon      = "C:/Shawarma/CHAO0524/Shawarma/Resources/Image/Food/"
-                             + requests4[i] + ".png";
-
-        level4.customers.push_back(cust);
-    }
-    m_Levels.push_back(level4);
-
-    // 關卡5
-    LevelData level5;
-    level5.backgroundImage = "C:/Shawarma/CHAO0524/Shawarma/Resources/Image/background/restaurant.png";
-
-    // 先準備 7 個客人的圖檔、位置和請求
-    std::vector<std::string> images5 = {
-        "C:/Shawarma/CHAO0524/Shawarma/Resources/Image/Customer/customer1.png",
-        "C:/Shawarma/CHAO0524/Shawarma/Resources/Image/Customer/customer2.png",
-        "C:/Shawarma/CHAO0524/Shawarma/Resources/Image/Customer/customer3.png",
-    };
-    std::vector<glm::vec2> positions5 = {
-        {100.0f, 85.0f},
-        {0.0f, 55.0f},
-        {300.0f, 40.0f},
-    };
-    // 這邊示範前兩位要薯條，後三位要卷餅
-    std::vector<std::string> requests5 = {
-        "FrenchFries", "FrenchFries",
-        "Roll",
-    };
-
-    for (int i = 0; i < 3; ++i) {
-        CustomerConfig cust;
-        cust.customerImage = images5[i];
-        cust.position      = positions5[i];
-        cust.foodRequest   = requests5[i];
-        cust.foodIcon      = "C:/Shawarma/CHAO0524/Shawarma/Resources/Image/Food/"
-                             + requests5[i] + ".png";
-        level5.customers.push_back(cust);
-    }
-    m_Levels.push_back(level5);
+// 方便生成位置
+static glm::vec2 CalcPosition(int index, int perRow = 5, float startX = -200.0f, float startY = 85.0f, float offsetX = 100.0f, float offsetY = -40.0f) {
+    int row = index / perRow;
+    int col = index % perRow;
+    return glm::vec2(startX + col * offsetX, startY + row * offsetY);
 }
+
+void LevelManager::LoadLevels() {
+    m_Levels.clear();
+
+    // 客製化卷餅配料與圖示對應
+    std::vector<std::vector<std::string>> customToppings = {
+        {"shaved_meat", "sauce"},                  // roll_no_pickle_fries
+        {"shaved_meat", "pickle"},                 // roll_no_sauce_fries
+        {"shaved_meat", "sauce", "fries"},         // roll_no_pickle
+        {"shaved_meat", "pickle", "fries"},        // roll_no_sauce
+        {"shaved_meat", "pickle", "sauce", "fries"}// full_roll
+    };
+    std::vector<std::string> customIcons = {
+        "roll_no_pickle_fries.png",
+        "roll_no_sauce_fries.png",
+        "roll_no_pickle.png",
+        "roll_no_sauce.png",
+        "roll.png"
+    };
+
+    const int totalLevels = 30;
+    for (int lvl = 1; lvl <= totalLevels; ++lvl) {
+        LevelData level;
+        level.backgroundImage = "C:/Users/yello/Shawarma/Resources/Image/background/restaurant.png";
+
+        // 每關客人數 = 5 + (lvl - 1)
+        int custCount = 5 + (lvl - 1);
+        for (int i = 0; i < custCount; ++i) {
+            CustomerConfig cust;
+            // 圖片輪流使用 customer1..customer6
+            int imgIdx = i % 6 + 1;
+            cust.customerImage = "C:/Users/yello/Shawarma/Resources/Image/Customer/customer" + std::to_string(imgIdx) + ".png";
+            cust.position = CalcPosition(i);
+            cust.foodRequest = "Roll";  // 預設捲餅，後面再改
+
+            // 1-5 關：只要薯條和捲餅
+            if (lvl <= 5) {
+                // 前半客人薯條、後半捲餅
+                if (i < custCount/2) {
+                    cust.foodRequest = "FrenchFries";
+                    cust.foodIcon = "C:/Users/yello/Shawarma/Resources/Image/Food/FrenchFries.png";
+                } else {
+                    cust.foodRequest = "Roll";
+                    cust.foodIcon = "C:/Users/yello/Shawarma/Resources/Image/Food/roll.png";
+                }
+                // 無 requiredToppings
+            }
+            // 6-10 關：新增耐心值，但行為同 1-5
+            else if (lvl < 11) {
+                if (i < custCount/2) {
+                    cust.foodRequest = "FrenchFries";
+                    cust.foodIcon = "C:/Users/yello/Shawarma/Resources/Image/Food/FrenchFries.png";
+                } else {
+                    cust.foodRequest = "Roll";
+                    cust.foodIcon = "C:/Users/yello/Shawarma/Resources/Image/Food/roll.png";
+                }
+            }
+            // 11-15 關：需要補充配料，但無自動 refill，需要 same as above icons
+            else if (lvl < 16) {
+                if (i < custCount/2) {
+                    cust.foodRequest = "FrenchFries";
+                    cust.foodIcon = "C:/Users/yello/Shawarma/Resources/Image/Food/FrenchFries.png";
+                } else {
+                    cust.foodRequest = "Roll";
+                    cust.foodIcon = "C:/Users/yello/Shawarma/Resources/Image/Food/roll.png";
+                }
+            }
+            // 16-20 關：新增汽水與可樂訂單
+            else if (lvl < 21) {
+                int rem = i % 4;
+                if (rem == 0) {
+                    cust.foodRequest = "Soda";
+                    cust.foodIcon = "C:/Users/yello/Shawarma/Resources/Image/Food/cup_soda_full.png";
+                } else if (rem == 1) {
+                    cust.foodRequest = "Cola";
+                    cust.foodIcon = "C:/Users/yello/Shawarma/Resources/Image/Food/cup_cola_full.png";
+                } else if (rem == 2) {
+                    cust.foodRequest = "FrenchFries";
+                    cust.foodIcon = "C:/Users/yello/Shawarma/Resources/Image/Food/FrenchFries.png";
+                } else {
+                    cust.foodRequest = "Roll";
+                    cust.foodIcon = "C:/Users/yello/Shawarma/Resources/Image/Food/roll.png";
+                }
+            }
+            // 21-24 關：新增果汁
+            else if (lvl < 25) {
+                int rem = i % 5;
+                if (rem == 0) {
+                    cust.foodRequest = "Juice";
+                    cust.foodIcon = "C:/Users/yello/Shawarma/Resources/Image/Food/juice.png";
+                } else if (rem == 1) {
+                    cust.foodRequest = "Soda";
+                    cust.foodIcon = "C:/Users/yello/Shawarma/Resources/Image/Food/cup_soda_full.png";
+                } else if (rem == 2) {
+                    cust.foodRequest = "Cola";
+                    cust.foodIcon = "C:/Users/yello/Shawarma/Resources/Image/Food/cup_cola_full.png";
+                } else if (rem == 3) {
+                    cust.foodRequest = "FrenchFries";
+                    cust.foodIcon = "C:/Users/yello/Shawarma/Resources/Image/Food/FrenchFries.png";
+                } else {
+                    cust.foodRequest = "Roll";
+                    cust.foodIcon = "C:/Users/yello/Shawarma/Resources/Image/Food/roll.png";
+                }
+            }
+            // 25-30 關：客製化卷餅
+            else {
+                // 均分五種 customToppings
+                int typeIdx = i % customToppings.size();
+                cust.foodRequest = "Roll";
+                cust.requiredToppings = customToppings[typeIdx];
+                cust.foodIcon = "C:/Users/yello/Shawarma/Resources/Image/Food/" + customIcons[typeIdx];
+            }
+
+            level.customers.push_back(cust);
+        }
+
+        m_Levels.push_back(level);
+    }
+}
+
+
+// 其餘函式保持不變…
 
 const LevelData& LevelManager::GetCurrentLevel() const {
     return m_Levels[m_CurrentLevelIndex];

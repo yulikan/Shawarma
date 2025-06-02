@@ -30,7 +30,7 @@ void App::Start() {
     // Level complete screen
     m_LevelCompleteScreen = std::make_shared<Util::GameObject>(
         std::make_unique<Util::Image>(
-            "C:/Shawarma/CHAO0524/Shawarma/Resources/Image/background/nextLevel.png"),
+            "C:/Users/yello/Shawarma/Resources/Image/background/nextLevel.png"),
         /*layer=*/7
     );
     m_LevelCompleteScreen->m_Transform.translation = glm::vec2(0.0f, 0.0f);
@@ -126,7 +126,7 @@ void App::Update() {
             m_Renderer->RemoveChild(m_DayTextGO);
             m_FailureScreen = std::make_shared<Util::GameObject>(
                 std::make_unique<Util::Image>(
-                    "C:/Shawarma/CHAO0524/Shawarma/Resources/Image/background/FailPage.png"
+                    "C:/Users/yello/Shawarma/Resources/Image/background/FailPage.png"
                 ), 7
             );
             m_FailureScreen->m_Transform.translation = {0,0};
@@ -134,7 +134,7 @@ void App::Update() {
             m_Renderer->AddChild(m_FailureScreen);
 
             m_RetryButton = std::make_shared<NextButton>(
-                "C:/Shawarma/CHAO0524/Shawarma/Resources/Image/Object/retryBtn.png"
+                "C:/Users/yello/Shawarma/Resources/Image/Object/retryBtn.png"
             );
             m_Renderer->AddChild(m_RetryButton);
 
@@ -154,7 +154,7 @@ if (m_CurrentPhase == phase::phase3) {
     if (Util::Input::IsKeyUp(Util::Keycode::N) && m_CurrentLevelPage == "LevelPage1") {
         m_CurrentLevelPage = "LevelPage2";
         m_Background = std::make_shared<BackgroundImage>(
-            "C:/Shawarma/CHAO0524/Shawarma/Resources/Image/background/LevelPage2.png");
+            "C:/Users/yello/Shawarma/Resources/Image/background/LevelPage2.png");
         m_Renderer = std::make_shared<Util::Renderer>(
             std::vector<std::shared_ptr<Util::GameObject>>{ m_Background });
         m_Renderer->AddChild(m_ReturnButton);
@@ -164,7 +164,7 @@ if (m_CurrentPhase == phase::phase3) {
     if (Util::Input::IsKeyUp(Util::Keycode::P) && m_CurrentLevelPage == "LevelPage2") {
         m_CurrentLevelPage = "LevelPage1";
         m_Background = std::make_shared<BackgroundImage>(
-            "C:/Shawarma/CHAO0524/Shawarma/Resources/Image/background/LevelPage1.png");
+            "C:/Users/yello/Shawarma/Resources/Image/background/LevelPage1.png");
         m_Renderer = std::make_shared<Util::Renderer>(
             std::vector<std::shared_ptr<Util::GameObject>>{ m_Background });
         m_Renderer->AddChild(m_ReturnButton);
@@ -176,7 +176,9 @@ if (m_CurrentPhase == phase::phase3) {
             glm::vec2 levelSize(230.0f, 200.0f);
             std::vector<glm::vec2> levelCenters = {
                 {-500.0f, 235.0f}, {-250.0f, 235.0f}, {0.0f, 235.0f},
-                {250.0f, 235.0f},  {500.0f, 235.0f},
+{250.0f, 235.0f},  {500.0f, 235.0f},{-500.0f, 0.0f}, {-250.0f, 0.0f}, {0.0f, 0.0f},
+{250.0f, 0.0f},  {500.0f, 0.0f},{-500.0f, -235.0f}, {-250.0f, -235.0f}, {0.0f, -235.0f},
+{250.0f, -235.0f},  {500.0f, -235.0f},
             };
 
             for (size_t i = 0; i < levelCenters.size(); ++i) {
@@ -305,7 +307,7 @@ if (m_CurrentPhase == phase::phase3) {
         if (!m_Fries->IsPlaced() && m_Fries->IsClicked()) {
             m_Fries->SetPlaced(true);
             auto newTopping = std::make_shared<Topping>(
-                "C:/Shawarma/CHAO0524/Shawarma/Resources/Image/Food/topping_fries.png",
+                "C:/Users/yello/Shawarma/Resources/Image/Food/topping_fries.png",
                 "fries"
             );
             newTopping->m_Transform.translation = glm::vec2(0.0f, -214.0f);
@@ -318,7 +320,7 @@ if (m_CurrentPhase == phase::phase3) {
             m_Sauce->SetPlaced(true);
             m_Sauce->DecreaseCount();
             auto newTopping = std::make_shared<Topping>(
-                "C:/Shawarma/CHAO0524/Shawarma/Resources/Image/Food/topping_sauce.png",
+                "C:/Users/yello/Shawarma/Resources/Image/Food/topping_sauce.png",
                 "sauce"
             );
             newTopping->m_Transform.translation = glm::vec2(0.0f, -248.0f);
@@ -331,7 +333,7 @@ if (m_CurrentPhase == phase::phase3) {
             m_Pickle->SetPlaced(true);
             m_Pickle->DecreaseCount();  // 扣除一次
             auto newTopping = std::make_shared<Topping>(
-                "C:/Shawarma/CHAO0524/Shawarma/Resources/Image/Food/topping_pickle.png",
+                "C:/Users/yello/Shawarma/Resources/Image/Food/topping_pickle.png",
                 "pickle"
             );
             newTopping->m_Transform.translation = glm::vec2(0.0f, -195.0f);
@@ -368,7 +370,7 @@ if (m_CurrentPhase == phase::phase3) {
         if (!m_ShavedMeat->IsPlaced() && m_ShavedMeat->IsClicked()) {
             m_ShavedMeat->SetPlaced(true);
             auto newTopping = std::make_shared<Topping>(
-                "C:/Shawarma/CHAO0524/Shawarma/Resources/Image/Food/topping_meat.png",
+                "C:/Users/yello/Shawarma/Resources/Image/Food/topping_meat.png",
                 "shaved_meat"
             );
             newTopping->m_Transform.translation = glm::vec2(0.0f, -232.0f);
@@ -380,7 +382,7 @@ if (m_CurrentPhase == phase::phase3) {
         if (!m_Potato->IsPlaced() && m_Potato->IsClicked()) {
             m_Potato->SetPlaced(true);
             m_Frying = std::make_shared<Topping>(
-                "C:/Shawarma/CHAO0524/Shawarma/Resources/Image/Food/frying.png",
+                "C:/Users/yello/Shawarma/Resources/Image/Food/frying.png",
                 "potato"
             );
             m_Frying->m_Transform.translation = glm::vec2(480.0f, -40.0f);
@@ -721,7 +723,7 @@ for (auto& customer : m_Customers) {
     // Shop & return
     if (m_ShopButton->IsClicked() && m_CurrentPhase == phase::phase1) {
         m_CurrentPhase = phase::phase3;
-        m_Background = std::make_shared<BackgroundImage>("C:/Shawarma/CHAO0524/Shawarma/Resources/Image/background/LevelPage1.png");
+        m_Background = std::make_shared<BackgroundImage>("C:/Users/yello/Shawarma/Resources/Image/background/LevelPage1.png");
         m_Renderer = std::make_shared<Util::Renderer>(std::vector<std::shared_ptr<Util::GameObject>>{ m_Background });
         m_Renderer->AddChild(m_ReturnButton);
     }
@@ -774,7 +776,7 @@ void App::LoadLevel(const LevelData& level) {
     std::cout << "current level: " << currentIndex + 1 << std::endl;
 
     // 保持原有的「從第2關起才限量」機制
-    m_EnableIngredientLimit = (currentIndex >= 1);
+    m_EnableIngredientLimit = (currentIndex >= 10);
     m_Pickle->EnableLimit(m_EnableIngredientLimit);
     m_Sauce->EnableLimit(m_EnableIngredientLimit);
 
@@ -824,7 +826,7 @@ void App::LoadLevel(const LevelData& level) {
     m_Renderer->AddChild(colaCup);
 
     m_JuicePack = std::make_shared<Util::GameObject>(
-        std::make_unique<Util::Image>("C:/Shawarma/CHAO0524/Shawarma/Resources/Image/Food/juicepack.png"), 4);
+        std::make_unique<Util::Image>("C:/Users/yello/Shawarma/Resources/Image/Food/juicepack.png"), 4);
     m_JuicePack->m_Transform.translation = glm::vec2(-420.0f, -210.0f);
     m_JuicePack->m_Transform.scale = glm::vec2(0.5f, 0.5f);
     m_Renderer->AddChild(m_JuicePack);

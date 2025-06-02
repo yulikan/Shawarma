@@ -24,7 +24,7 @@
 class BackgroundImage : public Util::GameObject {
 public:
     BackgroundImage()
-        : GameObject(std::make_unique<Util::Image>("C:/Shawarma/CHAO0524/Shawarma/Resources/Image/background/homePage.png"), 1) {
+        : GameObject(std::make_unique<Util::Image>("C:/Users/yello/Shawarma/Resources/Image/background/homePage.png"), 1) {
         m_Transform.scale = glm::vec2(0.65f, 0.65f);
     }
     explicit BackgroundImage(const std::string& imagePath)
@@ -47,7 +47,7 @@ public:
 class StartButton : public Util::GameObject {
 public:
     StartButton()
-        : GameObject(std::make_unique<Util::Image>("C:/Shawarma/CHAO0524/Shawarma/Resources/Image/Object/startBtn1.png"), 5) {
+        : GameObject(std::make_unique<Util::Image>("C:/Users/yello/Shawarma/Resources/Image/Object/startBtn1.png"), 5) {
         m_Transform.translation = glm::vec2(-328.0f, 45.0f);
         m_Transform.scale = glm::vec2(0.38f, 0.38f);
     }
@@ -67,7 +67,7 @@ public:
 class ShopButton : public Util::GameObject {
 public:
     ShopButton()
-        : GameObject(std::make_unique<Util::Image>("C:/Shawarma/CHAO0524/Shawarma/Resources/Image/Object/shopBtn.png"), 5) {
+        : GameObject(std::make_unique<Util::Image>("C:/Users/yello/Shawarma/Resources/Image/Object/shopBtn.png"), 5) {
         m_Transform.translation = glm::vec2(-42.0f, -87.0f);
         m_Transform.scale = glm::vec2(0.35f, 0.35f);
     }
@@ -87,7 +87,7 @@ public:
 class ReturnButton : public Util::GameObject {
 public:
     ReturnButton()
-        : GameObject(std::make_unique<Util::Image>("C:/Shawarma/CHAO0524/Shawarma/Resources/Image/Object/startBtn.png"), 5) {
+        : GameObject(std::make_unique<Util::Image>("C:/Users/yello/Shawarma/Resources/Image/Object/startBtn.png"), 5) {
         m_Transform.translation = glm::vec2(-400.0f, 300.0f);
         m_Transform.scale = glm::vec2(0.2f, 0.2f);
     }
@@ -166,7 +166,7 @@ private:
 class Meat : public Util::GameObject {
 public:
     Meat()
-        : Util::GameObject(std::make_unique<Util::Image>("C:/Shawarma/CHAO0524/Shawarma/Resources/Image/Food/meat.png"), 2) {
+        : Util::GameObject(std::make_unique<Util::Image>("C:/Users/yello/Shawarma/Resources/Image/Food/meat.png"), 2) {
         m_Transform.translation = glm::vec2(-390.0f, 90.0f);
         m_Transform.scale = glm::vec2(0.34f, 0.34f);
     }
@@ -175,7 +175,7 @@ public:
 class Paper : public Util::GameObject {
 public:
     Paper()
-        : Util::GameObject(std::make_unique<Util::Image>("C:/Shawarma/CHAO0524/Shawarma/Resources/Image/Object/Paper.png"), 2) {
+        : Util::GameObject(std::make_unique<Util::Image>("C:/Users/yello/Shawarma/Resources/Image/Object/Paper.png"), 2) {
         m_Transform.translation = glm::vec2(-155.0f, -225.0f);
         m_Transform.scale = glm::vec2(0.43f, 0.43f);
     }
@@ -185,7 +185,7 @@ public:
 class Crust : public Util::GameObject {
 public:
     Crust()
-        : Util::GameObject(std::make_unique<Util::Image>("C:/Shawarma/CHAO0524/Shawarma/Resources/Image/Food/crust.png"), 3)
+        : Util::GameObject(std::make_unique<Util::Image>("C:/Users/yello/Shawarma/Resources/Image/Food/crust.png"), 3)
           {
         m_Transform.translation = glm::vec2(0.0f, -210.0f);
         m_Transform.scale = glm::vec2(0.15f, 0.15f);
@@ -196,7 +196,7 @@ public:
 class Knife : public Util::GameObject {
 public:
     Knife()
-        : Util::GameObject(std::make_unique<Util::Image>("C:/Shawarma/CHAO0524/Shawarma/Resources/Image/Object/knife_origin.png"), 3){
+        : Util::GameObject(std::make_unique<Util::Image>("C:/Users/yello/Shawarma/Resources/Image/Object/knife_origin.png"), 3){
         m_Transform.translation = glm::vec2(-480.0f, -160.0f);
         m_Transform.scale = glm::vec2(0.2f, 0.2f);
     }
@@ -206,7 +206,7 @@ class FrenchFries : public Util::GameObject {
 public:
     FrenchFries()
         : Util::GameObject(
-              std::make_unique<Util::Image>("C:/Shawarma/CHAO0524/Shawarma/Resources/Image/Food/FrenchFries.png"),
+              std::make_unique<Util::Image>("C:/Users/yello/Shawarma/Resources/Image/Food/FrenchFries.png"),
               5), m_IsDragging(false) {
         m_Transform.translation = glm::vec2(100.0f, -100.0f); // 初始位置
         m_Transform.scale = glm::vec2(0.5f, 0.5f);             // 縮放大小
@@ -261,7 +261,7 @@ class Fries : public Util::GameObject {
 public:
     Fries()
         : Util::GameObject(
-              std::make_unique<Util::Image>("C:/Shawarma/CHAO0524/Shawarma/Resources/Image/Food/fries.png"),
+              std::make_unique<Util::Image>("C:/Users/yello/Shawarma/Resources/Image/Food/fries.png"),
               3),
           m_IsDragging(false),
           m_IsPlaced(false) {
@@ -317,7 +317,7 @@ private:
 class Sauce : public Util::GameObject {
 public:
     Sauce() : Util::GameObject(
-        std::make_unique<Util::Image>("C:/Shawarma/CHAO0524/Shawarma/Resources/Image/Food/sauce.png"), 3),
+        std::make_unique<Util::Image>("C:/Users/yello/Shawarma/Resources/Image/Food/sauce.png"), 3),
         m_IsPlaced(false), m_Count(5)
     {
         m_Transform.translation = glm::vec2(-100.0f, -120.0f);
@@ -393,7 +393,7 @@ private:
 class Pickle : public Util::GameObject {
 public:
     Pickle() : Util::GameObject(
-        std::make_unique<Util::Image>("C:/Shawarma/CHAO0524/Shawarma/Resources/Image/Food/pickle.png"), 3),
+        std::make_unique<Util::Image>("C:/Users/yello/Shawarma/Resources/Image/Food/pickle.png"), 3),
         m_IsPlaced(false),m_Count(5){  // 初始數量為 5 {
         m_Transform.translation = glm::vec2(-220.0f, -120.0f);
         m_Transform.scale = glm::vec2(0.5f, 0.5f);
@@ -465,7 +465,7 @@ private:
 class ShavedMeat : public Util::GameObject {
 public:
     ShavedMeat() : Util::GameObject(
-        std::make_unique<Util::Image>("C:/Shawarma/CHAO0524/Shawarma/Resources/Image/Food/shaved_meat.png"), 3),
+        std::make_unique<Util::Image>("C:/Users/yello/Shawarma/Resources/Image/Food/shaved_meat.png"), 3),
         m_IsPlaced(false) {
         m_Transform.translation = glm::vec2(-335.0f, -120.0f);
         m_Transform.scale = glm::vec2(0.5f, 0.5f);
@@ -491,7 +491,7 @@ private:
 class Potato : public Util::GameObject {
 public:
     Potato() : Util::GameObject(
-        std::make_unique<Util::Image>("C:/Shawarma/CHAO0524/Shawarma/Resources/Image/Food/potato.png"), 3),
+        std::make_unique<Util::Image>("C:/Users/yello/Shawarma/Resources/Image/Food/potato.png"), 3),
         m_IsPlaced(false) {
         m_Transform.translation = glm::vec2(590.0f, -88.0f);
         m_Transform.scale = glm::vec2(0.5f, 0.5f);
@@ -518,7 +518,7 @@ class CucumberHand : public Util::GameObject {
 public:
     CucumberHand()
         : Util::GameObject(std::make_unique<Util::Image>(
-            "C:/Shawarma/CHAO0524/Shawarma/Resources/Image/Food/hand_cucumber.png"), 3)
+            "C:/Users/yello/Shawarma/Resources/Image/Food/hand_cucumber.png"), 3)
     {
         m_Transform.translation = glm::vec2(-300.0f, 200.0f);  // 放在黃瓜上方
         m_Transform.scale = glm::vec2(1.5f, 1.5f);
@@ -555,7 +555,7 @@ class SauceHand : public Util::GameObject {
 public:
     SauceHand()
         : Util::GameObject(std::make_unique<Util::Image>(
-            "C:/Shawarma/CHAO0524/Shawarma/Resources/Image/Food/hand_sauce.png"), 3)
+            "C:/Users/yello/Shawarma/Resources/Image/Food/hand_sauce.png"), 3)
     {
         m_Transform.translation = glm::vec2(-300.0f, 100.0f);  // 放在 sauce 上方
         m_Transform.scale = glm::vec2(1.5f, 1.5f);
@@ -639,7 +639,7 @@ class PoorMan : public Util::GameObject {
 public:
     enum class EatState { NOT_EATEN, READY_TO_EAT, EATEN };
     PoorMan()
-        : Util::GameObject(std::make_unique<Util::Image>("C:/Shawarma/CHAO0524/Shawarma/Resources/Image/Object/poorMan.png"), 2) {
+        : Util::GameObject(std::make_unique<Util::Image>("C:/Users/yello/Shawarma/Resources/Image/Object/poorMan.png"), 2) {
         m_Transform.translation = glm::vec2(500.0f, -270.0f);
         m_Transform.scale = glm::vec2(0.47f, 0.47f);
     }
@@ -657,7 +657,7 @@ class Juice : public Util::GameObject {
 public:
     Juice()
         : GameObject(
-              std::make_unique<Util::Image>("C:/Shawarma/CHAO0524/Shawarma/Resources/Image/Food/juice.png"),
+              std::make_unique<Util::Image>("C:/Users/yello/Shawarma/Resources/Image/Food/juice.png"),
               5), m_IsDragging(false) {
         m_Transform.translation = glm::vec2(-400.0f, -210.0f);
         m_Transform.scale = glm::vec2(0.5f, 0.5f);
