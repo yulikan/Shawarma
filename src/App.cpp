@@ -32,7 +32,7 @@ void App::Start() {
     // Level complete screen
     m_LevelCompleteScreen = std::make_shared<Util::GameObject>(
         std::make_unique<Util::Image>(
-            "C:/Users/yello/Shawarma/Resources/Image/background/nextLevel.png"),
+            "C:/Shawarma/CHAO0603/Shawarma/Resources/Image/background/nextLevel.png"),
         /*layer=*/7
     );
     m_LevelCompleteScreen->m_Transform.translation = glm::vec2(0.0f, 0.0f);
@@ -129,7 +129,7 @@ void App::Update() {
             m_Renderer->RemoveChild(m_DayTextGO);
             m_FailureScreen = std::make_shared<Util::GameObject>(
                 std::make_unique<Util::Image>(
-                    "C:/Users/yello/Shawarma/Resources/Image/background/FailPage.png"
+                    "C:/Shawarma/CHAO0603/Shawarma/Resources/Image/background/FailPage.png"
                 ), 7
             );
             m_FailureScreen->m_Transform.translation = {0,0};
@@ -137,7 +137,7 @@ void App::Update() {
             m_Renderer->AddChild(m_FailureScreen);
 
             m_RetryButton = std::make_shared<NextButton>(
-                "C:/Users/yello/Shawarma/Resources/Image/Object/retryBtn.png"
+                "C:/Shawarma/CHAO0603/Shawarma/Resources/Image/Object/retryBtn.png"
             );
             m_Renderer->AddChild(m_RetryButton);
 
@@ -164,7 +164,7 @@ if (m_CurrentPhase == phase::phase3) {
     if (Util::Input::IsKeyUp(Util::Keycode::N) && m_CurrentLevelPage == "LevelPage1") {
         m_CurrentLevelPage = "LevelPage2";
         m_Background = std::make_shared<BackgroundImage>(
-            "C:/Users/yello/Shawarma/Resources/Image/background/LevelPage2.png");
+            "C:/Shawarma/CHAO0603/Shawarma/Resources/Image/background/LevelPage2.png");
         m_Renderer = std::make_shared<Util::Renderer>(
             std::vector<std::shared_ptr<Util::GameObject>>{ m_Background });
         m_Renderer->AddChild(m_ReturnButton);
@@ -174,7 +174,7 @@ if (m_CurrentPhase == phase::phase3) {
     if (Util::Input::IsKeyUp(Util::Keycode::P) && m_CurrentLevelPage == "LevelPage2") {
         m_CurrentLevelPage = "LevelPage1";
         m_Background = std::make_shared<BackgroundImage>(
-            "C:/Users/yello/Shawarma/Resources/Image/background/LevelPage1.png");
+            "C:/Shawarma/CHAO0603/Shawarma/Resources/Image/background/LevelPage1.png");
         m_Renderer = std::make_shared<Util::Renderer>(
             std::vector<std::shared_ptr<Util::GameObject>>{ m_Background });
         m_Renderer->AddChild(m_ReturnButton);
@@ -247,99 +247,139 @@ if (m_CurrentPhase == phase::phase3) {
 
     // Phase 2 main logic
     if (m_CurrentPhase == phase::phase2) {
-        // Spawn new customers
-        auto newCfgs = m_LevelManager.SpawnCustomers((int)m_Customers.size());
-        for (auto& cfg : newCfgs) {
-            auto customer = std::make_shared<Customer>(cfg.customerImage);
-            customer->m_Transform.translation = cfg.position;
-            customer->m_Transform.scale       = glm::vec2(0.5f, 0.5f);
-            customer->SetRequestedFood(cfg.foodRequest);
+     // ---------------------------------------------------------
+    // 1. 先更新耐心＆訂單完成，移除該刪除的客人（移除 UI + erase）
+    // ---------------------------------------------------------
+    for (auto it = m_Customers.begin(); it != m_Customers.end();) {
+        auto& customer = *it;
 
-            // Order icon
-            auto foodIcon = std::make_shared<Util::GameObject>(
-                std::make_unique<Util::Image>(cfg.foodIcon), 5);
-            if (cfg.foodRequest == "Roll") {
-                if (m_EnableCustomTopping) {
-                    // 第3關之後：套用 LevelManager 預先設定好的 requiredToppings
-                    customer->SetRequiredToppings(cfg.requiredToppings);
-                } else {
-                    // 前兩關：不檢查，任何配料都 OK
-                    customer->SetRequiredToppings({});
-                }
-                foodIcon->m_Transform.scale       = glm::vec2(0.08f, 0.08f);
-                foodIcon->m_Transform.translation = cfg.position + glm::vec2(0.0f, -55.0f);
-            } else {
-                foodIcon->m_Transform.scale       = glm::vec2(0.3f, 0.3f);
-                foodIcon->m_Transform.translation = cfg.position + glm::vec2(0.0f, -60.0f);
-            }
-            customer->SetOrderIcon(foodIcon);
-
-            // Patience text
-            auto patienceText = std::make_shared<PatienceText>();
-            patienceText->SetPatience(100);
-            patienceText->m_Transform.translation = cfg.position + glm::vec2(0.0f, -100.0f);
-            customer->SetPatienceText(patienceText);
-            m_Renderer->AddChild(patienceText);
-
-            // Add to scene
-            m_Customers.push_back(customer);
-            m_Renderer->AddChild(customer);
-            m_Renderer->AddChild(foodIcon);
-        }
-
-
-        // Phase2 主迴圈：同時更新耐心、逾時移除 & 訂單完成移除
-        for (auto it = m_Customers.begin(); it != m_Customers.end();) {
-            auto& customer = *it;
-
-            // —— 1. 更新耐心並處理逾時 ——
-            if (auto pt = customer->GetPatienceText()) {
-                pt->Update();
-                if (pt->GetRemaining() <= 0) {
-                    // 刪除 UI
-                    m_Renderer->RemoveChild(pt);
-                    customer->SetPatienceText(nullptr);
-                    if (customer->GetOrderIcon())
-                        m_Renderer->RemoveChild(customer->GetOrderIcon());
-                    m_Renderer->RemoveChild(customer);
-
-                    // 從容器移除
-                    it = m_Customers.erase(it);
-                    continue;
-                }
-            }
-
-            // —— 2. 處理訂單完成 ——
-            const auto& eaten = customer->GetEatenFoods();
-            if (std::find(eaten.begin(), eaten.end(),
-                          customer->GetRequestedFood()) != eaten.end())
-            {
-                // 加錢
-                if (customer->GetRequestedFood() == "Roll")         m_MoneyManager.Add(50);
-                else if (customer->GetRequestedFood() == "FrenchFries") m_MoneyManager.Add(30);
-                else if (customer->GetRequestedFood() == "sauce")   m_MoneyManager.Add(10);
-
+        // —— 1A. 更新耐心並處理逾時移除 ——
+        if (auto pt = customer->GetPatienceText()) {
+            pt->Update();
+            if (pt->GetRemaining() <= 0) {
                 // 刪除 PatienceText
-                if (auto pt2 = customer->GetPatienceText()) {
-                    m_Renderer->RemoveChild(pt2);
-                    customer->SetPatienceText(nullptr);
-                }
-                // 刪除圖示與客人本體
-                m_Renderer->RemoveChild(customer->GetOrderIcon());
+                m_Renderer->RemoveChild(pt);
+                customer->SetPatienceText(nullptr);
+                // 刪除 Order Icon（如果有的話）
+                if (customer->GetOrderIcon())
+                    m_Renderer->RemoveChild(customer->GetOrderIcon());
+                // 刪除客人本體
                 m_Renderer->RemoveChild(customer);
 
-                // 從容器移除
                 it = m_Customers.erase(it);
                 continue;
             }
-
-            ++it;
         }
+
+        // —— 1B. 處理訂單完成移除 ——
+        const auto& eaten = customer->GetEatenFoods();
+        if (std::find(eaten.begin(), eaten.end(),
+                      customer->GetRequestedFood()) != eaten.end())
+        {
+            // 加錢
+            if (customer->GetRequestedFood() == "Roll")           m_MoneyManager.Add(50);
+            else if (customer->GetRequestedFood() == "FrenchFries") m_MoneyManager.Add(30);
+            else if (customer->GetRequestedFood() == "sauce")     m_MoneyManager.Add(10);
+
+            // 刪除 PatienceText
+            if (auto pt2 = customer->GetPatienceText()) {
+                m_Renderer->RemoveChild(pt2);
+                customer->SetPatienceText(nullptr);
+            }
+            // 刪除 Order Icon
+            if (customer->GetOrderIcon())
+                m_Renderer->RemoveChild(customer->GetOrderIcon());
+            // 刪除客人本體
+            m_Renderer->RemoveChild(customer);
+
+            it = m_Customers.erase(it);
+            continue;
+        }
+
+        ++it;
+    }
+
+    // ---------------------------------------------------------
+    // 2. 再來根據「剩下的客人數」去 Spawn 新客人，並把位置、Icon、文字統一以
+    //    customer->m_Transform.translation 為基準
+    // ---------------------------------------------------------
+
+        std::array<bool, 3> occupied = { false, false, false };
+    for (auto& customer : m_Customers) {
+        glm::vec2 pos = customer->m_Transform.translation;
+        // 與 kCustomerSlots 做「完全相等」比對即可，
+        // 因為我們一開始就是把 customer->m_Transform.translation 設成 kCustomerSlots[...]。
+        for (size_t i = 0; i < kCustomerSlots.size(); ++i) {
+            if (pos == kCustomerSlots[i]) {
+                occupied[i] = true;
+                break;
+            }
+        }
+    }
+
+    // ---------------------------------------------------------
+    // 3. 根據「還剩下幾個空位」，去 Spawn 新客人，把他們補到第一個 free 槽位
+    // ---------------------------------------------------------
+    // 注意：SpawnCustomers 需要傳入「目前活躍的客人數量」，因為它會決定要生成幾位新客人。
+    // 此處傳 (int)m_Customers.size() 就代表「真正留在畫面上的客人有幾位」，跟執行 Remove 之後的大小一致。
+
+    auto newCfgs = m_LevelManager.SpawnCustomers((int)m_Customers.size());
+    for (auto& cfg : newCfgs) {
+        // 3A. 找出「第一個未被佔用」的槽位 index
+        size_t slotIndex = 0;
+        while (slotIndex < occupied.size() && occupied[slotIndex]) {
+            ++slotIndex;
+        }
+        if (slotIndex >= occupied.size()) {
+            // 理論上不會跑到這裡，因為 SpawnCustomers 已經保證「最多 spawn 的數量 <= 空位數量」。
+            slotIndex = occupied.size() - 1;
+        }
+        // 把這個槽位標記為已佔用
+        occupied[slotIndex] = true;
+
+        // 3B. 建立新客人，並把位置設成 kCustomerSlots[slotIndex]
+        auto customer = std::make_shared<Customer>(cfg.customerImage);
+        customer->m_Transform.translation = kCustomerSlots[slotIndex];
+        customer->m_Transform.scale       = glm::vec2(0.5f, 0.5f);
+        customer->SetRequestedFood(cfg.foodRequest);
+
+        // 3C. 以 customer 位置為基準，建立 FoodIcon 與 PatienceText
+        glm::vec2 custPos = customer->m_Transform.translation;
+
+        // Food Icon
+        auto foodIcon = std::make_shared<Util::GameObject>(
+            std::make_unique<Util::Image>(cfg.foodIcon), 5);
+        if (cfg.foodRequest == "Roll") {
+            if (m_EnableCustomTopping) {
+                customer->SetRequiredToppings(cfg.requiredToppings);
+            } else {
+                customer->SetRequiredToppings({});
+            }
+            foodIcon->m_Transform.scale       = glm::vec2(0.08f, 0.08f);
+            foodIcon->m_Transform.translation = custPos + glm::vec2(0.0f, -55.0f);
+        } else {
+            foodIcon->m_Transform.scale       = glm::vec2(0.3f, 0.3f);
+            foodIcon->m_Transform.translation = custPos + glm::vec2(0.0f, -60.0f);
+        }
+        customer->SetOrderIcon(foodIcon);
+
+        // Patience Text
+        auto patienceText = std::make_shared<PatienceText>();
+        patienceText->SetPatience(100);
+        patienceText->m_Transform.translation = custPos + glm::vec2(0.0f, -100.0f);
+        customer->SetPatienceText(patienceText);
+
+        // 3D. 把客人、FoodIcon、PatienceText 加到場景中
+        m_Renderer->AddChild(patienceText);
+        m_Customers.push_back(customer);
+        m_Renderer->AddChild(customer);
+        m_Renderer->AddChild(foodIcon);
+    }
         // Fries button
         if (!m_Fries->IsPlaced() && m_Fries->IsClicked()) {
             m_Fries->SetPlaced(true);
             auto newTopping = std::make_shared<Topping>(
-                "C:/Users/yello/Shawarma/Resources/Image/Food/topping_fries.png",
+                "C:/Shawarma/CHAO0603/Shawarma/Resources/Image/Food/topping_fries.png",
                 "fries"
             );
             newTopping->m_Transform.translation = glm::vec2(0.0f, -214.0f);
@@ -352,7 +392,7 @@ if (m_CurrentPhase == phase::phase3) {
             m_Sauce->SetPlaced(true);
             m_Sauce->DecreaseCount();
             auto newTopping = std::make_shared<Topping>(
-                "C:/Users/yello/Shawarma/Resources/Image/Food/topping_sauce.png",
+                "C:/Shawarma/CHAO0603/Shawarma/Resources/Image/Food/topping_sauce.png",
                 "sauce"
             );
             newTopping->m_Transform.translation = glm::vec2(0.0f, -248.0f);
@@ -365,7 +405,7 @@ if (m_CurrentPhase == phase::phase3) {
             m_Pickle->SetPlaced(true);
             m_Pickle->DecreaseCount();  // 扣除一次
             auto newTopping = std::make_shared<Topping>(
-                "C:/Users/yello/Shawarma/Resources/Image/Food/topping_pickle.png",
+                "C:/Shawarma/CHAO0603/Shawarma/Resources/Image/Food/topping_pickle.png",
                 "pickle"
             );
             newTopping->m_Transform.translation = glm::vec2(0.0f, -195.0f);
@@ -402,7 +442,7 @@ if (m_CurrentPhase == phase::phase3) {
         if (!m_ShavedMeat->IsPlaced() && m_ShavedMeat->IsClicked()) {
             m_ShavedMeat->SetPlaced(true);
             auto newTopping = std::make_shared<Topping>(
-                "C:/Users/yello/Shawarma/Resources/Image/Food/topping_meat.png",
+                "C:/Shawarma/CHAO0603/Shawarma/Resources/Image/Food/topping_meat.png",
                 "shaved_meat"
             );
             newTopping->m_Transform.translation = glm::vec2(0.0f, -232.0f);
@@ -414,7 +454,7 @@ if (m_CurrentPhase == phase::phase3) {
         if (!m_Potato->IsPlaced() && m_Potato->IsClicked()) {
             m_Potato->SetPlaced(true);
             m_Frying = std::make_shared<Topping>(
-                "C:/Users/yello/Shawarma/Resources/Image/Food/frying.png",
+                "C:/Shawarma/CHAO0603/Shawarma/Resources/Image/Food/frying.png",
                 "potato"
             );
             m_Frying->m_Transform.translation = glm::vec2(480.0f, -40.0f);
@@ -755,7 +795,7 @@ for (auto& customer : m_Customers) {
     // Shop & return
     if (m_ShopButton->IsClicked() && m_CurrentPhase == phase::phase1) {
         m_CurrentPhase = phase::phase3;
-        m_Background = std::make_shared<BackgroundImage>("C:/Users/yello/Shawarma/Resources/Image/background/LevelPage1.png");
+        m_Background = std::make_shared<BackgroundImage>("C:/Shawarma/CHAO0603/Shawarma/Resources/Image/background/LevelPage1.png");
         m_Renderer = std::make_shared<Util::Renderer>(std::vector<std::shared_ptr<Util::GameObject>>{ m_Background });
         m_Renderer->AddChild(m_ReturnButton);
         m_IgnoreNextMouseUp = true;
@@ -862,7 +902,7 @@ void App::LoadLevel(const LevelData& level) {
     m_Renderer->AddChild(colaCup);
 
     m_JuicePack = std::make_shared<Util::GameObject>(
-        std::make_unique<Util::Image>("C:/Users/yello/Shawarma/Resources/Image/Food/juicepack.png"), 4);
+        std::make_unique<Util::Image>("C:/Shawarma/CHAO0603/Shawarma/Resources/Image/Food/juicepack.png"), 4);
     m_JuicePack->m_Transform.translation = glm::vec2(-420.0f, -210.0f);
     m_JuicePack->m_Transform.scale = glm::vec2(0.5f, 0.5f);
     m_Renderer->AddChild(m_JuicePack);
