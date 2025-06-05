@@ -12,7 +12,7 @@ class NextButton : public Util::GameObject {
 public:
     // 加入 imagePath 參數，預設維持原本 nextLevelBtn.png
     explicit NextButton(const std::string& imagePath =
-            "C:/Shawarma/CHAO0603/Shawarma/Resources/Image/Object/nextLevelBtn.png",
+            "C:/Users/yello/Shawarma/Resources/Image/Object/nextLevelBtn.png",
         int layer = 8
     )
     : Util::GameObject(

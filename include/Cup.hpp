@@ -69,7 +69,7 @@ public:
 
 private:
     void ReloadSprite() {
-        std::string base = "C:/Shawarma/CHAO0603/Shawarma/Resources/Image/Food/";
+        std::string base = "C:/Users/yello/Shawarma/Resources/Image/Food/";
         std::string path;
         if (m_State == CupState::FULL) {
             path = base + (m_Type==DrinkType::SODA

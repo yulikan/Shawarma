@@ -46,7 +46,7 @@ void LevelManager::LoadLevels() {
     const int totalLevels = 30;
     for (int lvl = 1; lvl <= totalLevels; ++lvl) {
         LevelData level;
-        level.backgroundImage = "C:/Shawarma/CHAO0603/Shawarma/Resources/Image/background/restaurant.png";
+        level.backgroundImage = "C:/Users/yello/Shawarma/Resources/Image/background/restaurant.png";
 
         // 每關客人數 = 5 + (lvl - 1)
         int custCount = 5 + (lvl - 1);
@@ -54,7 +54,7 @@ void LevelManager::LoadLevels() {
             CustomerConfig cust;
             // 圖片輪流使用 customer1..customer6
             int imgIdx = i % 6 + 1;
-            cust.customerImage = "C:/Shawarma/CHAO0603/Shawarma/Resources/Image/Customer/customer" + std::to_string(imgIdx) + ".png";
+            cust.customerImage = "C:/Users/yello/Shawarma/Resources/Image/Customer/customer" + std::to_string(imgIdx) + ".png";
             cust.position = CalcPosition(i);
             cust.foodRequest = "Roll";  // 預設捲餅，後面再改
 
@@ -63,10 +63,10 @@ void LevelManager::LoadLevels() {
                 // 前半客人薯條、後半捲餅
                 if (i < custCount/2) {
                     cust.foodRequest = "FrenchFries";
-                    cust.foodIcon = "C:/Shawarma/CHAO0603/Shawarma/Resources/Image/Food/FrenchFries.png";
+                    cust.foodIcon = "C:/Users/yello/Shawarma/Resources/Image/Food/FrenchFries.png";
                 } else {
                     cust.foodRequest = "Roll";
-                    cust.foodIcon = "C:/Shawarma/CHAO0603/Shawarma/Resources/Image/Food/roll.png";
+                    cust.foodIcon = "C:/Users/yello/Shawarma/Resources/Image/Food/roll.png";
                 }
                 // 無 requiredToppings
             }
@@ -74,20 +74,20 @@ void LevelManager::LoadLevels() {
             else if (lvl < 11) {
                 if (i < custCount/2) {
                     cust.foodRequest = "FrenchFries";
-                    cust.foodIcon = "C:/Shawarma/CHAO0603/Shawarma/Resources/Image/Food/FrenchFries.png";
+                    cust.foodIcon = "C:/Users/yello/Shawarma/Resources/Image/Food/FrenchFries.png";
                 } else {
                     cust.foodRequest = "Roll";
-                    cust.foodIcon = "C:/Shawarma/CHAO0603/Shawarma/Resources/Image/Food/roll.png";
+                    cust.foodIcon = "C:/Users/yello/Shawarma/Resources/Image/Food/roll.png";
                 }
             }
             // 11-15 關：需要補充配料，但無自動 refill，需要 same as above icons
             else if (lvl < 16) {
                 if (i < custCount/2) {
                     cust.foodRequest = "FrenchFries";
-                    cust.foodIcon = "C:/Shawarma/CHAO0603/Shawarma/Resources/Image/Food/FrenchFries.png";
+                    cust.foodIcon = "C:/Users/yello/Shawarma/Resources/Image/Food/FrenchFries.png";
                 } else {
                     cust.foodRequest = "Roll";
-                    cust.foodIcon = "C:/Shawarma/CHAO0603/Shawarma/Resources/Image/Food/roll.png";
+                    cust.foodIcon = "C:/Users/yello/Shawarma/Resources/Image/Food/roll.png";
                 }
             }
             // 16-20 關：新增汽水與可樂訂單
@@ -95,16 +95,16 @@ void LevelManager::LoadLevels() {
                 int rem = i % 4;
                 if (rem == 0) {
                     cust.foodRequest = "Soda";
-                    cust.foodIcon = "C:/Shawarma/CHAO0603/Shawarma/Resources/Image/Food/cup_soda_full.png";
+                    cust.foodIcon = "C:/Users/yello/Shawarma/Resources/Image/Food/cup_soda_full.png";
                 } else if (rem == 1) {
                     cust.foodRequest = "Cola";
-                    cust.foodIcon = "C:/Shawarma/CHAO0603/Shawarma/Resources/Image/Food/cup_cola_full.png";
+                    cust.foodIcon = "C:/Users/yello/Shawarma/Resources/Image/Food/cup_cola_full.png";
                 } else if (rem == 2) {
                     cust.foodRequest = "FrenchFries";
-                    cust.foodIcon = "C:/Shawarma/CHAO0603/Shawarma/Resources/Image/Food/FrenchFries.png";
+                    cust.foodIcon = "C:/Users/yello/Shawarma/Resources/Image/Food/FrenchFries.png";
                 } else {
                     cust.foodRequest = "Roll";
-                    cust.foodIcon = "C:/Shawarma/CHAO0603/Shawarma/Resources/Image/Food/roll.png";
+                    cust.foodIcon = "C:/Users/yello/Shawarma/Resources/Image/Food/roll.png";
                 }
             }
             // 21-24 關：新增果汁
@@ -112,19 +112,19 @@ void LevelManager::LoadLevels() {
                 int rem = i % 5;
                 if (rem == 0) {
                     cust.foodRequest = "Juice";
-                    cust.foodIcon = "C:/Shawarma/CHAO0603/Shawarma/Resources/Image/Food/juice.png";
+                    cust.foodIcon = "C:/Users/yello/Shawarma/Resources/Image/Food/juice.png";
                 } else if (rem == 1) {
                     cust.foodRequest = "Soda";
-                    cust.foodIcon = "C:/Shawarma/CHAO0603/Shawarma/Resources/Image/Food/cup_soda_full.png";
+                    cust.foodIcon = "C:/Users/yello/Shawarma/Resources/Image/Food/cup_soda_full.png";
                 } else if (rem == 2) {
                     cust.foodRequest = "Cola";
-                    cust.foodIcon = "C:/Shawarma/CHAO0603/Shawarma/Resources/Image/Food/cup_cola_full.png";
+                    cust.foodIcon = "C:/Users/yello/Shawarma/Resources/Image/Food/cup_cola_full.png";
                 } else if (rem == 3) {
                     cust.foodRequest = "FrenchFries";
-                    cust.foodIcon = "C:/Shawarma/CHAO0603/Shawarma/Resources/Image/Food/FrenchFries.png";
+                    cust.foodIcon = "C:/Users/yello/Shawarma/Resources/Image/Food/FrenchFries.png";
                 } else {
                     cust.foodRequest = "Roll";
-                    cust.foodIcon = "C:/Shawarma/CHAO0603/Shawarma/Resources/Image/Food/roll.png";
+                    cust.foodIcon = "C:/Users/yello/Shawarma/Resources/Image/Food/roll.png";
                 }
             }
             // 25-30 關：客製化卷餅
@@ -133,7 +133,7 @@ void LevelManager::LoadLevels() {
                 int typeIdx = i % customToppings.size();
                 cust.foodRequest = "Roll";
                 cust.requiredToppings = customToppings[typeIdx];
-                cust.foodIcon = "C:/Shawarma/CHAO0603/Shawarma/Resources/Image/Food/" + customIcons[typeIdx];
+                cust.foodIcon = "C:/Users/yello/Shawarma/Resources/Image/Food/" + customIcons[typeIdx];
             }
 
             level.customers.push_back(cust);
