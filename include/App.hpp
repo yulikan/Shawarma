@@ -757,6 +757,7 @@ private:
 
     bool m_EnableIngredientLimit = false;    // 原：第2關後才有數量限制
     bool m_EnableCustomTopping   = false;    // 新：第3關後才檢查客製化配料
+    bool m_EnablePatience;
     //第二關開始新增此功能
     int m_PickleRefillState = 2;
     int m_SauceRefillState = 2;

@@ -270,57 +270,61 @@ if (m_CurrentPhase == phase::phase3) {
 
     // Phase 2 main logic
     if (m_CurrentPhase == phase::phase2) {
-     // ---------------------------------------------------------
-    // 1. 先更新耐心＆訂單完成，移除該刪除的客人（移除 UI + erase）
+    // ---------------------------------------------------------
+    // 1. 先更新耐心（若启用），并做逾时移除
     // ---------------------------------------------------------
     for (auto it = m_Customers.begin(); it != m_Customers.end();) {
         auto& customer = *it;
 
-        // —— 1A. 更新耐心並處理逾時移除 ——
-        if (auto pt = customer->GetPatienceText()) {
-            pt->Update();
-            if (pt->GetRemaining() <= 0) {
-                // 刪除 PatienceText
-                m_Renderer->RemoveChild(pt);
-                customer->SetPatienceText(nullptr);
-                // 刪除 Order Icon（如果有的話）
-                if (customer->GetOrderIcon())
-                    m_Renderer->RemoveChild(customer->GetOrderIcon());
-                // 刪除客人本體
-                m_Renderer->RemoveChild(customer);
+        // —— 1A. 更新耐心并处理逾时离开 ——
+        if (m_EnablePatience) {
+            if (auto pt = customer->GetPatienceText()) {
+                pt->Update();
+                if (pt->GetRemaining() <= 0) {
+                    // 顾客耐心耗尽，移除 PatienceText、订单图示、顾客本体
+                    m_Renderer->RemoveChild(pt);
+                    customer->SetPatienceText(nullptr);
+                    if (customer->GetOrderIcon())
+                        m_Renderer->RemoveChild(customer->GetOrderIcon());
+                    m_Renderer->RemoveChild(customer);
 
-                it = m_Customers.erase(it);
-                continue;
+                    it = m_Customers.erase(it);
+                    continue;
+                }
             }
         }
 
-        // —— 1B. 處理訂單完成移除 ——
+        // —— 1B. 不论是否启用耐心，都要检查“是否吃完” ——
         const auto& eaten = customer->GetEatenFoods();
-        if (std::find(eaten.begin(), eaten.end(),
-                      customer->GetRequestedFood()) != eaten.end())
-        {
-            // 加錢
-            if (customer->GetRequestedFood() == "Roll")           m_MoneyManager.Add(50);
-            else if (customer->GetRequestedFood() == "FrenchFries") m_MoneyManager.Add(30);
-            else if (customer->GetRequestedFood() == "sauce")     m_MoneyManager.Add(10);
+        const auto& requested = customer->GetRequestedFood();
+        if (std::find(eaten.begin(), eaten.end(), requested) != eaten.end()) {
+            // 顾客吃完，结算金钱
+            if (requested == "Roll")             m_MoneyManager.Add(50);
+            else if (requested == "FrenchFries") m_MoneyManager.Add(30);
+            else if (requested == "sauce")       m_MoneyManager.Add(10);
+            else if (requested == "Juice")       m_MoneyManager.Add(15);
+            // …（根据实际的 RequestedFood 类型再补一行）
 
-            // 刪除 PatienceText
+            // 移除 PatienceText（若存在）
             if (auto pt2 = customer->GetPatienceText()) {
                 m_Renderer->RemoveChild(pt2);
                 customer->SetPatienceText(nullptr);
             }
-            // 刪除 Order Icon
+            // 移除订单图示（若存在）
             if (customer->GetOrderIcon())
                 m_Renderer->RemoveChild(customer->GetOrderIcon());
-            // 刪除客人本體
+            // 移除顾客本体
             m_Renderer->RemoveChild(customer);
 
             it = m_Customers.erase(it);
             continue;
         }
 
+        // —— 如果既没逾时也没吃完，就推进迭代器 ——
         ++it;
     }
+
+
 
     // ---------------------------------------------------------
     // 2. 再來根據「剩下的客人數」去 Spawn 新客人，並把位置、Icon、文字統一以
@@ -388,15 +392,18 @@ if (m_CurrentPhase == phase::phase3) {
 
         // Patience Text
         auto patienceText = std::make_shared<PatienceText>();
-        patienceText->SetPatience(100);
+        patienceText->SetPatience(30);
         patienceText->m_Transform.translation = custPos + glm::vec2(0.0f, -100.0f);
         customer->SetPatienceText(patienceText);
 
         // 3D. 把客人、FoodIcon、PatienceText 加到場景中
-        m_Renderer->AddChild(patienceText);
+
         m_Customers.push_back(customer);
         m_Renderer->AddChild(customer);
         m_Renderer->AddChild(foodIcon);
+        if (m_EnablePatience) {
+            m_Renderer->AddChild(patienceText);
+        }
     }
         // Fries button
         if (!m_Fries->IsPlaced() && m_Fries->IsClicked()) {
@@ -684,55 +691,63 @@ if (m_BevMachine->IsButtonClicked(DrinkType::COLA)) {
 
         }
 
-        // Customer <> Roll interaction
-// App.cpp – Customer <> Roll interaction （修改自原始 App.cpp 第460行左右） :contentReference[oaicite:0]{index=0}:contentReference[oaicite:1]{index=1}
-for (auto& customer : m_Customers) {
-    for (auto it = m_Rolls.begin(); it != m_Rolls.end();) {
-        auto& rollObj = *it;
-        float distance = glm::distance(customer->m_Transform.translation,
-                                       rollObj->m_Transform.translation);
-        if (distance < 50.0f) {
-            customer->SetEatState(Customer::EatState::READY_TO_EAT);
-            if (Util::Input::IsKeyUp(Util::Keycode::MOUSE_LB) &&
-                customer->GetEatState() == Customer::EatState::READY_TO_EAT)
-            {
-                // 取得玩家實際放的配料
-                auto actual = rollObj->GetContents();
-                // 取得客人所需的配料
-                auto required = customer->GetRequiredToppings();
-                // 排序：順序無關才可比對
-                std::sort(actual.begin(),   actual.end());
-                std::sort(required.begin(), required.end());
+       // App.cpp 中，替换掉原本的 Customer <> Roll 交互块
+    // —— 检查每个顾客是否要吃卷饼 ——
+    for (auto& customer : m_Customers) {
+        // 只有当鼠标一松并且顾客状态为 READY 才检查哪一个 roll 被吃
+        if (customer->GetEatState() == Customer::EatState::READY_TO_EAT &&
+            Util::Input::IsKeyUp(Util::Keycode::MOUSE_LB))
+        {
+            for (auto it = m_Rolls.begin(); it != m_Rolls.end(); ++it) {
+                auto& rollObj = *it;
+                float distance = glm::distance(
+                    customer->m_Transform.translation,
+                    rollObj->m_Transform.translation
+                );
+                if (distance < 50.0f) {
+                    // 卷饼被“吃”掉
+                    auto actual = rollObj->GetContents();
+                    auto required = customer->GetRequiredToppings();
+                    std::sort(actual.begin(),   actual.end());
+                    std::sort(required.begin(), required.end());
 
-                // 核心：如果還沒到第3關（m_EnableCustomTopping==false），
-                // 或者配料完全吻合，都視為成功
-                bool isMatch = (!m_EnableCustomTopping) || (actual == required);
-                if (isMatch) {
-                    // 成功：給錢、記錄、移除
-                    customer->SetEatState(Customer::EatState::EATEN);
-                    customer->RecordFood("Roll");
-                    for (const auto& ing : actual)
-                        customer->RecordFood(ing);
-                    m_MoneyManager.Add(50);
-                } else {
-                    // 失敗（第3關後才可能到這裡）：不加錢、不記錄
-                    customer->SetEatState(Customer::EatState::EATEN);
-                    // TODO: 如需扣分或顯示失敗UI可在此加入
+                    bool isMatch = (!m_EnableCustomTopping) || (actual == required);
+                    if (isMatch) {
+                        customer->SetEatState(Customer::EatState::EATEN);
+                        customer->RecordFood("Roll");
+                        for (auto& ing : actual)
+                            customer->RecordFood(ing);
+                        m_MoneyManager.Add(50);
+                    } else {
+                        customer->SetEatState(Customer::EatState::EATEN);
+                        // TODO: 显示失败UI或扣分逻辑
+                    }
+
+                    // 立刻删除卷饼并结束整个 UpdatePhase2：本帧不再处理其他顾客或卷饼
+                    m_Renderer->RemoveChild(rollObj);
+                    m_Rolls.erase(it);
+                    g_IsObjectDragging = false;
+                    return;
                 }
-
-                // 清除卷餅物件，結束拖曳
-                m_Renderer->RemoveChild(rollObj);
-                it = m_Rolls.erase(it);
-                g_IsObjectDragging = false;
-                continue;
             }
-        } else {
-            if (customer->GetEatState() != Customer::EatState::EATEN)
-                customer->SetEatState(Customer::EatState::NOT_EATEN);
         }
-        ++it;
+        // 如果距离小于 50 但鼠标未松开，也把状态设为 READY_TO_EAT
+        for (auto& rollObj : m_Rolls) {
+            float dist2 = glm::distance(
+                customer->m_Transform.translation,
+                rollObj->m_Transform.translation
+            );
+            if (dist2 < 50.0f) {
+                customer->SetEatState(Customer::EatState::READY_TO_EAT);
+                break;
+            }
+        
     }
+
+    // —— 其他 phase2 逻辑（产生新顾客、耐心计时等）——
+    // …
 }
+
 
         // PoorMan <> Roll interaction
         if (m_PoorMan) {
@@ -924,9 +939,14 @@ void App::LoadLevel(const LevelData& level) {
     m_Sauce->EnableLimit(m_EnableIngredientLimit);
 
     // 新增：從第3關 (currentIndex >= 2) 起啟用「客製配料檢查」
-    m_EnableCustomTopping = (currentIndex >= 2);
+    m_EnableCustomTopping = (currentIndex >= 25);
 
-
+    if (currentIndex >= 5) {
+        m_EnablePatience = true;
+    }
+    else {
+        m_EnablePatience = false;
+    }
     // Reset frying counter
     m_FryingCounter = 0;
     if (m_FryingCounterText) m_FryingCounterText->UpdateCounter(0);

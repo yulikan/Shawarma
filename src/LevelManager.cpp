@@ -1,4 +1,7 @@
 #include "LevelManager.hpp"
+#include <random>    // 新增
+static std::random_device rd;
+static std::mt19937       gen(rd());
 
 LevelManager::LevelManager() : m_CurrentLevelIndex(0) {
     LoadLevels();
@@ -44,98 +47,174 @@ void LevelManager::LoadLevels() {
     };
 
     const int totalLevels = 30;
-    for (int lvl = 1; lvl <= totalLevels; ++lvl) {
+ for (int lvl = 1; lvl <= totalLevels; ++lvl) {
         LevelData level;
         level.backgroundImage = "C:/Users/yello/Shawarma/Resources/Image/background/restaurant.png";
 
         // 每關客人數 = 5 + (lvl - 1)
         int custCount = 5 + (lvl - 1);
+
+        // 預先定義可用的圖片路徑，以方便後面一律隨機挑選
+        std::vector<std::string> friesIcon = { "C:/Users/yello/Shawarma/Resources/Image/Food/FrenchFries.png" };
+        std::vector<std::string> rollIcon  = { "C:/Users/yello/Shawarma/Resources/Image/Food/roll.png"       };
+        std::vector<std::string> sodaIcon  = { "C:/Users/yello/Shawarma/Resources/Image/Food/cup_soda_full.png"};
+        std::vector<std::string> colaIcon  = { "C:/Users/yello/Shawarma/Resources/Image/Food/cup_cola_full.png"};
+        std::vector<std::string> juiceIcon = { "C:/Users/yello/Shawarma/Resources/Image/Food/juice.png"       };
+
+        // --- 針對這一關的每一位客人，隨機產生訂單 ---
         for (int i = 0; i < custCount; ++i) {
             CustomerConfig cust;
-            // 圖片輪流使用 customer1..customer6
+
+            // 圖片依序輪流使用 customer1..customer6
             int imgIdx = i % 6 + 1;
-            cust.customerImage = "C:/Users/yello/Shawarma/Resources/Image/Customer/customer" + std::to_string(imgIdx) + ".png";
+            cust.customerImage = "C:/Users/yello/Shawarma/Resources/Image/Customer/customer"
+                                 + std::to_string(imgIdx) + ".png";
             cust.position = CalcPosition(i);
-            cust.foodRequest = "Roll";  // 預設捲餅，後面再改
 
-            // 1-5 關：只要薯條和捲餅
+            // 隨機分配訂單（下方分區塊敘述的關卡範圍）
             if (lvl <= 5) {
-                // 前半客人薯條、後半捲餅
-                if (i < custCount/2) {
+                // 1-5 關：全部隨機從「薯條、捲餅」二選一
+                std::uniform_int_distribution<> dist(0, 1);
+                int choice = dist(gen);
+                if (choice == 0) {
                     cust.foodRequest = "FrenchFries";
-                    cust.foodIcon = "C:/Users/yello/Shawarma/Resources/Image/Food/FrenchFries.png";
+                    cust.foodIcon    = friesIcon[0];
+                    cust.requiredToppings.clear();
                 } else {
                     cust.foodRequest = "Roll";
-                    cust.foodIcon = "C:/Users/yello/Shawarma/Resources/Image/Food/roll.png";
+                    cust.foodIcon    = rollIcon[0];
+                    cust.requiredToppings.clear();
                 }
-                // 無 requiredToppings
             }
-            // 6-10 關：新增耐心值，但行為同 1-5
             else if (lvl < 11) {
-                if (i < custCount/2) {
+                // 6-10 關：行為同 1-5，但啟用耐心值（由 App 端自行處理）
+                std::uniform_int_distribution<> dist(0, 1);
+                int choice = dist(gen);
+                if (choice == 0) {
                     cust.foodRequest = "FrenchFries";
-                    cust.foodIcon = "C:/Users/yello/Shawarma/Resources/Image/Food/FrenchFries.png";
+                    cust.foodIcon    = friesIcon[0];
+                    cust.requiredToppings.clear();
                 } else {
                     cust.foodRequest = "Roll";
-                    cust.foodIcon = "C:/Users/yello/Shawarma/Resources/Image/Food/roll.png";
+                    cust.foodIcon    = rollIcon[0];
+                    cust.requiredToppings.clear();
                 }
             }
-            // 11-15 關：需要補充配料，但無自動 refill，需要 same as above icons
             else if (lvl < 16) {
-                if (i < custCount/2) {
+                // 11-15 關：同樣隨機薯條、捲餅；配料補充機制由外層再出發
+                std::uniform_int_distribution<> dist(0, 1);
+                int choice = dist(gen);
+                if (choice == 0) {
                     cust.foodRequest = "FrenchFries";
-                    cust.foodIcon = "C:/Users/yello/Shawarma/Resources/Image/Food/FrenchFries.png";
+                    cust.foodIcon    = friesIcon[0];
+                    cust.requiredToppings.clear();
                 } else {
                     cust.foodRequest = "Roll";
-                    cust.foodIcon = "C:/Users/yello/Shawarma/Resources/Image/Food/roll.png";
+                    cust.foodIcon    = rollIcon[0];
+                    cust.requiredToppings.clear();
                 }
             }
-            // 16-20 關：新增汽水與可樂訂單
             else if (lvl < 21) {
-                int rem = i % 4;
-                if (rem == 0) {
-                    cust.foodRequest = "Soda";
-                    cust.foodIcon = "C:/Users/yello/Shawarma/Resources/Image/Food/cup_soda_full.png";
-                } else if (rem == 1) {
-                    cust.foodRequest = "Cola";
-                    cust.foodIcon = "C:/Users/yello/Shawarma/Resources/Image/Food/cup_cola_full.png";
-                } else if (rem == 2) {
-                    cust.foodRequest = "FrenchFries";
-                    cust.foodIcon = "C:/Users/yello/Shawarma/Resources/Image/Food/FrenchFries.png";
-                } else {
-                    cust.foodRequest = "Roll";
-                    cust.foodIcon = "C:/Users/yello/Shawarma/Resources/Image/Food/roll.png";
+                // 16-20 關：新增汽水、可樂，但隨機分配四種：Soda、Cola、FrenchFries、Roll
+                std::uniform_int_distribution<> dist(0, 3);
+                int choice = dist(gen);
+                switch (choice) {
+                    case 0:
+                        cust.foodRequest = "Soda";
+                        cust.foodIcon    = sodaIcon[0];
+                        cust.requiredToppings.clear();
+                        break;
+                    case 1:
+                        cust.foodRequest = "Cola";
+                        cust.foodIcon    = colaIcon[0];
+                        cust.requiredToppings.clear();
+                        break;
+                    case 2:
+                        cust.foodRequest = "FrenchFries";
+                        cust.foodIcon    = friesIcon[0];
+                        cust.requiredToppings.clear();
+                        break;
+                    case 3:
+                    default:
+                        cust.foodRequest = "Roll";
+                        cust.foodIcon    = rollIcon[0];
+                        cust.requiredToppings.clear();
+                        break;
                 }
             }
-            // 21-24 關：新增果汁
             else if (lvl < 25) {
-                int rem = i % 5;
-                if (rem == 0) {
-                    cust.foodRequest = "Juice";
-                    cust.foodIcon = "C:/Users/yello/Shawarma/Resources/Image/Food/juice.png";
-                } else if (rem == 1) {
-                    cust.foodRequest = "Soda";
-                    cust.foodIcon = "C:/Users/yello/Shawarma/Resources/Image/Food/cup_soda_full.png";
-                } else if (rem == 2) {
-                    cust.foodRequest = "Cola";
-                    cust.foodIcon = "C:/Users/yello/Shawarma/Resources/Image/Food/cup_cola_full.png";
-                } else if (rem == 3) {
-                    cust.foodRequest = "FrenchFries";
-                    cust.foodIcon = "C:/Users/yello/Shawarma/Resources/Image/Food/FrenchFries.png";
-                } else {
-                    cust.foodRequest = "Roll";
-                    cust.foodIcon = "C:/Users/yello/Shawarma/Resources/Image/Food/roll.png";
+                // 21-24 關：加入果汁選項，隨機五種：Juice、Soda、Cola、FrenchFries、Roll
+                std::uniform_int_distribution<> dist(0, 4);
+                int choice = dist(gen);
+                switch (choice) {
+                    case 0:
+                        cust.foodRequest = "Juice";
+                        cust.foodIcon    = juiceIcon[0];
+                        cust.requiredToppings.clear();
+                        break;
+                    case 1:
+                        cust.foodRequest = "Soda";
+                        cust.foodIcon    = sodaIcon[0];
+                        cust.requiredToppings.clear();
+                        break;
+                    case 2:
+                        cust.foodRequest = "Cola";
+                        cust.foodIcon    = colaIcon[0];
+                        cust.requiredToppings.clear();
+                        break;
+                    case 3:
+                        cust.foodRequest = "FrenchFries";
+                        cust.foodIcon    = friesIcon[0];
+                        cust.requiredToppings.clear();
+                        break;
+                    case 4:
+                    default:
+                        cust.foodRequest = "Roll";
+                        cust.foodIcon    = rollIcon[0];
+                        cust.requiredToppings.clear();
+                        break;
                 }
             }
-            // 25-30 關：客製化卷餅
             else {
-                // 均分五種 customToppings
-                int typeIdx = i % customToppings.size();
-                cust.foodRequest = "Roll";
-                cust.requiredToppings = customToppings[typeIdx];
-                cust.foodIcon = "C:/Users/yello/Shawarma/Resources/Image/Food/" + customIcons[typeIdx];
+                // 25-30 關：「客製化捲餅」與「其他食物並行」：
+                // 我們先決定：這位客人的訂單究竟是「客製化捲餅」還是「一般食物」
+                // 例如：讓 60% 機率出捲餅（需依 customToppings），40% 機率出其他種類
+                std::uniform_real_distribution<> prob(0.0, 1.0);
+                double p = prob(gen);
+
+                if (p < 0.6) {
+                    // 60% 機率 → 客製化捲餅
+                    std::uniform_int_distribution<> distCt(0, static_cast<int>(customToppings.size()) - 1);
+                    int typeIdx = distCt(gen);
+                    cust.foodRequest      = "Roll";
+                    cust.requiredToppings = customToppings[typeIdx];
+                    cust.foodIcon         = "C:/Users/yello/Shawarma/Resources/Image/Food/" + customIcons[typeIdx];
+                } else {
+                    // 40% 機率 → 從「Soda、Cola、FrenchFries」中隨機挑
+                    std::uniform_int_distribution<> distOther(0, 2);
+                    int choice = distOther(gen);
+                    switch (choice) {
+                        case 0:
+                            cust.foodRequest = "Soda";
+                            cust.foodIcon    = sodaIcon[0];
+                            cust.requiredToppings.clear();
+                            break;
+                        case 1:
+                            cust.foodRequest = "Cola";
+                            cust.foodIcon    = colaIcon[0];
+                            cust.requiredToppings.clear();
+                            break;
+                        case 2:
+                        default:
+                            cust.foodRequest = "FrenchFries";
+                            cust.foodIcon    = friesIcon[0];
+                            cust.requiredToppings.clear();
+                            break;
+                    }
+                }
             }
 
+            // 把這筆客人設定推進本關清單
             level.customers.push_back(cust);
         }
 
