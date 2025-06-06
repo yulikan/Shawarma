@@ -104,12 +104,13 @@ void App::Update() {
         m_CurrentState = State::END;
 
     // Level complete phase
-    if (m_CurrentPhase == phase::levelComplete) {
-        // 1. 移除「第 N 天」的 DayText
+ if (m_CurrentPhase == phase::levelComplete) {
+        // 1. 移除「第 N 天」的 DayText（如果有）
         m_Renderer->RemoveChild(m_DayTextGO);
 
         // 2. 顯示「第 N 關」文字
-        int levelNum = static_cast<int>(m_LevelManager.GetCurrentLevelIndex()) + 1;
+        int currentIdx = static_cast<int>(m_LevelManager.GetCurrentLevelIndex()); // 0-based
+        int levelNum   = currentIdx + 1;    // 人類可讀的關卡編號（1~30）
         m_LevelText->SetText(std::to_string(levelNum));
         m_Renderer->AddChild(m_LevelTextGO);
 
@@ -118,30 +119,101 @@ void App::Update() {
         m_CompleteMoneyText->SetText("$" + std::to_string(currentBalance));
         m_Renderer->AddChild(m_CompleteMoneyTextGO);
 
-        // 4. 如果點擊 NextButton，就把這些結算畫面物件都移除，進入下一關
-        if (m_NextButton->IsClicked()) {
+        // 4. 檢查是不是第 30 關
+        int lastIdx = m_LevelManager.GetTotalLevelCount() - 1;  // 29（0-based）
+        if (currentIdx < lastIdx) {
+            // 不是最後一關，就維持原本「下一關按鈕」行為
+            m_Renderer->AddChild(m_LevelCompleteScreen);
+            m_Renderer->AddChild(m_NextButton);
+
+            if (m_NextButton->IsClicked()) {
+                // 移除結算畫面與按鈕，進下一關
+                m_Renderer->RemoveChild(m_LevelTextGO);
+                m_Renderer->RemoveChild(m_CompleteMoneyTextGO);
+                m_Renderer->RemoveChild(m_LevelCompleteScreen);
+                m_Renderer->RemoveChild(m_NextButton);
+
+                m_LevelManager.NextLevel();
+                LoadLevel(m_LevelManager.GetCurrentLevel());
+                m_CurrentPhase = phase::phase2;
+            }
+        }
+        else {
+            // 已經是第 30 關，顯示勝利畫面 (winPage) 及兩個按鈕
+            // a) 先移除結算畫面跟 NextButton（如果還沒移除）
             m_Renderer->RemoveChild(m_LevelTextGO);
             m_Renderer->RemoveChild(m_CompleteMoneyTextGO);
             m_Renderer->RemoveChild(m_LevelCompleteScreen);
             m_Renderer->RemoveChild(m_NextButton);
 
-            m_LevelManager.NextLevel();
-            LoadLevel(m_LevelManager.GetCurrentLevel());
-            m_CurrentPhase = phase::phase2;
+            // b) 動態產生 winPage 與按鈕 (只做一次)
+            if (!m_WinScreen) {
+                // 1) 建立 winPage 背景
+                m_WinScreen = std::make_shared<Util::GameObject>(
+                    std::make_unique<Util::Image>("C:/Users/yello/Shawarma/Resources/Image/background/winPage.png"),
+                    /*layer=*/7
+                );
+                // 調整背景位置與縮放（依照你的需求）
+                m_WinScreen->m_Transform.translation = glm::vec2(0.0f, 0.0f);
+                m_WinScreen->m_Transform.scale       = glm::vec2(1.1f, 1.1f);
+
+                // 2) 建立「重新開始」按鈕
+                m_RestartButton = std::make_shared<NextButton>(
+                    "C:/Users/yello/Shawarma/Resources/Image/Object/restartBtn.png", /*layer=*/8
+                );
+                m_RestartButton->m_Transform.translation = glm::vec2(-200.0f, -50.0f);
+                m_RestartButton->m_Transform.scale       = glm::vec2(0.25f, 0.25f);
+
+                // 3) 建立「離開遊戲」按鈕
+                m_ExitButton = std::make_shared<NextButton>(
+                    "C:/Users/yello/Shawarma/Resources/Image/Object/exitBtn.png", /*layer=*/8
+                );
+                m_ExitButton->m_Transform.translation = glm::vec2(200.0f, -50.0f);
+                m_ExitButton->m_Transform.scale       = glm::vec2(0.25f, 0.25f);
+
+                // 4) 把 winPage 與按鈕加入 Renderer
+                m_Renderer->AddChild(m_WinScreen);
+                m_Renderer->AddChild(m_RestartButton);
+                m_Renderer->AddChild(m_ExitButton);
+            }
+
+            // c) 監聽「重新開始」按鈕
+            if (m_RestartButton->IsClicked()) {
+                // 移除 winPage UI 與按鈕
+                m_Renderer->RemoveChild(m_WinScreen);
+                m_Renderer->RemoveChild(m_RestartButton);
+                m_Renderer->RemoveChild(m_ExitButton);
+
+                // LevelManager 重置到第 1 關
+                m_LevelManager.Reset();  // 確保已把 index 設回 0 並啟動該關
+                LoadLevel(m_LevelManager.GetCurrentLevel());
+                m_CurrentPhase = phase::phase2;
+
+                // 清除指標，下次若再次到第 30 關，才會重新 new
+                m_WinScreen.reset();
+                m_RestartButton.reset();
+                m_ExitButton.reset();
+            }
+            // d) 監聽「離開遊戲」按鈕
+            else if (m_ExitButton->IsClicked()) {
+                m_CurrentState = State::END;
+            }
         }
 
-        m_Renderer->Update();
+        // e) 最後更新 Renderer
+        if (m_Renderer) m_Renderer->Update();
         return;
     }
-
-
+     int currentLevelIndex = m_LevelManager.GetCurrentLevelIndex();
+        const LevelData& levelData = m_LevelManager.GetLevels()[currentLevelIndex];
+        int threshold = levelData.passThreshold;
     // Phase 2: check finished orders
     if (m_CurrentPhase == phase::phase2
          && m_LevelManager.IsLevelFinished()
          && m_Customers.empty())
     {
         // 依照金額判斷過關
-        if (m_MoneyManager.GetBalance() >= 100) {
+        if (m_MoneyManager.GetBalance() >= threshold) {
             // 過關：顯示結算畫面
             m_Renderer->AddChild(m_LevelCompleteScreen);
             m_Renderer->AddChild(m_NextButton);
@@ -150,6 +222,13 @@ void App::Update() {
         else {
             // 失敗：顯示失敗畫面與重試按鈕
             m_Renderer->RemoveChild(m_DayTextGO);
+            int currentIdx = static_cast<int>(m_LevelManager.GetCurrentLevelIndex()); // 0-based
+            int levelNum   = currentIdx + 1;    // 人類可讀的關卡編號（1~30）
+            m_LevelText->SetText(std::to_string(levelNum));
+            m_Renderer->AddChild(m_LevelTextGO);
+            int currentBalance = m_MoneyManager.GetBalance();
+            m_CompleteMoneyText->SetText("$" + std::to_string(currentBalance));
+            m_Renderer->AddChild(m_CompleteMoneyTextGO);
             m_FailureScreen = std::make_shared<Util::GameObject>(
                 std::make_unique<Util::Image>(
                     "C:/Users/yello/Shawarma/Resources/Image/background/FailPage.png"
@@ -300,9 +379,8 @@ if (m_CurrentPhase == phase::phase3) {
         if (std::find(eaten.begin(), eaten.end(), requested) != eaten.end()) {
             // 顾客吃完，结算金钱
             if (requested == "FrenchFries") m_MoneyManager.Add(30);
-            else if (requested == "sauce")       m_MoneyManager.Add(10);
             else if (requested == "Juice")       m_MoneyManager.Add(15);
-            // …（根据实际的 RequestedFood 类型再补一行）
+
 
             // 移除 PatienceText（若存在）
             if (auto pt2 = customer->GetPatienceText()) {

@@ -799,6 +799,9 @@ private:
     bool IsCurrentLevelComplete() const;   // 判斷關卡是否完成
     void ResetLevelObjects();             // 切換關卡前重置場景
     bool m_IgnoreNextMouseUp;
+    std::shared_ptr<Util::GameObject> m_WinScreen;       // 胜利畫面背景
+    std::shared_ptr<NextButton>       m_RestartButton;   // 重新開始按鈕
+    std::shared_ptr<NextButton>       m_ExitButton;      // 離開遊戲按鈕
 };
 
 #endif

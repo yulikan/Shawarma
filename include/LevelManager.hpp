@@ -4,7 +4,8 @@
 #include <vector>
 #include <string>
 #include <glm/vec2.hpp>
-
+#include <unordered_map>
+#include <random>
 // 定義單個客人的設定
 struct CustomerConfig {
     std::string customerImage;  // 客人的圖片路徑或識別字串
@@ -18,6 +19,8 @@ struct CustomerConfig {
 struct LevelData {
     std::string backgroundImage;              // 背景圖片路徑
     std::vector<CustomerConfig> customers;    // 關卡中所有客人的設定
+    int passThreshold = 0;  // 【新增】該關的通關標準金額
+
 };
 
 class LevelManager {
@@ -57,10 +60,44 @@ public:
     int GetMaxActiveCustomers() const { return m_MaxActiveCustomers; }
     void SetLevelIndex(size_t index);  // 新增：手動設定要跳的關卡
     int GetTotalLevelCount() const;
+
+    const std::vector<LevelData>& GetLevels() const { return m_Levels; }
+
 private:
     std::vector<LevelData> m_Levels;
     size_t m_CurrentLevelIndex;
+    std::unordered_map<std::string, int> m_foodRevenue = {
+        {"FrenchFries", 30},
+        {"Soda",        20},
+        {"Cola",        25},
+        {"Juice",       15}
+    };
 
+    // 2) 客製化捲餅各「配料」單價，還要有一個 baseRollPrice
+    //    例如：baseRoll 本身 10 元，之後每一種配料（肉、醬、醃黃瓜、薯條）單獨計價
+    std::unordered_map<std::string, int> m_toppingPrice = {
+        {"shaved_meat", 20},
+        {"sauce",        5},
+        {"pickle",       5},
+        {"fries",       10}
+    };
+    int m_baseRollPrice = 10; // 沒有任何配料時，最便宜的捲餅價 10 元
+
+    // 3) 隨機亂數引擎
+    std::random_device m_rd;
+    std::mt19937       m_gen;
+
+    // 助手函式：計算「某組配料向量」的實際捲餅售價
+    int CalcRollPrice(const std::vector<std::string>& toppings) const {
+        int price = m_baseRollPrice;
+        for (auto &t : toppings) {
+            auto it = m_toppingPrice.find(t);
+            if (it != m_toppingPrice.end()) {
+                price += it->second;
+            }
+        }
+        return price;
+    }
     // 新增
     std::vector<CustomerConfig> m_PendingConfigs; // 本關剩下還沒出場的客人設定
     int m_NextCustomerIdx;                         // 下一位要出場的索引
