@@ -32,7 +32,7 @@ void App::Start() {
     // Level complete screen
     m_LevelCompleteScreen = std::make_shared<Util::GameObject>(
         std::make_unique<Util::Image>(
-            "C:/Users/yello/Shawarma/Resources/Image/background/nextLevel.png"),
+            "C:/Shawarma/CHAO0606/Shawarma/Resources/Image/background/nextLevel.png"),
         /*layer=*/7
     );
     m_LevelCompleteScreen->m_Transform.translation = glm::vec2(0.0f, 0.0f);
@@ -104,12 +104,14 @@ void App::Update() {
         m_CurrentState = State::END;
 
     // Level complete phase
+    // 階段 3: 關卡結算畫面
     if (m_CurrentPhase == phase::levelComplete) {
-        // 1. 移除「第 N 天」的 DayText
+        // 1. 移除「第 N 天」的 DayText（如果有）
         m_Renderer->RemoveChild(m_DayTextGO);
 
         // 2. 顯示「第 N 關」文字
-        int levelNum = static_cast<int>(m_LevelManager.GetCurrentLevelIndex()) + 1;
+        int currentIdx = static_cast<int>(m_LevelManager.GetCurrentLevelIndex()); // 0-based
+        int levelNum   = currentIdx + 1;    // 人類可讀的關卡編號（1~30）
         m_LevelText->SetText(std::to_string(levelNum));
         m_Renderer->AddChild(m_LevelTextGO);
 
@@ -118,19 +120,89 @@ void App::Update() {
         m_CompleteMoneyText->SetText("$" + std::to_string(currentBalance));
         m_Renderer->AddChild(m_CompleteMoneyTextGO);
 
-        // 4. 如果點擊 NextButton，就把這些結算畫面物件都移除，進入下一關
-        if (m_NextButton->IsClicked()) {
+        // 4. 檢查是不是第 30 關
+        int lastIdx = m_LevelManager.GetTotalLevelCount() - 1;  // 29（0-based）
+        if (currentIdx < lastIdx) {
+            // 不是最後一關，就維持原本「下一關按鈕」行為
+            m_Renderer->AddChild(m_LevelCompleteScreen);
+            m_Renderer->AddChild(m_NextButton);
+
+            if (m_NextButton->IsClicked()) {
+                // 移除結算畫面與按鈕，進下一關
+                m_Renderer->RemoveChild(m_LevelTextGO);
+                m_Renderer->RemoveChild(m_CompleteMoneyTextGO);
+                m_Renderer->RemoveChild(m_LevelCompleteScreen);
+                m_Renderer->RemoveChild(m_NextButton);
+
+                m_LevelManager.NextLevel();
+                LoadLevel(m_LevelManager.GetCurrentLevel());
+                m_CurrentPhase = phase::phase2;
+            }
+        }
+        else {
+            // 已經是第 30 關，顯示勝利畫面 (winPage) 及兩個按鈕
+            // a) 先移除結算畫面跟 NextButton（如果還沒移除）
             m_Renderer->RemoveChild(m_LevelTextGO);
             m_Renderer->RemoveChild(m_CompleteMoneyTextGO);
             m_Renderer->RemoveChild(m_LevelCompleteScreen);
             m_Renderer->RemoveChild(m_NextButton);
 
-            m_LevelManager.NextLevel();
-            LoadLevel(m_LevelManager.GetCurrentLevel());
-            m_CurrentPhase = phase::phase2;
+            // b) 動態產生 winPage 與按鈕 (只做一次)
+            if (!m_WinScreen) {
+                // 1) 建立 winPage 背景
+                m_WinScreen = std::make_shared<Util::GameObject>(
+                    std::make_unique<Util::Image>("C:/Shawarma/CHAO0606/Shawarma/Resources/Image/background/winPage.png"),
+                    /*layer=*/7
+                );
+                // 調整背景位置與縮放（依照你的需求）
+                m_WinScreen->m_Transform.translation = glm::vec2(0.0f, 0.0f);
+                m_WinScreen->m_Transform.scale       = glm::vec2(1.1f, 1.1f);
+
+                // 2) 建立「重新開始」按鈕
+                m_RestartButton = std::make_shared<NextButton>(
+                    "C:/Shawarma/CHAO0606/Shawarma/Resources/Image/Object/restartBtn.png", /*layer=*/8
+                );
+                m_RestartButton->m_Transform.translation = glm::vec2(-200.0f, -50.0f);
+                m_RestartButton->m_Transform.scale       = glm::vec2(0.25f, 0.25f);
+
+                // 3) 建立「離開遊戲」按鈕
+                m_ExitButton = std::make_shared<NextButton>(
+                    "C:/Shawarma/CHAO0606/Shawarma/Resources/Image/Object/exitBtn.png", /*layer=*/8
+                );
+                m_ExitButton->m_Transform.translation = glm::vec2(200.0f, -50.0f);
+                m_ExitButton->m_Transform.scale       = glm::vec2(0.25f, 0.25f);
+
+                // 4) 把 winPage 與按鈕加入 Renderer
+                m_Renderer->AddChild(m_WinScreen);
+                m_Renderer->AddChild(m_RestartButton);
+                m_Renderer->AddChild(m_ExitButton);
+            }
+
+            // c) 監聽「重新開始」按鈕
+            if (m_RestartButton->IsClicked()) {
+                // 移除 winPage UI 與按鈕
+                m_Renderer->RemoveChild(m_WinScreen);
+                m_Renderer->RemoveChild(m_RestartButton);
+                m_Renderer->RemoveChild(m_ExitButton);
+
+                // LevelManager 重置到第 1 關
+                m_LevelManager.Reset();  // 確保已把 index 設回 0 並啟動該關
+                LoadLevel(m_LevelManager.GetCurrentLevel());
+                m_CurrentPhase = phase::phase2;
+
+                // 清除指標，下次若再次到第 30 關，才會重新 new
+                m_WinScreen.reset();
+                m_RestartButton.reset();
+                m_ExitButton.reset();
+            }
+            // d) 監聽「離開遊戲」按鈕
+            else if (m_ExitButton->IsClicked()) {
+                m_CurrentState = State::END;
+            }
         }
 
-        m_Renderer->Update();
+        // e) 最後更新 Renderer
+        if (m_Renderer) m_Renderer->Update();
         return;
     }
 
@@ -152,7 +224,7 @@ void App::Update() {
             m_Renderer->RemoveChild(m_DayTextGO);
             m_FailureScreen = std::make_shared<Util::GameObject>(
                 std::make_unique<Util::Image>(
-                    "C:/Users/yello/Shawarma/Resources/Image/background/FailPage.png"
+                    "C:/Shawarma/CHAO0606/Shawarma/Resources/Image/background/FailPage.png"
                 ), 7
             );
             m_FailureScreen->m_Transform.translation = {0,0};
@@ -160,7 +232,7 @@ void App::Update() {
             m_Renderer->AddChild(m_FailureScreen);
 
             m_RetryButton = std::make_shared<NextButton>(
-                "C:/Users/yello/Shawarma/Resources/Image/Object/retryBtn.png"
+                "C:/Shawarma/CHAO0606/Shawarma/Resources/Image/Object/retryBtn.png"
             );
             m_Renderer->AddChild(m_RetryButton);
 
@@ -187,7 +259,7 @@ if (m_CurrentPhase == phase::phase3) {
     if (Util::Input::IsKeyUp(Util::Keycode::N) && m_CurrentLevelPage == "LevelPage1") {
         m_CurrentLevelPage = "LevelPage2";
         m_Background = std::make_shared<BackgroundImage>(
-            "C:/Users/yello/Shawarma/Resources/Image/background/LevelPage2.png");
+            "C:/Shawarma/CHAO0606/Shawarma/Resources/Image/background/LevelPage2.png");
         m_Renderer = std::make_shared<Util::Renderer>(
             std::vector<std::shared_ptr<Util::GameObject>>{ m_Background });
         m_Renderer->AddChild(m_ReturnButton);
@@ -197,7 +269,7 @@ if (m_CurrentPhase == phase::phase3) {
     if (Util::Input::IsKeyUp(Util::Keycode::P) && m_CurrentLevelPage == "LevelPage2") {
         m_CurrentLevelPage = "LevelPage1";
         m_Background = std::make_shared<BackgroundImage>(
-            "C:/Users/yello/Shawarma/Resources/Image/background/LevelPage1.png");
+            "C:/Shawarma/CHAO0606/Shawarma/Resources/Image/background/LevelPage1.png");
         m_Renderer = std::make_shared<Util::Renderer>(
             std::vector<std::shared_ptr<Util::GameObject>>{ m_Background });
         m_Renderer->AddChild(m_ReturnButton);
@@ -402,7 +474,7 @@ if (m_CurrentPhase == phase::phase3) {
         if (!m_Fries->IsPlaced() && m_Fries->IsClicked()) {
             m_Fries->SetPlaced(true);
             auto newTopping = std::make_shared<Topping>(
-                "C:/Users/yello/Shawarma/Resources/Image/Food/topping_fries.png",
+                "C:/Shawarma/CHAO0606/Shawarma/Resources/Image/Food/topping_fries.png",
                 "fries"
             );
             newTopping->m_Transform.translation = glm::vec2(0.0f, -214.0f);
@@ -415,7 +487,7 @@ if (m_CurrentPhase == phase::phase3) {
             m_Sauce->SetPlaced(true);
             m_Sauce->DecreaseCount();
             auto newTopping = std::make_shared<Topping>(
-                "C:/Users/yello/Shawarma/Resources/Image/Food/topping_sauce.png",
+                "C:/Shawarma/CHAO0606/Shawarma/Resources/Image/Food/topping_sauce.png",
                 "sauce"
             );
             newTopping->m_Transform.translation = glm::vec2(0.0f, -248.0f);
@@ -428,7 +500,7 @@ if (m_CurrentPhase == phase::phase3) {
             m_Pickle->SetPlaced(true);
             m_Pickle->DecreaseCount();  // 扣除一次
             auto newTopping = std::make_shared<Topping>(
-                "C:/Users/yello/Shawarma/Resources/Image/Food/topping_pickle.png",
+                "C:/Shawarma/CHAO0606/Shawarma/Resources/Image/Food/topping_pickle.png",
                 "pickle"
             );
             newTopping->m_Transform.translation = glm::vec2(0.0f, -195.0f);
@@ -465,7 +537,7 @@ if (m_CurrentPhase == phase::phase3) {
         if (!m_ShavedMeat->IsPlaced() && m_ShavedMeat->IsClicked()) {
             m_ShavedMeat->SetPlaced(true);
             auto newTopping = std::make_shared<Topping>(
-                "C:/Users/yello/Shawarma/Resources/Image/Food/topping_meat.png",
+                "C:/Shawarma/CHAO0606/Shawarma/Resources/Image/Food/topping_meat.png",
                 "shaved_meat"
             );
             newTopping->m_Transform.translation = glm::vec2(0.0f, -232.0f);
@@ -477,7 +549,7 @@ if (m_CurrentPhase == phase::phase3) {
         if (!m_Potato->IsPlaced() && m_Potato->IsClicked()) {
             m_Potato->SetPlaced(true);
             m_Frying = std::make_shared<Topping>(
-                "C:/Users/yello/Shawarma/Resources/Image/Food/frying.png",
+                "C:/Shawarma/CHAO0606/Shawarma/Resources/Image/Food/frying.png",
                 "potato"
             );
             m_Frying->m_Transform.translation = glm::vec2(480.0f, -40.0f);
@@ -858,7 +930,7 @@ for (auto& customer : m_Customers) {
     // Shop & return
     if (m_ShopButton->IsClicked() && m_CurrentPhase == phase::phase1) {
         m_CurrentPhase = phase::phase3;
-        m_Background = std::make_shared<BackgroundImage>("C:/Users/yello/Shawarma/Resources/Image/background/LevelPage1.png");
+        m_Background = std::make_shared<BackgroundImage>("C:/Shawarma/CHAO0606/Shawarma/Resources/Image/background/LevelPage1.png");
         m_Renderer = std::make_shared<Util::Renderer>(std::vector<std::shared_ptr<Util::GameObject>>{ m_Background });
         m_Renderer->AddChild(m_ReturnButton);
         m_IgnoreNextMouseUp = true;
@@ -969,7 +1041,7 @@ void App::LoadLevel(const LevelData& level) {
     m_Renderer->AddChild(colaCup);
 
     m_JuicePack = std::make_shared<Util::GameObject>(
-        std::make_unique<Util::Image>("C:/Users/yello/Shawarma/Resources/Image/Food/juicepack.png"), 4);
+        std::make_unique<Util::Image>("C:/Shawarma/CHAO0606/Shawarma/Resources/Image/Food/juicepack.png"), 4);
     m_JuicePack->m_Transform.translation = glm::vec2(-420.0f, -210.0f);
     m_JuicePack->m_Transform.scale = glm::vec2(0.5f, 0.5f);
     m_Renderer->AddChild(m_JuicePack);
