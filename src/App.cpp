@@ -299,8 +299,7 @@ if (m_CurrentPhase == phase::phase3) {
         const auto& requested = customer->GetRequestedFood();
         if (std::find(eaten.begin(), eaten.end(), requested) != eaten.end()) {
             // 顾客吃完，结算金钱
-            if (requested == "Roll")             m_MoneyManager.Add(50);
-            else if (requested == "FrenchFries") m_MoneyManager.Add(30);
+            if (requested == "FrenchFries") m_MoneyManager.Add(30);
             else if (requested == "sauce")       m_MoneyManager.Add(10);
             else if (requested == "Juice")       m_MoneyManager.Add(15);
             // …（根据实际的 RequestedFood 类型再补一行）
@@ -691,63 +690,59 @@ if (m_BevMachine->IsButtonClicked(DrinkType::COLA)) {
 
         }
 
-       // App.cpp 中，替换掉原本的 Customer <> Roll 交互块
-    // —— 检查每个顾客是否要吃卷饼 ——
-    for (auto& customer : m_Customers) {
-        // 只有当鼠标一松并且顾客状态为 READY 才检查哪一个 roll 被吃
-        if (customer->GetEatState() == Customer::EatState::READY_TO_EAT &&
-            Util::Input::IsKeyUp(Util::Keycode::MOUSE_LB))
-        {
-            for (auto it = m_Rolls.begin(); it != m_Rolls.end(); ++it) {
-                auto& rollObj = *it;
-                float distance = glm::distance(
+        for (auto& customer : m_Customers) {
+            if (customer->GetEatState() == Customer::EatState::READY_TO_EAT &&
+                Util::Input::IsKeyUp(Util::Keycode::MOUSE_LB))
+            {
+                for (auto it = m_Rolls.begin(); it != m_Rolls.end(); ++it) {
+                    auto& rollObj = *it;
+                    float distance = glm::distance(
+                        customer->m_Transform.translation,
+                        rollObj->m_Transform.translation
+                    );
+                    if (distance < 50.0f) {
+                        // —— 找到一顆可以吃的 Roll ——
+
+                        // 1. 先檢查這位顧客的 “RequestedFood” 是不是 "Roll"。
+                        //    如果是，就用「配料數量」來算價錢：空餅皮 10、每個配料 +10，最高 50。
+                        if (customer->GetRequestedFood() == "Roll") {
+                            auto actual = rollObj->GetContents();
+                            int toppingCount = static_cast<int>(actual.size());
+                            int price = 10 + toppingCount * 10;
+                            if (price > 50) price = 50;
+                            m_MoneyManager.Add(price);
+
+                            customer->RecordFood("Roll");
+                            for (auto& ing : actual) {
+                                customer->RecordFood(ing);
+                            }
+                        }
+                        // 2. 更新顧客狀態為 EATEN
+                        customer->SetEatState(Customer::EatState::EATEN);
+
+                        // 3. 從場景移除這顆卷餅
+                        m_Renderer->RemoveChild(rollObj);
+                        m_Rolls.erase(it);
+                        g_IsObjectDragging = false;
+
+                        // 已吃完，結束本輪
+                        break;
+                    }
+                }
+            }
+
+            // 如果距離 < 50 但鼠標未松開，設為 READY_TO_EAT
+            for (auto& rollObj : m_Rolls) {
+                float dist2 = glm::distance(
                     customer->m_Transform.translation,
                     rollObj->m_Transform.translation
                 );
-                if (distance < 50.0f) {
-                    // 卷饼被“吃”掉
-                    auto actual = rollObj->GetContents();
-                    auto required = customer->GetRequiredToppings();
-                    std::sort(actual.begin(),   actual.end());
-                    std::sort(required.begin(), required.end());
-
-                    bool isMatch = (!m_EnableCustomTopping) || (actual == required);
-                    if (isMatch) {
-                        customer->SetEatState(Customer::EatState::EATEN);
-                        customer->RecordFood("Roll");
-                        for (auto& ing : actual)
-                            customer->RecordFood(ing);
-                        m_MoneyManager.Add(50);
-                    } else {
-                        customer->SetEatState(Customer::EatState::EATEN);
-                        // TODO: 显示失败UI或扣分逻辑
-                    }
-
-                    // 立刻删除卷饼并结束整个 UpdatePhase2：本帧不再处理其他顾客或卷饼
-                    m_Renderer->RemoveChild(rollObj);
-                    m_Rolls.erase(it);
-                    g_IsObjectDragging = false;
-                    return;
+                if (dist2 < 50.0f) {
+                    customer->SetEatState(Customer::EatState::READY_TO_EAT);
+                    break;
                 }
             }
         }
-        // 如果距离小于 50 但鼠标未松开，也把状态设为 READY_TO_EAT
-        for (auto& rollObj : m_Rolls) {
-            float dist2 = glm::distance(
-                customer->m_Transform.translation,
-                rollObj->m_Transform.translation
-            );
-            if (dist2 < 50.0f) {
-                customer->SetEatState(Customer::EatState::READY_TO_EAT);
-                break;
-            }
-        
-    }
-
-    // —— 其他 phase2 逻辑（产生新顾客、耐心计时等）——
-    // …
-}
-
 
         // PoorMan <> Roll interaction
         if (m_PoorMan) {
