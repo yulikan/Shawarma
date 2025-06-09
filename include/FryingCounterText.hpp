@@ -5,6 +5,7 @@
 #include "Util/Text.hpp"
 #include "Util/Color.hpp"
 
+// 薯條機
 class FryingCounterText : public Util::GameObject {
 public:
     FryingCounterText()
@@ -13,7 +14,7 @@ public:
                                            "0",
                                            Util::Color::FromName(Util::Colors::RED)),
               4) {
-        m_Transform.translation = {490.0F, -120.0F};  // 顯示在畫面右上
+        m_Transform.translation = {490.0F, -120.0F};
         m_Transform.scale = glm::vec2(1.0f, 1.0f);
     }
 

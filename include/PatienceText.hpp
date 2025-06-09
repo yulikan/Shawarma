@@ -6,6 +6,7 @@
 #include "Util/Color.hpp"
 #include "Util/Time.hpp"
 
+// 耐心值
 class PatienceText : public Util::GameObject {
 public:
     PatienceText()

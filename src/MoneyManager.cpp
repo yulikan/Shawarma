@@ -7,6 +7,7 @@ MoneyManager::MoneyManager(int initial)
     : m_Balance(initial)
 {}
 
+// 玩家累積金額
 int MoneyManager::GetBalance() const {
     return m_Balance;
 }

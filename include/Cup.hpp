@@ -7,6 +7,7 @@
 #include "Util/Keycode.hpp"
 #include <glm/vec2.hpp>
 
+// 飲料機杯子
 enum class DrinkType { SODA, COLA };
 enum class CupState  { FULL, EMPTY };
 
@@ -30,25 +31,24 @@ public:
         bool down = Util::Input::IsKeyDown(Util::Keycode::MOUSE_LB);
         bool up   = Util::Input::IsKeyUp(Util::Keycode::MOUSE_LB);
 
-        // 1) 按下开始拖动
+        // 拖杯子
         if (down && !m_IsDragging && IsMouseOver(mouse)) {
             m_IsDragging   = true;
             g_IsObjectDragging = true;
             m_DragOffset   = m_Transform.translation - mouse;
         }
 
-        // 2) 拖动中
         if (m_IsDragging && !up) {
             m_Transform.translation = mouse + m_DragOffset;
         }
 
-        // 3) 松开结束拖拽
         if (m_IsDragging && up) {
             m_IsDragging   = false;
             g_IsObjectDragging = false;
         }
     }
 
+    // 生成空杯子
     void Serve() {
         if (m_State == CupState::FULL) {
             m_State = CupState::EMPTY;
@@ -56,6 +56,7 @@ public:
         }
     }
 
+    // 填飲料到杯子
     void Refill() {
         if (m_State == CupState::EMPTY) {
             m_State = CupState::FULL;
@@ -69,7 +70,7 @@ public:
 
 private:
     void ReloadSprite() {
-        std::string base = "C:/Users/yello/Shawarma/Resources/Image/Food/";
+        std::string base = "C:/Shawarma/CHAO0609/Shawarma/Resources/Image/Food/";
         std::string path;
         if (m_State == CupState::FULL) {
             path = base + (m_Type==DrinkType::SODA
