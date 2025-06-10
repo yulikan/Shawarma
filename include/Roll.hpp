@@ -11,7 +11,7 @@
 class Roll : public Util::GameObject {
 public:
     Roll(const std::vector<std::string>& contents)
-        : Util::GameObject(std::make_unique<Util::Image>("C:/Shawarma/CHAO0609/Shawarma/Resources/Image/Food/roll.png"), 5),
+        : Util::GameObject(std::make_unique<Util::Image>(RESOURCE_DIR "/Image/Food/roll.png"), 5),
           m_Contents(contents),
           m_IsDragging(false) {
         m_Transform.translation = glm::vec2(0.0f, 0.0f);

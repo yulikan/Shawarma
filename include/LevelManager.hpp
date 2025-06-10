@@ -55,7 +55,16 @@ public:
     int GetTotalLevelCount() const;
 
     const std::vector<LevelData>& GetLevels() const { return m_Levels; }
-
+    int CalcRollPrice(const std::vector<std::string>& toppings) const {
+        int price = m_baseRollPrice;
+        for (auto &t : toppings) {
+            auto it = m_toppingPrice.find(t);
+            if (it != m_toppingPrice.end()) {
+                price += it->second;
+            }
+        }
+        return price;
+    }
 private:
     std::vector<LevelData> m_Levels;
     size_t m_CurrentLevelIndex;
@@ -79,16 +88,7 @@ private:
     std::random_device m_rd;
     std::mt19937       m_gen;
 
-    int CalcRollPrice(const std::vector<std::string>& toppings) const {
-        int price = m_baseRollPrice;
-        for (auto &t : toppings) {
-            auto it = m_toppingPrice.find(t);
-            if (it != m_toppingPrice.end()) {
-                price += it->second;
-            }
-        }
-        return price;
-    }
+
 
     std::vector<CustomerConfig> m_PendingConfigs;
     int m_NextCustomerIdx;

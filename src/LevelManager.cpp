@@ -44,7 +44,7 @@ void LevelManager::LoadLevels() {
     const int totalLevels = 30;
   for (int lvl = 1; lvl <= totalLevels; ++lvl) {
         LevelData level;
-        level.backgroundImage = "C:/Shawarma/CHAO0609/Shawarma/Resources/Image/background/restaurant.png";
+        level.backgroundImage = RESOURCE_DIR "/Image/background/restaurant.png";;
 
         int custCount = 5 + (lvl - 1);
 

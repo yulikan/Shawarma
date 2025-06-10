@@ -12,7 +12,7 @@
 class NextButton : public Util::GameObject {
 public:
     explicit NextButton(const std::string& imagePath =
-            "C:/Shawarma/CHAO0609/Shawarma/Resources/Image/Object/nextLevelBtn.png",
+            RESOURCE_DIR "/Image/Object/nextLevelBtn.png",
         int layer = 8
     )
     : Util::GameObject(
