@@ -702,7 +702,7 @@ private:
 class App {
 public:
     App()
-      : m_BGM("Resources/Audio/bgm.mp3")
+      : m_BGM(RESOURCE_DIR"/music/bgm.mp3")
     {}
     enum class State { START, UPDATE, LEVEL_END, END };
     enum class phase { phase1, phase2, phase3, levelComplete ,failed};

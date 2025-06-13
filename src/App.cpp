@@ -19,7 +19,7 @@ void App::Start() {
     // bgm設定
     m_BGM.LoadMedia(RESOURCE_DIR"/music/bgm.mp3");
     m_BGM.Play(-1);
-    m_BGM.SetVolume(10);
+    m_BGM.SetVolume(70);
 
     LOG_TRACE("Start");
     m_CurrentState = State::UPDATE;
