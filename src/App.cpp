@@ -10,8 +10,17 @@
 #include "Roll.hpp"
 #include "NextButton.hpp"
 #include "PatienceText.hpp"
+#include "Util/BGM.hpp"
+#include <SDL_mixer.h>
 
 void App::Start() {
+    Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 4096);
+
+    // bgm設定
+    m_BGM.LoadMedia(RESOURCE_DIR"/music/bgm.mp3");
+    m_BGM.Play(-1);
+    m_BGM.SetVolume(10);
+
     LOG_TRACE("Start");
     m_CurrentState = State::UPDATE;
     m_Renderer = std::make_shared<Util::Renderer>();

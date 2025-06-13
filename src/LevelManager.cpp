@@ -48,17 +48,17 @@ void LevelManager::LoadLevels() {
 
         int custCount = 5 + (lvl - 1);
 
-        std::string friesIconPath = "C:/Shawarma/CHAO0609/Shawarma/Resources/Image/Food/FrenchFries.png";
-        std::string rollIconPath  = "C:/Shawarma/CHAO0609/Shawarma/Resources/Image/Food/roll.png";
-        std::string sodaIconPath  = "C:/Shawarma/CHAO0609/Shawarma/Resources/Image/Food/cup_soda_full.png";
-        std::string colaIconPath  = "C:/Shawarma/CHAO0609/Shawarma/Resources/Image/Food/cup_cola_full.png";
-        std::string juiceIconPath = "C:/Shawarma/CHAO0609/Shawarma/Resources/Image/Food/juice.png";
+        std::string friesIconPath = RESOURCE_DIR "/Image/Food/FrenchFries.png";
+        std::string rollIconPath  = RESOURCE_DIR "/Image/Food/roll.png";
+        std::string sodaIconPath  = RESOURCE_DIR "/Image/Food/cup_soda_full.png";
+        std::string colaIconPath  = RESOURCE_DIR "/Image/Food/cup_cola_full.png";
+        std::string juiceIconPath = RESOURCE_DIR "/Image/Food/juice.png";
 
         for (int i = 0; i < custCount; ++i) {
             CustomerConfig cust;
 
             int imgIdx = (i % 6) + 1;
-            cust.customerImage = "C:/Shawarma/CHAO0609/Shawarma/Resources/Image/Customer/customer"
+            cust.customerImage = RESOURCE_DIR "/Image/Customer/customer"
                                  + std::to_string(imgIdx) + ".png";
             cust.position = CalcPosition(i);
 
@@ -171,7 +171,7 @@ void LevelManager::LoadLevels() {
                     int typeIdx = distCt(m_gen);
                     cust.foodRequest      = "Roll";
                     cust.requiredToppings = customToppings[typeIdx];
-                    cust.foodIcon         = "C:/Shawarma/CHAO0609/Shawarma/Resources/Image/Food/" + customIcons[typeIdx];
+                    cust.foodIcon         = RESOURCE_DIR "/Image/Food/" + customIcons[typeIdx];
                 } else {
                     // 40%：從「Juice、Soda、Cola、FrenchFries」中均等選其一
                     std::uniform_int_distribution<> distOther(0, 3);

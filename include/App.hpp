@@ -7,6 +7,7 @@
 #include "Util/Renderer.hpp"
 #include "Util/Input.hpp"
 #include "Util/Keycode.hpp"
+#include "Util/BGM.hpp"
 #include <unordered_set>
 #include <vector>
 #include <string>
@@ -700,6 +701,9 @@ private:
 // App
 class App {
 public:
+    App()
+      : m_BGM("Resources/Audio/bgm.mp3")
+    {}
     enum class State { START, UPDATE, LEVEL_END, END };
     enum class phase { phase1, phase2, phase3, levelComplete ,failed};
     State GetCurrentState() const { return m_CurrentState; }
@@ -787,6 +791,9 @@ private:
     std::shared_ptr<Util::GameObject> m_WinScreen;       // 勝利畫面背景
     std::shared_ptr<NextButton>       m_RestartButton;   // 重新開始按鈕
     std::shared_ptr<NextButton>       m_ExitButton;      // 離開遊戲按鈕
+
+    Util::BGM m_BGM;
+
 };
 
 #endif
